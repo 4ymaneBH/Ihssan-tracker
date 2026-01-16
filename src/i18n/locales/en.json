@@ -1,0 +1,134 @@
+{
+    "common": {
+        "appName": "Ihssan",
+        "today": "Today",
+        "track": "Track",
+        "insights": "Insights",
+        "settings": "Settings",
+        "save": "Save",
+        "cancel": "Cancel",
+        "done": "Done",
+        "edit": "Edit",
+        "delete": "Delete",
+        "next": "Next",
+        "back": "Back",
+        "skip": "Skip",
+        "continue": "Continue",
+        "getStarted": "Get Started"
+    },
+    "onboarding": {
+        "welcome": "Welcome to Ihssan",
+        "tagline": "Your companion for consistent ibadah",
+        "chooseLanguage": "Choose your language",
+        "chooseTheme": "Choose your theme",
+        "lightTheme": "Light",
+        "darkTheme": "Dark",
+        "setGoals": "Set your daily goals",
+        "enableNotifications": "Enable gentle reminders",
+        "notificationDesc": "We'll send you gentle nudges to help you stay consistent. No guilt, just encouragement.",
+        "quietHours": "Quiet hours",
+        "quietHoursDesc": "No notifications during these hours"
+    },
+    "salat": {
+        "title": "Salat",
+        "fajr": "Fajr",
+        "dhuhr": "Dhuhr",
+        "asr": "Asr",
+        "maghrib": "Maghrib",
+        "isha": "Isha",
+        "onTime": "On time",
+        "late": "Late",
+        "missed": "Missed",
+        "sunnah": "Sunnah",
+        "prayersCompleted": "prayers completed",
+        "weeklyStreak": "Weekly streak"
+    },
+    "adhkar": {
+        "title": "Adhkar",
+        "morning": "Morning Adhkar",
+        "evening": "Evening Adhkar",
+        "custom": "Custom Adhkar",
+        "completed": "Completed",
+        "remaining": "remaining",
+        "tapToCount": "Tap to count"
+    },
+    "quran": {
+        "title": "Qur'an",
+        "pagesRead": "Pages read",
+        "minutesRead": "Minutes read",
+        "dailyGoal": "Daily goal",
+        "weeklyGoal": "Weekly goal",
+        "pages": "pages",
+        "minutes": "minutes",
+        "addReading": "Add reading",
+        "notes": "Notes (optional)"
+    },
+    "charity": {
+        "title": "Charity",
+        "sadaqah": "Sadaqah",
+        "money": "Money",
+        "food": "Food",
+        "time": "Time",
+        "help": "Help",
+        "amount": "Amount (optional)",
+        "thisWeek": "This week",
+        "timesGiven": "times given"
+    },
+    "tahajjud": {
+        "title": "Tahajjud",
+        "nightPrayer": "Night Prayer",
+        "completed": "Completed",
+        "thisWeek": "This week",
+        "nights": "nights",
+        "sleepReminder": "Sleep earlier reminder"
+    },
+    "habits": {
+        "title": "Habits",
+        "customHabits": "Custom Habits",
+        "addHabit": "Add habit",
+        "habitName": "Habit name",
+        "schedule": "Schedule",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "specificDays": "Specific days",
+        "icon": "Icon",
+        "streak": "Streak",
+        "days": "days"
+    },
+    "insights": {
+        "title": "Insights",
+        "weeklyReport": "Weekly Report",
+        "salatOnTime": "Salat on time",
+        "adhkarCompletion": "Adhkar completion",
+        "quranPages": "Qur'an pages",
+        "charityCount": "Charity count",
+        "tahajjudNights": "Tahajjud nights",
+        "greatWeek": "Great week! Keep going!",
+        "keepGoing": "You're making progress!"
+    },
+    "settings": {
+        "title": "Settings",
+        "language": "Language",
+        "theme": "Theme",
+        "notifications": "Notifications",
+        "quietHours": "Quiet hours",
+        "privacy": "Privacy",
+        "hideAmounts": "Hide charity amounts",
+        "about": "About",
+        "version": "Version"
+    },
+    "days": {
+        "sunday": "Sun",
+        "monday": "Mon",
+        "tuesday": "Tue",
+        "wednesday": "Wed",
+        "thursday": "Thu",
+        "friday": "Fri",
+        "saturday": "Sat"
+    },
+    "messages": {
+        "logged": "Logged successfully",
+        "streakMaintained": "Streak maintained!",
+        "newRecord": "New record!"
+    }
+}

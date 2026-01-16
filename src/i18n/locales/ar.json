@@ -1,0 +1,134 @@
+{
+    "common": {
+        "appName": "إحسان",
+        "today": "اليوم",
+        "track": "التتبع",
+        "insights": "الإحصائيات",
+        "settings": "الإعدادات",
+        "save": "حفظ",
+        "cancel": "إلغاء",
+        "done": "تم",
+        "edit": "تعديل",
+        "delete": "حذف",
+        "next": "التالي",
+        "back": "رجوع",
+        "skip": "تخطي",
+        "continue": "متابعة",
+        "getStarted": "ابدأ الآن"
+    },
+    "onboarding": {
+        "welcome": "مرحباً بك في إحسان",
+        "tagline": "رفيقك للثبات على العبادة",
+        "chooseLanguage": "اختر لغتك",
+        "chooseTheme": "اختر المظهر",
+        "lightTheme": "فاتح",
+        "darkTheme": "داكن",
+        "setGoals": "حدد أهدافك اليومية",
+        "enableNotifications": "فعّل التذكيرات اللطيفة",
+        "notificationDesc": "سنرسل لك تذكيرات لطيفة لمساعدتك على الثبات. بدون لوم، فقط تشجيع.",
+        "quietHours": "ساعات الهدوء",
+        "quietHoursDesc": "لا إشعارات خلال هذه الساعات"
+    },
+    "salat": {
+        "title": "الصلاة",
+        "fajr": "الفجر",
+        "dhuhr": "الظهر",
+        "asr": "العصر",
+        "maghrib": "المغرب",
+        "isha": "العشاء",
+        "onTime": "في وقتها",
+        "late": "متأخرة",
+        "missed": "فائتة",
+        "sunnah": "السنن",
+        "prayersCompleted": "صلوات مكتملة",
+        "weeklyStreak": "سلسلة الأسبوع"
+    },
+    "adhkar": {
+        "title": "الأذكار",
+        "morning": "أذكار الصباح",
+        "evening": "أذكار المساء",
+        "custom": "أذكار مخصصة",
+        "completed": "مكتمل",
+        "remaining": "متبقي",
+        "tapToCount": "اضغط للعد"
+    },
+    "quran": {
+        "title": "القرآن",
+        "pagesRead": "صفحات مقروءة",
+        "minutesRead": "دقائق قراءة",
+        "dailyGoal": "الهدف اليومي",
+        "weeklyGoal": "الهدف الأسبوعي",
+        "pages": "صفحات",
+        "minutes": "دقائق",
+        "addReading": "أضف قراءة",
+        "notes": "ملاحظات (اختياري)"
+    },
+    "charity": {
+        "title": "الصدقة",
+        "sadaqah": "الصدقة",
+        "money": "مال",
+        "food": "طعام",
+        "time": "وقت",
+        "help": "مساعدة",
+        "amount": "المبلغ (اختياري)",
+        "thisWeek": "هذا الأسبوع",
+        "timesGiven": "مرات التصدق"
+    },
+    "tahajjud": {
+        "title": "التهجد",
+        "nightPrayer": "صلاة الليل",
+        "completed": "مكتمل",
+        "thisWeek": "هذا الأسبوع",
+        "nights": "ليالي",
+        "sleepReminder": "تذكير بالنوم مبكراً"
+    },
+    "habits": {
+        "title": "العادات",
+        "customHabits": "عادات مخصصة",
+        "addHabit": "أضف عادة",
+        "habitName": "اسم العادة",
+        "schedule": "الجدول",
+        "daily": "يومي",
+        "weekly": "أسبوعي",
+        "specificDays": "أيام محددة",
+        "icon": "الأيقونة",
+        "streak": "السلسلة",
+        "days": "أيام"
+    },
+    "insights": {
+        "title": "الإحصائيات",
+        "weeklyReport": "التقرير الأسبوعي",
+        "salatOnTime": "الصلاة في وقتها",
+        "adhkarCompletion": "إتمام الأذكار",
+        "quranPages": "صفحات القرآن",
+        "charityCount": "عدد الصدقات",
+        "tahajjudNights": "ليالي التهجد",
+        "greatWeek": "أسبوع رائع! استمر!",
+        "keepGoing": "أنت تتقدم!"
+    },
+    "settings": {
+        "title": "الإعدادات",
+        "language": "اللغة",
+        "theme": "المظهر",
+        "notifications": "الإشعارات",
+        "quietHours": "ساعات الهدوء",
+        "privacy": "الخصوصية",
+        "hideAmounts": "إخفاء مبالغ الصدقة",
+        "about": "حول التطبيق",
+        "version": "الإصدار"
+    },
+    "days": {
+        "sunday": "أحد",
+        "monday": "إثن",
+        "tuesday": "ثلا",
+        "wednesday": "أرب",
+        "thursday": "خمي",
+        "friday": "جمع",
+        "saturday": "سبت"
+    },
+    "messages": {
+        "logged": "تم التسجيل بنجاح",
+        "streakMaintained": "السلسلة مستمرة!",
+        "newRecord": "رقم قياسي جديد!"
+    }
+}
