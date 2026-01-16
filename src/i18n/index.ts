@@ -23,7 +23,8 @@ export const isRTL = (lang: string): boolean => {
 
 // Get device language or default to English
 const getDeviceLanguage = (): string => {
-    const deviceLang = Localization.locale.split('-')[0];
+    const locales = Localization.getLocales();
+    const deviceLang = locales[0]?.languageCode || 'en';
     return resources.hasOwnProperty(deviceLang) ? deviceLang : 'en';
 };
 

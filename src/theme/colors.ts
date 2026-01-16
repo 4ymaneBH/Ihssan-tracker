@@ -83,7 +83,15 @@ export const lightTheme = {
     tabBarBorder: colors.neutral[200],
     tabBarActive: colors.primary[600],
     tabBarInactive: colors.neutral[400],
-    ...colors,
+    // Palettes for advanced usage
+    palette: colors,
+    // Semantic colors
+    success: colors.success,
+    warning: colors.warning,
+    error: colors.error,
+    info: colors.info,
+    // Card colors
+    cards: colors.cards,
 };
 
 // Dark theme
@@ -104,8 +112,14 @@ export const darkTheme = {
     tabBarBorder: colors.neutral[800],
     tabBarActive: colors.primary[400],
     tabBarInactive: colors.neutral[500],
-    ...colors,
-    // Adjust card colors for dark mode
+    // Palettes for advanced usage
+    palette: colors,
+    // Semantic colors
+    success: colors.success,
+    warning: colors.warning,
+    error: colors.error,
+    info: colors.info,
+    // Dark mode card colors
     cards: {
         salat: '#134E4A',
         adhkar: '#451A03',

@@ -5,10 +5,9 @@ import {
     Text,
     StyleSheet,
     ScrollView,
-    SafeAreaView,
     TouchableOpacity,
-    I18nManager,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../context';
 import { useSalatStore, useHabitsStore } from '../store';
