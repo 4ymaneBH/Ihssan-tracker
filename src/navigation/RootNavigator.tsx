@@ -11,6 +11,7 @@ import OnboardingScreen from '../screens/OnboardingScreen';
 import AdhkarScreen from '../screens/AdhkarScreen';
 import TahajjudScreen from '../screens/TahajjudScreen';
 import QuranScreen from '../screens/QuranScreen';
+import ProfileScreen from '../screens/ProfileScreen';
 import MainTabs from './MainTabs';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -58,6 +59,11 @@ const RootNavigator: React.FC = () => {
                         <Stack.Screen
                             name="Quran"
                             component={QuranScreen}
+                            options={{ presentation: 'card' }}
+                        />
+                        <Stack.Screen
+                            name="Profile"
+                            component={ProfileScreen}
                             options={{ presentation: 'card' }}
                         />
                     </>

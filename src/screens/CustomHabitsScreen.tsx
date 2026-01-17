@@ -19,8 +19,27 @@ import { Card, Chip, IconButton } from '../components';
 import { getDateString, formatNumber } from '../utils';
 import { CustomHabit } from '../types';
 
-// Available icons for custom habits
-const HABIT_ICONS = ['📿', '📚', '💪', '🏃', '💧', '🌿', '🧘', '💤', '✍️', '🎯', '⭐', '🌙', '☀️', '🤲', '📖', '🕌'];
+// Available icons for custom habits (MaterialCommunityIcons names)
+const HABIT_ICONS = [
+    'hands-pray',
+    'book-open-variant',
+    'arm-flex',
+    'run',
+    'water',
+    'leaf',
+    'meditation',
+    'sleep',
+    'pencil',
+    'target',
+    'star',
+    'moon-waning-crescent',
+    'white-balance-sunny',
+    'dumbbell',
+    'heart',
+    'mosque',
+] as const;
+
+type HabitIconName = typeof HABIT_ICONS[number];
 
 // Available colors for custom habits
 const HABIT_COLORS = [
@@ -157,21 +176,25 @@ const AddHabitModal: React.FC<AddHabitModalProps> = ({
                         {t('habits.selectIcon')}
                     </Text>
                     <View style={styles.iconGrid}>
-                        {HABIT_ICONS.map((i) => (
+                        {HABIT_ICONS.map((iconName) => (
                             <TouchableOpacity
-                                key={i}
+                                key={iconName}
                                 style={[
                                     styles.iconOption,
                                     {
                                         backgroundColor:
-                                            icon === i ? theme.colors.primary : theme.colors.surface,
+                                            icon === iconName ? theme.colors.primary : theme.colors.surface,
                                         borderColor:
-                                            icon === i ? theme.colors.primary : theme.colors.border,
+                                            icon === iconName ? theme.colors.primary : theme.colors.border,
                                     },
                                 ]}
-                                onPress={() => setIcon(i)}
+                                onPress={() => setIcon(iconName)}
                             >
-                                <Text style={styles.iconText}>{i}</Text>
+                                <MaterialCommunityIcons
+                                    name={iconName}
+                                    size={24}
+                                    color={icon === iconName ? '#fff' : theme.colors.textSecondary}
+                                />
                             </TouchableOpacity>
                         ))}
                     </View>
@@ -302,7 +325,7 @@ const CustomHabitsScreen: React.FC = () => {
                 onLongPress={() => handleEditHabit(habit)}
             >
                 <View style={[styles.habitIcon, { backgroundColor: habit.color + '20' }]}>
-                    <Text style={styles.habitIconText}>{habit.icon}</Text>
+                    <MaterialCommunityIcons name={habit.icon as any} size={24} color={habit.color} />
                 </View>
                 <View style={styles.habitInfo}>
                     <Text style={[styles.habitName, { color: theme.colors.text }]}>

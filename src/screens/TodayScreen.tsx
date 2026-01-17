@@ -406,6 +406,7 @@ const TahajjudCard: React.FC = () => {
 const TodayScreen: React.FC = () => {
     const { t, i18n } = useTranslation();
     const { theme } = useTheme();
+    const navigation = useNavigation<NavigationProp>();
 
     const today = new Date();
     const formattedDate = today.toLocaleDateString(
@@ -413,17 +414,29 @@ const TodayScreen: React.FC = () => {
         { weekday: 'long', month: 'long', day: 'numeric' }
     );
 
+    const handleOpenProfile = () => {
+        navigation.navigate('Profile');
+    };
+
     return (
         <SafeAreaView
             style={[styles.container, { backgroundColor: theme.colors.background }]}
         >
             <View style={styles.header}>
-                <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
-                    {t('common.today')}
-                </Text>
-                <Text style={[styles.headerDate, { color: theme.colors.textSecondary }]}>
-                    {formattedDate}
-                </Text>
+                <View>
+                    <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
+                        {t('common.today')}
+                    </Text>
+                    <Text style={[styles.headerDate, { color: theme.colors.textSecondary }]}>
+                        {formattedDate}
+                    </Text>
+                </View>
+                <TouchableOpacity
+                    style={[styles.profileButton, { backgroundColor: theme.colors.surface }]}
+                    onPress={handleOpenProfile}
+                >
+                    <MaterialCommunityIcons name="account-circle" size={32} color={theme.colors.primary} />
+                </TouchableOpacity>
             </View>
 
             <ScrollView
@@ -448,6 +461,9 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
         paddingHorizontal: 20,
         paddingTop: 16,
         paddingBottom: 12,
@@ -457,7 +473,7 @@ const styles = StyleSheet.create({
         fontWeight: '700',
     },
     headerDate: {
-        fontSize: 15,
+        fontSize: 14,
         marginTop: 4,
     },
     scrollView: {
@@ -644,6 +660,13 @@ const styles = StyleSheet.create({
     viewDetailsLinkText: {
         fontSize: 13,
         fontWeight: '500',
+    },
+    profileButton: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 });
 

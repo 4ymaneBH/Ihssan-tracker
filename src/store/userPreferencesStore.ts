@@ -6,9 +6,13 @@ import { UserPreferences } from '../types';
 import { changeLanguage } from '../i18n';
 
 interface UserPreferencesState extends UserPreferences {
+    // Profile data
+    displayName?: string;
+    avatarId?: string;
     // Actions
     setLanguage: (language: 'en' | 'ar') => Promise<void>;
     setTheme: (theme: 'light' | 'dark' | 'system') => void;
+    setProfile: (name: string, avatar: string) => void;
     completeOnboarding: () => void;
     setNotificationsEnabled: (enabled: boolean) => void;
     setQuietHours: (start: string, end: string) => void;
@@ -44,6 +48,10 @@ export const useUserPreferencesStore = create<UserPreferencesState>()(
 
             setTheme: (theme) => {
                 set({ theme });
+            },
+
+            setProfile: (displayName, avatarId) => {
+                set({ displayName, avatarId });
             },
 
             completeOnboarding: () => {

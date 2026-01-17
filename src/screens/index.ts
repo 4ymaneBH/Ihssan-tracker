@@ -8,3 +8,4 @@ export { default as CustomHabitsScreen } from './CustomHabitsScreen';
 export { default as AdhkarScreen } from './AdhkarScreen';
 export { default as TahajjudScreen } from './TahajjudScreen';
 export { default as QuranScreen } from './QuranScreen';
+export { default as ProfileScreen } from './ProfileScreen';

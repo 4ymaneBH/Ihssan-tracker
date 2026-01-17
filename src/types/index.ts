@@ -144,6 +144,7 @@ export type RootStackParamList = {
     Adhkar: { category?: 'morning' | 'evening' | 'general' };
     Tahajjud: undefined;
     Quran: undefined;
+    Profile: undefined;
 };
 
 export type MainTabParamList = {
