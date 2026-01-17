@@ -1,10 +1,11 @@
-// Insights Screen - Weekly summary and progress
-import React from 'react';
+// Insights Screen - Weekly summary and progress with monthly export
+import React, { useState } from 'react';
 import {
     View,
     Text,
     StyleSheet,
     ScrollView,
+    TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +13,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context';
 import { useSalatStore, useHabitsStore } from '../store';
 import { formatNumber, formatPercentage } from '../utils';
+import { ExportModal } from '../components';
 
 interface ProgressBarProps {
     value: number;
@@ -45,6 +47,9 @@ const InsightsScreen: React.FC = () => {
     const { theme } = useTheme();
     const { getOnTimePercentage, getPrayerStreak } = useSalatStore();
     const { getWeeklyQuranPages, getWeeklyCharityCount, getWeeklyTahajjudNights } = useHabitsStore();
+
+    const [showExportModal, setShowExportModal] = useState(false);
+    const isArabic = i18n.language === 'ar';
 
     const salatOnTimePercent = getOnTimePercentage(7);
     const streak = getPrayerStreak();
@@ -186,8 +191,25 @@ const InsightsScreen: React.FC = () => {
                     ))}
                 </View>
 
+                {/* Export Button */}
+                <TouchableOpacity
+                    style={[styles.exportButton, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+                    onPress={() => setShowExportModal(true)}
+                >
+                    <MaterialCommunityIcons name="file-export-outline" size={22} color={theme.colors.primary} />
+                    <Text style={[styles.exportButtonText, { color: theme.colors.primary }]}>
+                        {isArabic ? 'تصدير التقرير الشهري' : 'Export Monthly Report'}
+                    </Text>
+                </TouchableOpacity>
+
                 <View style={styles.bottomSpacer} />
             </ScrollView>
+
+            {/* Export Modal */}
+            <ExportModal
+                visible={showExportModal}
+                onClose={() => setShowExportModal(false)}
+            />
         </SafeAreaView>
     );
 };
@@ -294,6 +316,21 @@ const styles = StyleSheet.create({
     },
     bottomSpacer: {
         height: 24,
+    },
+    // Export button
+    exportButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 10,
+        padding: 16,
+        borderRadius: 16,
+        borderWidth: 1,
+        marginTop: 8,
+    },
+    exportButtonText: {
+        fontSize: 15,
+        fontWeight: '600',
     },
 });
 
