@@ -1,7 +1,8 @@
 // Components barrel export
-export { Card } from './Card';
-export { StreakBadge } from './StreakBadge';
-export { ProgressBar } from './ProgressBar';
-export { IconButton } from './IconButton';
-export { Chip } from './Chip';
+export { default as Card } from './Card';
+export { default as Chip } from './Chip';
+export { default as IconButton } from './IconButton';
+export { default as StreakBadge } from './StreakBadge';
 export { default as ExportModal } from './ExportModal';
+export { default as ResetModal } from './ResetModal';
+export { HabitType } from './ResetModal';

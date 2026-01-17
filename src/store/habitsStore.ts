@@ -55,6 +55,20 @@ interface HabitsState {
     logCustomHabit: (habitId: string, count: number) => void;
     getCustomHabitLog: (date: string, habitId: string) => CustomHabitLog | null;
     getActiveHabits: () => CustomHabit[];
+    isHabitScheduledToday: (habit: CustomHabit) => boolean;
+    getTodayCustomHabits: () => CustomHabit[];
+
+    // Reset actions
+    resetAdhkarToday: (category: 'morning' | 'evening') => void;
+    resetAdhkarHistory: () => void;
+    resetQuranToday: () => void;
+    resetQuranHistory: () => void;
+    resetCharityToday: () => void;
+    resetCharityHistory: () => void;
+    resetTahajjudToday: () => void;
+    resetTahajjudHistory: () => void;
+    resetCustomHabitToday: (habitId: string) => void;
+    resetCustomHabitHistory: (habitId: string) => void;
 }
 
 export const useHabitsStore = create<HabitsState>()(
@@ -241,6 +255,81 @@ export const useHabitsStore = create<HabitsState>()(
 
             getActiveHabits: () => {
                 return get().customHabits.filter((h) => h.isActive);
+            },
+
+            isHabitScheduledToday: (habit) => {
+                if (habit.frequency === 'daily') return true;
+                if (!habit.specificDays || habit.specificDays.length === 0) return true;
+                const today = new Date().getDay(); // 0 = Sunday
+                return habit.specificDays.includes(today);
+            },
+
+            getTodayCustomHabits: () => {
+                const activeHabits = get().getActiveHabits();
+                return activeHabits.filter((h) => get().isHabitScheduledToday(h));
+            },
+
+            // Reset actions
+            resetAdhkarToday: (category) => {
+                const today = getDateString(new Date());
+                const id = `adhkar-${today}-${category}`;
+                set((state) => {
+                    const { [id]: _, ...rest } = state.adhkarLogs;
+                    return { adhkarLogs: rest };
+                });
+            },
+
+            resetAdhkarHistory: () => {
+                set({ adhkarLogs: {} });
+            },
+
+            resetQuranToday: () => {
+                const today = getDateString(new Date());
+                set((state) => {
+                    const { [today]: _, ...rest } = state.quranLogs;
+                    return { quranLogs: rest };
+                });
+            },
+
+            resetQuranHistory: () => {
+                set({ quranLogs: {} });
+            },
+
+            resetCharityToday: () => {
+                const today = getDateString(new Date());
+                set((state) => ({
+                    charityLogs: state.charityLogs.filter((l) => l.date !== today),
+                }));
+            },
+
+            resetCharityHistory: () => {
+                set({ charityLogs: [] });
+            },
+
+            resetTahajjudToday: () => {
+                const today = getDateString(new Date());
+                set((state) => {
+                    const { [today]: _, ...rest } = state.tahajjudLogs;
+                    return { tahajjudLogs: rest };
+                });
+            },
+
+            resetTahajjudHistory: () => {
+                set({ tahajjudLogs: {} });
+            },
+
+            resetCustomHabitToday: (habitId) => {
+                const today = getDateString(new Date());
+                const id = `${habitId}-${today}`;
+                set((state) => ({
+                    customHabitLogs: state.customHabitLogs.filter((l) => l.id !== id),
+                }));
+            },
+
+            resetCustomHabitHistory: (habitId) => {
+                set((state) => ({
+                    customHabitLogs: state.customHabitLogs.filter((l) => l.habitId !== habitId),
+                }));
             },
         }),
         {

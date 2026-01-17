@@ -14,6 +14,10 @@ interface SalatState {
     getWeekLogs: () => SalatLog[];
     getPrayerStreak: () => number;
     getOnTimePercentage: (days?: number) => number;
+
+    // Reset actions
+    resetSalatToday: () => void;
+    resetSalatHistory: () => void;
 }
 
 const createEmptyLog = (date: string): SalatLog => ({
@@ -104,6 +108,19 @@ export const useSalatStore = create<SalatState>()(
                 }
 
                 return total > 0 ? Math.round((onTime / total) * 100) : 0;
+            },
+
+            // Reset actions
+            resetSalatToday: () => {
+                const today = getDateString(new Date());
+                set((state) => {
+                    const { [today]: _, ...rest } = state.logs;
+                    return { logs: rest };
+                });
+            },
+
+            resetSalatHistory: () => {
+                set({ logs: {} });
             },
         }),
         {
