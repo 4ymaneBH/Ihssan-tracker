@@ -49,10 +49,11 @@ interface HabitsState {
     getWeeklyTahajjudNights: () => number;
 
     // Custom habit actions
-    addCustomHabit: (habit: Omit<CustomHabit, 'id' | 'createdAt' | 'isActive'>) => void;
+    addCustomHabit: (habit: Omit<CustomHabit, 'id' | 'createdAt'>) => void;
+    updateCustomHabit: (habitId: string, updates: Partial<CustomHabit>) => void;
     removeCustomHabit: (habitId: string) => void;
-    logCustomHabit: (habitId: string, completed: boolean) => void;
-    getCustomHabitLog: (habitId: string, date: string) => CustomHabitLog | null;
+    logCustomHabit: (habitId: string, count: number) => void;
+    getCustomHabitLog: (date: string, habitId: string) => CustomHabitLog | null;
     getActiveHabits: () => CustomHabit[];
 }
 
@@ -191,9 +192,16 @@ export const useHabitsStore = create<HabitsState>()(
                             ...habit,
                             id,
                             createdAt: Date.now(),
-                            isActive: true,
                         },
                     ],
+                }));
+            },
+
+            updateCustomHabit: (habitId, updates) => {
+                set((state) => ({
+                    customHabits: state.customHabits.map((h) =>
+                        h.id === habitId ? { ...h, ...updates } : h
+                    ),
                 }));
             },
 
@@ -205,9 +213,11 @@ export const useHabitsStore = create<HabitsState>()(
                 }));
             },
 
-            logCustomHabit: (habitId, completed) => {
+            logCustomHabit: (habitId, count) => {
                 const date = getDateString(new Date());
                 const id = `${habitId}-${date}`;
+                const habit = get().customHabits.find((h) => h.id === habitId);
+                const completed = habit ? count >= habit.targetCount : count > 0;
 
                 set((state) => ({
                     customHabitLogs: [
@@ -217,13 +227,14 @@ export const useHabitsStore = create<HabitsState>()(
                             habitId,
                             date,
                             completed,
+                            count,
                             createdAt: Date.now(),
                         },
                     ],
                 }));
             },
 
-            getCustomHabitLog: (habitId, date) => {
+            getCustomHabitLog: (date, habitId) => {
                 const id = `${habitId}-${date}`;
                 return get().customHabitLogs.find((l) => l.id === id) || null;
             },

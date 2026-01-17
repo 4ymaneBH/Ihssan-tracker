@@ -86,14 +86,22 @@
         "title": "العادات",
         "customHabits": "عادات مخصصة",
         "addHabit": "أضف عادة",
+        "editHabit": "تعديل العادة",
         "habitName": "اسم العادة",
+        "enterHabitName": "أدخل اسم العادة",
+        "selectIcon": "اختر الأيقونة",
+        "selectColor": "اختر اللون",
+        "frequency": "التكرار",
+        "targetCount": "العدد المستهدف",
         "schedule": "الجدول",
         "daily": "يومي",
         "weekly": "أسبوعي",
         "specificDays": "أيام محددة",
         "icon": "الأيقونة",
         "streak": "السلسلة",
-        "days": "أيام"
+        "days": "أيام",
+        "noHabits": "لا توجد عادات مخصصة",
+        "addFirstHabit": "اضغط على + لإضافة أول عادة"
     },
     "insights": {
         "title": "الإحصائيات",

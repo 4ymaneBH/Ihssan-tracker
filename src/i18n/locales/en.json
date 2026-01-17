@@ -85,15 +85,23 @@
     "habits": {
         "title": "Habits",
         "customHabits": "Custom Habits",
-        "addHabit": "Add habit",
-        "habitName": "Habit name",
+        "addHabit": "Add Habit",
+        "editHabit": "Edit Habit",
+        "habitName": "Habit Name",
+        "enterHabitName": "Enter habit name",
+        "selectIcon": "Select Icon",
+        "selectColor": "Select Color",
+        "frequency": "Frequency",
+        "targetCount": "Target Count",
         "schedule": "Schedule",
         "daily": "Daily",
         "weekly": "Weekly",
         "specificDays": "Specific days",
         "icon": "Icon",
         "streak": "Streak",
-        "days": "days"
+        "days": "days",
+        "noHabits": "No Custom Habits Yet",
+        "addFirstHabit": "Tap the + button to create your first habit"
     },
     "insights": {
         "title": "Insights",

@@ -106,7 +106,10 @@ export interface CustomHabit {
     name: string;
     nameAr?: string;
     icon: string;
-    schedule: ScheduleType;
+    color: string;
+    frequency: 'daily' | 'weekly';
+    targetCount: number;
+    schedule?: ScheduleType;
     specificDays?: number[]; // 0-6, Sunday = 0
     createdAt: number;
     isActive: boolean;
@@ -118,6 +121,7 @@ export interface CustomHabitLog {
     habitId: string;
     date: string;
     completed: boolean;
+    count: number;
     createdAt: number;
 }
 
