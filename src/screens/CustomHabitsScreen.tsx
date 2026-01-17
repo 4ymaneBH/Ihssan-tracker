@@ -66,15 +66,36 @@ const AddHabitModal: React.FC<AddHabitModalProps> = ({
     onSave,
     editingHabit,
 }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { theme } = useTheme();
 
     const [name, setName] = useState(editingHabit?.name || '');
     const [nameAr, setNameAr] = useState(editingHabit?.nameAr || '');
-    const [icon, setIcon] = useState(editingHabit?.icon || '📿');
+    const [icon, setIcon] = useState(editingHabit?.icon || 'hands-pray');
     const [color, setColor] = useState(editingHabit?.color || '#0D9488');
     const [frequency, setFrequency] = useState<'daily' | 'weekly'>(editingHabit?.frequency || 'daily');
+    const [specificDays, setSpecificDays] = useState<number[]>(editingHabit?.specificDays || [0, 1, 2, 3, 4, 5, 6]);
     const [targetCount, setTargetCount] = useState(String(editingHabit?.targetCount || 1));
+
+    const WEEKDAYS = [
+        { key: 0, en: 'S', ar: 'أ' },
+        { key: 1, en: 'M', ar: 'ن' },
+        { key: 2, en: 'T', ar: 'ث' },
+        { key: 3, en: 'W', ar: 'ر' },
+        { key: 4, en: 'T', ar: 'خ' },
+        { key: 5, en: 'F', ar: 'ج' },
+        { key: 6, en: 'S', ar: 'س' },
+    ];
+
+    const toggleDay = (day: number) => {
+        if (specificDays.includes(day)) {
+            if (specificDays.length > 1) {
+                setSpecificDays(specificDays.filter(d => d !== day));
+            }
+        } else {
+            setSpecificDays([...specificDays, day].sort());
+        }
+    };
 
     const handleSave = () => {
         if (!name.trim()) return;
@@ -85,6 +106,7 @@ const AddHabitModal: React.FC<AddHabitModalProps> = ({
             icon,
             color,
             frequency,
+            specificDays: frequency === 'weekly' ? specificDays : undefined,
             targetCount: parseInt(targetCount) || 1,
             isActive: true,
         });
@@ -92,9 +114,10 @@ const AddHabitModal: React.FC<AddHabitModalProps> = ({
         // Reset form
         setName('');
         setNameAr('');
-        setIcon('📿');
+        setIcon('hands-pray');
         setColor('#0D9488');
         setFrequency('daily');
+        setSpecificDays([0, 1, 2, 3, 4, 5, 6]);
         setTargetCount('1');
         onClose();
     };
@@ -236,6 +259,47 @@ const AddHabitModal: React.FC<AddHabitModalProps> = ({
                             onPress={() => setFrequency('weekly')}
                         />
                     </View>
+
+                    {/* Weekday Picker (shown when weekly) */}
+                    {frequency === 'weekly' && (
+                        <View style={styles.weekdayPicker}>
+                            <Text style={[styles.weekdayLabel, { color: theme.colors.textSecondary }]}>
+                                {i18n.language === 'ar' ? 'حدد الأيام:' : 'Select days:'}
+                            </Text>
+                            <View style={styles.weekdayRow}>
+                                {WEEKDAYS.map((day) => (
+                                    <TouchableOpacity
+                                        key={day.key}
+                                        style={[
+                                            styles.weekdayButton,
+                                            {
+                                                backgroundColor: specificDays.includes(day.key)
+                                                    ? theme.colors.primary
+                                                    : theme.colors.surface,
+                                                borderColor: specificDays.includes(day.key)
+                                                    ? theme.colors.primary
+                                                    : theme.colors.border,
+                                            },
+                                        ]}
+                                        onPress={() => toggleDay(day.key)}
+                                    >
+                                        <Text
+                                            style={[
+                                                styles.weekdayText,
+                                                {
+                                                    color: specificDays.includes(day.key)
+                                                        ? theme.colors.onPrimary
+                                                        : theme.colors.text,
+                                                },
+                                            ]}
+                                        >
+                                            {i18n.language === 'ar' ? day.ar : day.en}
+                                        </Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        </View>
+                    )}
 
                     {/* Target Count */}
                     <Text style={[styles.inputLabel, { color: theme.colors.text }]}>
@@ -543,6 +607,30 @@ const styles = StyleSheet.create({
     frequencyRow: {
         flexDirection: 'row',
         gap: 12,
+    },
+    // Weekday picker
+    weekdayPicker: {
+        marginTop: 12,
+    },
+    weekdayLabel: {
+        fontSize: 13,
+        marginBottom: 8,
+    },
+    weekdayRow: {
+        flexDirection: 'row',
+        gap: 8,
+    },
+    weekdayButton: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1,
+    },
+    weekdayText: {
+        fontSize: 14,
+        fontWeight: '600',
     },
 });
 

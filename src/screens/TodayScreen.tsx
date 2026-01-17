@@ -402,6 +402,96 @@ const TahajjudCard: React.FC = () => {
     );
 };
 
+// Custom Habits Card Component
+const CustomHabitsCard: React.FC = () => {
+    const { t, i18n } = useTranslation();
+    const { theme } = useTheme();
+    const navigation = useNavigation<NavigationProp>();
+    const isArabic = i18n.language === 'ar';
+
+    const getTodayCustomHabits = useHabitsStore((state) => state.getTodayCustomHabits);
+    const logCustomHabit = useHabitsStore((state) => state.logCustomHabit);
+    const getCustomHabitLog = useHabitsStore((state) => state.getCustomHabitLog);
+
+    const todayHabits = getTodayCustomHabits();
+    const today = getDateString(new Date());
+
+    if (todayHabits.length === 0) {
+        return null; // Don't show card if no habits scheduled
+    }
+
+    const handleToggleHabit = (habitId: string, targetCount: number) => {
+        const log = getCustomHabitLog(today, habitId);
+        const currentCount = log?.count || 0;
+        const newCount = currentCount >= targetCount ? 0 : targetCount;
+        logCustomHabit(habitId, newCount);
+    };
+
+    const handleOpenCustomHabits = () => {
+        navigation.navigate('Main', { screen: 'Track' } as any);
+    };
+
+    return (
+        <View style={[styles.card, { backgroundColor: theme.colors.surface }]}>
+            <View style={styles.cardHeader}>
+                <View style={styles.cardTitleRow}>
+                    <View style={[styles.iconContainer, { backgroundColor: '#8B5CF6' + '20' }]}>
+                        <MaterialCommunityIcons name="checkbox-multiple-marked" size={22} color="#8B5CF6" />
+                    </View>
+                    <Text style={[styles.cardTitle, { color: theme.colors.text }]}>
+                        {isArabic ? 'العادات' : 'Habits'}
+                    </Text>
+                </View>
+                <TouchableOpacity onPress={handleOpenCustomHabits}>
+                    <MaterialCommunityIcons name="plus" size={22} color={theme.colors.primary} />
+                </TouchableOpacity>
+            </View>
+
+            {/* Habit Items */}
+            {todayHabits.map((habit) => {
+                const log = getCustomHabitLog(today, habit.id);
+                const isComplete = (log?.count || 0) >= habit.targetCount;
+                const habitName = isArabic ? (habit.nameAr || habit.name) : habit.name;
+
+                return (
+                    <TouchableOpacity
+                        key={habit.id}
+                        style={[
+                            styles.customHabitItem,
+                            {
+                                backgroundColor: isComplete ? habit.color + '15' : theme.colors.background,
+                                borderColor: isComplete ? habit.color : theme.colors.border,
+                            },
+                        ]}
+                        onPress={() => handleToggleHabit(habit.id, habit.targetCount)}
+                    >
+                        <View style={[styles.customHabitIcon, { backgroundColor: habit.color + '20' }]}>
+                            <MaterialCommunityIcons
+                                name={habit.icon as any}
+                                size={20}
+                                color={habit.color}
+                            />
+                        </View>
+                        <Text
+                            style={[styles.customHabitName, { color: theme.colors.text }]}
+                            numberOfLines={1}
+                        >
+                            {habitName}
+                        </Text>
+                        {isComplete && (
+                            <MaterialCommunityIcons
+                                name="check-circle"
+                                size={20}
+                                color={habit.color}
+                            />
+                        )}
+                    </TouchableOpacity>
+                );
+            })}
+        </View>
+    );
+};
+
 // Main Today Screen
 const TodayScreen: React.FC = () => {
     const { t, i18n } = useTranslation();
@@ -449,6 +539,7 @@ const TodayScreen: React.FC = () => {
                 <QuranCard />
                 <CharityCard />
                 <TahajjudCard />
+                <CustomHabitsCard />
 
                 <View style={styles.bottomSpacer} />
             </ScrollView>
@@ -667,6 +758,28 @@ const styles = StyleSheet.create({
         borderRadius: 22,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    // Custom Habits
+    customHabitItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 14,
+        borderRadius: 12,
+        borderWidth: 1,
+        marginTop: 10,
+        gap: 12,
+    },
+    customHabitIcon: {
+        width: 36,
+        height: 36,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    customHabitName: {
+        flex: 1,
+        fontSize: 15,
+        fontWeight: '500',
     },
 });
 
