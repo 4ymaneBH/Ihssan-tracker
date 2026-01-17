@@ -1,0 +1,264 @@
+// Notification service for reminders
+import * as Notifications from 'expo-notifications';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
+
+// Configure notification behavior
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: false,
+        shouldShowBanner: true,
+        shouldShowList: true,
+    }),
+});
+
+// Notification types
+export type NotificationType =
+    | 'salat_reminder'
+    | 'adhkar_morning'
+    | 'adhkar_evening'
+    | 'quran_reminder'
+    | 'tahajjud_reminder'
+    | 'custom_habit';
+
+interface ScheduledNotification {
+    id: string;
+    type: NotificationType;
+    title: string;
+    body: string;
+    hour: number;
+    minute: number;
+}
+
+// Storage key
+const NOTIFICATIONS_KEY = 'scheduled-notifications';
+
+// Request notification permissions
+export const requestNotificationPermissions = async (): Promise<boolean> => {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+
+    if (existingStatus !== 'granted') {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+    }
+
+    return finalStatus === 'granted';
+};
+
+// Check if within quiet hours
+export const isWithinQuietHours = (
+    quietStart: string,
+    quietEnd: string
+): boolean => {
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+    const [startHour, startMin] = quietStart.split(':').map(Number);
+    const [endHour, endMin] = quietEnd.split(':').map(Number);
+
+    const startMinutes = startHour * 60 + startMin;
+    const endMinutes = endHour * 60 + endMin;
+
+    // Handle overnight quiet hours (e.g., 22:00 - 06:00)
+    if (startMinutes > endMinutes) {
+        return currentMinutes >= startMinutes || currentMinutes <= endMinutes;
+    }
+
+    return currentMinutes >= startMinutes && currentMinutes <= endMinutes;
+};
+
+// Schedule a daily notification
+export const scheduleDailyNotification = async (
+    notification: ScheduledNotification
+): Promise<string | null> => {
+    try {
+        const identifier = await Notifications.scheduleNotificationAsync({
+            content: {
+                title: notification.title,
+                body: notification.body,
+                data: { type: notification.type },
+                sound: true,
+            },
+            trigger: {
+                type: Notifications.SchedulableTriggerInputTypes.DAILY,
+                hour: notification.hour,
+                minute: notification.minute,
+            },
+        });
+
+        // Save to storage
+        const stored = await AsyncStorage.getItem(NOTIFICATIONS_KEY);
+        const notifications: Record<string, ScheduledNotification> = stored
+            ? JSON.parse(stored)
+            : {};
+        notifications[notification.id] = {
+            ...notification,
+        };
+        await AsyncStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(notifications));
+
+        return identifier;
+    } catch (error) {
+        console.error('Failed to schedule notification:', error);
+        return null;
+    }
+};
+
+// Cancel a scheduled notification
+export const cancelNotification = async (notificationId: string): Promise<void> => {
+    try {
+        await Notifications.cancelScheduledNotificationAsync(notificationId);
+
+        // Remove from storage
+        const stored = await AsyncStorage.getItem(NOTIFICATIONS_KEY);
+        if (stored) {
+            const notifications: Record<string, ScheduledNotification> = JSON.parse(stored);
+            delete notifications[notificationId];
+            await AsyncStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(notifications));
+        }
+    } catch (error) {
+        console.error('Failed to cancel notification:', error);
+    }
+};
+
+// Cancel all scheduled notifications
+export const cancelAllNotifications = async (): Promise<void> => {
+    try {
+        await Notifications.cancelAllScheduledNotificationsAsync();
+        await AsyncStorage.removeItem(NOTIFICATIONS_KEY);
+    } catch (error) {
+        console.error('Failed to cancel all notifications:', error);
+    }
+};
+
+// Get all scheduled notifications
+export const getScheduledNotifications = async (): Promise<ScheduledNotification[]> => {
+    try {
+        const stored = await AsyncStorage.getItem(NOTIFICATIONS_KEY);
+        if (stored) {
+            return Object.values(JSON.parse(stored));
+        }
+        return [];
+    } catch (error) {
+        console.error('Failed to get scheduled notifications:', error);
+        return [];
+    }
+};
+
+// Snooze a notification for a specified duration (in minutes)
+export const snoozeNotification = async (
+    notification: ScheduledNotification,
+    snoozeMinutes: number = 10
+): Promise<string | null> => {
+    try {
+        const snoozeTime = new Date();
+        snoozeTime.setMinutes(snoozeTime.getMinutes() + snoozeMinutes);
+
+        const identifier = await Notifications.scheduleNotificationAsync({
+            content: {
+                title: notification.title,
+                body: notification.body,
+                data: { type: notification.type, snoozed: true },
+                sound: true,
+            },
+            trigger: {
+                type: Notifications.SchedulableTriggerInputTypes.DATE,
+                date: snoozeTime,
+            },
+        });
+
+        return identifier;
+    } catch (error) {
+        console.error('Failed to snooze notification:', error);
+        return null;
+    }
+};
+
+// Default reminder messages (gentle, no guilt)
+export const reminderMessages = {
+    salat: {
+        en: {
+            title: '🕌 Prayer Time',
+            body: "It's time for prayer. May your salat bring you peace.",
+        },
+        ar: {
+            title: '🕌 وقت الصلاة',
+            body: 'حان وقت الصلاة. نسأل الله أن تكون صلاتك سكينة لقلبك.',
+        },
+    },
+    adhkar_morning: {
+        en: {
+            title: '🌅 Morning Adhkar',
+            body: 'Start your day with remembrance. Your morning adhkar await.',
+        },
+        ar: {
+            title: '🌅 أذكار الصباح',
+            body: 'ابدأ يومك بذكر الله. أذكار الصباح بانتظارك.',
+        },
+    },
+    adhkar_evening: {
+        en: {
+            title: '🌆 Evening Adhkar',
+            body: 'Wind down with remembrance. Your evening adhkar await.',
+        },
+        ar: {
+            title: '🌆 أذكار المساء',
+            body: 'اختم يومك بذكر الله. أذكار المساء بانتظارك.',
+        },
+    },
+    quran: {
+        en: {
+            title: '📖 Qur\'an Time',
+            body: 'A few minutes with the Qur\'an can brighten your whole day.',
+        },
+        ar: {
+            title: '📖 وقت القرآن',
+            body: 'دقائق مع القرآن قد تُنير يومك بأكمله.',
+        },
+    },
+    tahajjud: {
+        en: {
+            title: '🌙 Tahajjud',
+            body: 'The night is quiet. Consider rising for tahajjud.',
+        },
+        ar: {
+            title: '🌙 التهجد',
+            body: 'الليل هادئ. قم للتهجد إن استطعت.',
+        },
+    },
+};
+
+// Setup default notifications
+export const setupDefaultNotifications = async (language: 'en' | 'ar'): Promise<void> => {
+    // Morning Adhkar - 6:00 AM
+    await scheduleDailyNotification({
+        id: 'adhkar_morning',
+        type: 'adhkar_morning',
+        title: reminderMessages.adhkar_morning[language].title,
+        body: reminderMessages.adhkar_morning[language].body,
+        hour: 6,
+        minute: 0,
+    });
+
+    // Evening Adhkar - 6:00 PM
+    await scheduleDailyNotification({
+        id: 'adhkar_evening',
+        type: 'adhkar_evening',
+        title: reminderMessages.adhkar_evening[language].title,
+        body: reminderMessages.adhkar_evening[language].body,
+        hour: 18,
+        minute: 0,
+    });
+
+    // Qur'an reminder - 8:00 PM
+    await scheduleDailyNotification({
+        id: 'quran_reminder',
+        type: 'quran_reminder',
+        title: reminderMessages.quran[language].title,
+        body: reminderMessages.quran[language].body,
+        hour: 20,
+        minute: 0,
+    });
+};

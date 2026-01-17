@@ -1,7 +1,7 @@
 // Bottom Tab Navigation
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, StyleSheet, I18nManager } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { MainTabParamList } from '../types';
 import { useTheme } from '../context';
@@ -14,13 +14,12 @@ import SettingsScreen from '../screens/SettingsScreen';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
-// Simple icon components
-const TabIcon: React.FC<{ name: string; color: string; focused: boolean }> = ({
+// Simple icon components using emoji
+const TabIcon: React.FC<{ name: string; focused: boolean }> = ({
     name,
-    color,
     focused,
 }) => {
-    const iconPaths: Record<string, string> = {
+    const icons: Record<string, string> = {
         today: '📋',
         track: '📊',
         insights: '💡',
@@ -29,13 +28,9 @@ const TabIcon: React.FC<{ name: string; color: string; focused: boolean }> = ({
 
     return (
         <View style={[styles.iconContainer, focused && styles.iconFocused]}>
-            <View style={styles.icon}>
-                <View style={{ opacity: focused ? 1 : 0.7 }}>
-                    <View style={styles.iconText}>
-                        {/* Using emoji as placeholder - can be replaced with custom icons */}
-                    </View>
-                </View>
-            </View>
+            <Text style={[styles.iconText, { opacity: focused ? 1 : 0.7 }]}>
+                {icons[name] || '📌'}
+            </Text>
         </View>
     );
 };
@@ -68,8 +63,8 @@ const MainTabs: React.FC = () => {
                 component={TodayScreen}
                 options={{
                     tabBarLabel: t('common.today'),
-                    tabBarIcon: ({ color, focused }) => (
-                        <TabIcon name="today" color={color} focused={focused} />
+                    tabBarIcon: ({ focused }) => (
+                        <TabIcon name="today" focused={focused} />
                     ),
                 }}
             />
@@ -78,8 +73,8 @@ const MainTabs: React.FC = () => {
                 component={TrackScreen}
                 options={{
                     tabBarLabel: t('common.track'),
-                    tabBarIcon: ({ color, focused }) => (
-                        <TabIcon name="track" color={color} focused={focused} />
+                    tabBarIcon: ({ focused }) => (
+                        <TabIcon name="track" focused={focused} />
                     ),
                 }}
             />
@@ -88,8 +83,8 @@ const MainTabs: React.FC = () => {
                 component={InsightsScreen}
                 options={{
                     tabBarLabel: t('common.insights'),
-                    tabBarIcon: ({ color, focused }) => (
-                        <TabIcon name="insights" color={color} focused={focused} />
+                    tabBarIcon: ({ focused }) => (
+                        <TabIcon name="insights" focused={focused} />
                     ),
                 }}
             />
@@ -98,8 +93,8 @@ const MainTabs: React.FC = () => {
                 component={SettingsScreen}
                 options={{
                     tabBarLabel: t('common.settings'),
-                    tabBarIcon: ({ color, focused }) => (
-                        <TabIcon name="settings" color={color} focused={focused} />
+                    tabBarIcon: ({ focused }) => (
+                        <TabIcon name="settings" focused={focused} />
                     ),
                 }}
             />

@@ -32,14 +32,14 @@ const SalatCard: React.FC = () => {
         { key: 'isha', label: t('salat.isha') },
     ];
 
-    const getStatusColor = (status: SalatStatus) => {
+    const getStatusColor = (status: SalatStatus | undefined) => {
         if (status === 'onTime') return theme.colors.success.main;
         if (status === 'late') return theme.colors.warning.main;
         if (status === 'missed') return theme.colors.error.main;
         return theme.colors.border;
     };
 
-    const getStatusEmoji = (status: SalatStatus) => {
+    const getStatusEmoji = (status: SalatStatus | undefined) => {
         if (status === 'onTime') return '✓';
         if (status === 'late') return '⏰';
         if (status === 'missed') return '✗';
