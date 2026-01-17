@@ -1,6 +1,7 @@
 // Streak Badge Component
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../context';
 import { formatNumber } from '../utils';
@@ -58,7 +59,11 @@ export const StreakBadge: React.FC<StreakBadgeProps> = ({
                 },
             ]}
         >
-            <Text style={[styles.icon, { fontSize: sizeStyles.iconSize }]}>🔥</Text>
+            <MaterialCommunityIcons
+                name="fire"
+                size={sizeStyles.iconSize}
+                color={theme.colors.onPrimary}
+            />
             <Text
                 style={[
                     styles.count,
@@ -87,9 +92,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 20,
         gap: 4,
-    },
-    icon: {
-        marginRight: 2,
     },
     count: {
         fontWeight: '700',

@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context';
 import { useHabitsStore } from '../store';
 import { Card, Chip, IconButton } from '../components';
@@ -313,7 +314,7 @@ const CustomHabitsScreen: React.FC = () => {
                 </View>
                 {isComplete && (
                     <View style={[styles.checkBadge, { backgroundColor: habit.color }]}>
-                        <Text style={styles.checkText}>✓</Text>
+                        <MaterialCommunityIcons name="check" size={16} color="#FFFFFF" />
                     </View>
                 )}
             </TouchableOpacity>
@@ -341,7 +342,7 @@ const CustomHabitsScreen: React.FC = () => {
 
             {customHabits.length === 0 ? (
                 <View style={styles.emptyState}>
-                    <Text style={styles.emptyEmoji}>✨</Text>
+                    <MaterialCommunityIcons name="star-four-points-outline" size={64} color={theme.colors.textTertiary} />
                     <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>
                         {t('habits.noHabits')}
                     </Text>

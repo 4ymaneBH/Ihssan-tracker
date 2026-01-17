@@ -129,9 +129,12 @@ const DhikrCard: React.FC<DhikrCardProps> = ({
 
             {/* Reference */}
             {dhikr.reference && (
-                <Text style={[styles.referenceText, { color: theme.colors.textTertiary }]}>
-                    📖 {dhikr.reference}
-                </Text>
+                <View style={styles.referenceRow}>
+                    <MaterialCommunityIcons name="book-open-variant" size={14} color={theme.colors.textTertiary} />
+                    <Text style={[styles.referenceText, { color: theme.colors.textTertiary }]}>
+                        {dhikr.reference}
+                    </Text>
+                </View>
             )}
 
             {/* Progress bar */}
@@ -398,9 +401,14 @@ const styles = StyleSheet.create({
         lineHeight: 22,
         marginBottom: 12,
     },
+    referenceRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        marginBottom: 12,
+    },
     referenceText: {
         fontSize: 12,
-        marginBottom: 12,
     },
     progressTrack: {
         height: 4,

@@ -5,17 +5,19 @@ import {
     Text,
     StyleSheet,
     ScrollView,
-    SafeAreaView,
     TouchableOpacity,
     Switch,
     Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context';
 import { useUserPreferencesStore } from '../store';
 
 interface SettingRowProps {
-    icon: string;
+    iconName: string;
+    iconColor?: string;
     label: string;
     value?: string;
     onPress?: () => void;
@@ -23,7 +25,8 @@ interface SettingRowProps {
 }
 
 const SettingRow: React.FC<SettingRowProps> = ({
-    icon,
+    iconName,
+    iconColor,
     label,
     value,
     onPress,
@@ -34,7 +37,13 @@ const SettingRow: React.FC<SettingRowProps> = ({
     const content = (
         <View style={styles.settingRow}>
             <View style={styles.settingLeft}>
-                <Text style={styles.settingIcon}>{icon}</Text>
+                <View style={[styles.iconContainer, { backgroundColor: (iconColor || theme.colors.primary) + '15' }]}>
+                    <MaterialCommunityIcons
+                        name={iconName as any}
+                        size={20}
+                        color={iconColor || theme.colors.primary}
+                    />
+                </View>
                 <Text style={[styles.settingLabel, { color: theme.colors.text }]}>
                     {label}
                 </Text>
@@ -46,9 +55,11 @@ const SettingRow: React.FC<SettingRowProps> = ({
                             {value}
                         </Text>
                     )}
-                    <Text style={[styles.chevron, { color: theme.colors.textTertiary }]}>
-                        ›
-                    </Text>
+                    <MaterialCommunityIcons
+                        name="chevron-right"
+                        size={22}
+                        color={theme.colors.textTertiary}
+                    />
                 </View>
             )}
         </View>
@@ -56,7 +67,7 @@ const SettingRow: React.FC<SettingRowProps> = ({
 
     if (onPress) {
         return (
-            <TouchableOpacity onPress={onPress}>
+            <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
                 {content}
             </TouchableOpacity>
         );
@@ -150,7 +161,8 @@ const SettingsScreen: React.FC = () => {
                     </Text>
 
                     <SettingRow
-                        icon="🌐"
+                        iconName="translate"
+                        iconColor={theme.colors.info.main}
                         label={t('settings.language')}
                         value={language === 'en' ? 'English' : 'العربية'}
                         onPress={handleLanguageChange}
@@ -159,7 +171,8 @@ const SettingsScreen: React.FC = () => {
                     <View style={[styles.divider, { backgroundColor: theme.colors.borderLight }]} />
 
                     <SettingRow
-                        icon={userTheme === 'dark' ? '🌙' : '☀️'}
+                        iconName={userTheme === 'dark' ? 'weather-night' : 'white-balance-sunny'}
+                        iconColor={userTheme === 'dark' ? theme.colors.info.main : theme.colors.warning.main}
                         label={t('settings.theme')}
                         value={getThemeLabel()}
                         onPress={handleThemeChange}
@@ -173,7 +186,8 @@ const SettingsScreen: React.FC = () => {
                     </Text>
 
                     <SettingRow
-                        icon="🔔"
+                        iconName="bell-outline"
+                        iconColor={theme.colors.success.main}
                         label={t('settings.notifications')}
                         rightElement={
                             <Switch
@@ -188,7 +202,8 @@ const SettingsScreen: React.FC = () => {
                     <View style={[styles.divider, { backgroundColor: theme.colors.borderLight }]} />
 
                     <SettingRow
-                        icon="🌙"
+                        iconName="moon-waning-crescent"
+                        iconColor={theme.colors.info.main}
                         label={t('settings.quietHours')}
                         value="22:00 - 06:00"
                         onPress={() => { }}
@@ -202,7 +217,8 @@ const SettingsScreen: React.FC = () => {
                     </Text>
 
                     <SettingRow
-                        icon="🔒"
+                        iconName="lock-outline"
+                        iconColor={theme.colors.error.main}
                         label={t('settings.hideAmounts')}
                         rightElement={
                             <Switch
@@ -222,7 +238,7 @@ const SettingsScreen: React.FC = () => {
                     </Text>
 
                     <SettingRow
-                        icon="ℹ️"
+                        iconName="information-outline"
                         label={t('settings.about')}
                         onPress={() => { }}
                     />
@@ -230,7 +246,7 @@ const SettingsScreen: React.FC = () => {
                     <View style={[styles.divider, { backgroundColor: theme.colors.borderLight }]} />
 
                     <SettingRow
-                        icon="📱"
+                        iconName="cellphone"
                         label={t('settings.version')}
                         value="1.0.0"
                     />
@@ -297,8 +313,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: 12,
     },
-    settingIcon: {
-        fontSize: 22,
+    iconContainer: {
+        width: 36,
+        height: 36,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     settingLabel: {
         fontSize: 16,
@@ -306,18 +326,14 @@ const styles = StyleSheet.create({
     settingRight: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 8,
+        gap: 6,
     },
     settingValue: {
-        fontSize: 16,
-    },
-    chevron: {
-        fontSize: 22,
-        fontWeight: '300',
+        fontSize: 15,
     },
     divider: {
         height: 1,
-        marginLeft: 50,
+        marginLeft: 64,
     },
     appInfo: {
         alignItems: 'center',

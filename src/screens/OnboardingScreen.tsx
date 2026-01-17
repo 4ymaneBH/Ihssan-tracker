@@ -5,11 +5,12 @@ import {
     Text,
     StyleSheet,
     TouchableOpacity,
-    SafeAreaView,
     Dimensions,
     I18nManager,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context';
 import { useUserPreferencesStore } from '../store';
 import { changeLanguage } from '../i18n';
@@ -123,7 +124,7 @@ const OnboardingScreen: React.FC = () => {
                     ]}
                     onPress={() => handleThemeSelect('light')}
                 >
-                    <Text style={[styles.optionEmoji]}>☀️</Text>
+                    <MaterialCommunityIcons name="white-balance-sunny" size={32} color="#F59E0B" />
                     <Text style={[styles.optionLabel, { color: '#1F2937' }]}>
                         {t('onboarding.lightTheme')}
                     </Text>
@@ -143,7 +144,7 @@ const OnboardingScreen: React.FC = () => {
                     ]}
                     onPress={() => handleThemeSelect('dark')}
                 >
-                    <Text style={[styles.optionEmoji]}>🌙</Text>
+                    <MaterialCommunityIcons name="moon-waning-crescent" size={32} color="#818CF8" />
                     <Text style={[styles.optionLabel, { color: '#FFFFFF' }]}>
                         {t('onboarding.darkTheme')}
                     </Text>
@@ -165,7 +166,9 @@ const OnboardingScreen: React.FC = () => {
                         { backgroundColor: theme.colors.cards.salat },
                     ]}
                 >
-                    <Text style={styles.goalEmoji}>🕌</Text>
+                    <View style={[styles.goalIconContainer, { backgroundColor: theme.colors.primary + '20' }]}>
+                        <MaterialCommunityIcons name="mosque" size={24} color={theme.colors.primary} />
+                    </View>
                     <Text style={[styles.goalLabel, { color: theme.colors.text }]}>
                         {t('salat.title')}
                     </Text>
@@ -180,7 +183,9 @@ const OnboardingScreen: React.FC = () => {
                         { backgroundColor: theme.colors.cards.quran },
                     ]}
                 >
-                    <Text style={styles.goalEmoji}>📖</Text>
+                    <View style={[styles.goalIconContainer, { backgroundColor: theme.colors.success.main + '20' }]}>
+                        <MaterialCommunityIcons name="book-open-page-variant" size={24} color={theme.colors.success.main} />
+                    </View>
                     <Text style={[styles.goalLabel, { color: theme.colors.text }]}>
                         {t('quran.title')}
                     </Text>
@@ -195,7 +200,9 @@ const OnboardingScreen: React.FC = () => {
                         { backgroundColor: theme.colors.cards.adhkar },
                     ]}
                 >
-                    <Text style={styles.goalEmoji}>📿</Text>
+                    <View style={[styles.goalIconContainer, { backgroundColor: theme.colors.info.main + '20' }]}>
+                        <MaterialCommunityIcons name="hands-pray" size={24} color={theme.colors.info.main} />
+                    </View>
                     <Text style={[styles.goalLabel, { color: theme.colors.text }]}>
                         {t('adhkar.title')}
                     </Text>
@@ -321,6 +328,14 @@ const styles = StyleSheet.create({
     },
     goalsContainer: {
         gap: 16,
+    },
+    goalIconContainer: {
+        width: 48,
+        height: 48,
+        borderRadius: 14,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 8,
     },
     goalCard: {
         flexDirection: 'row',

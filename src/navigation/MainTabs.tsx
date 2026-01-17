@@ -18,13 +18,13 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
 // Tab icon mapping
 type IconName = 'view-dashboard' | 'view-dashboard-outline' |
     'calendar-check' | 'calendar-check-outline' |
-    'chart-arc' | 'chart-arc-outline' |
+    'chart-donut' | 'chart-donut-variant' |
     'cog' | 'cog-outline';
 
 const tabIcons: Record<string, { active: IconName; inactive: IconName }> = {
     Today: { active: 'view-dashboard', inactive: 'view-dashboard-outline' },
     Track: { active: 'calendar-check', inactive: 'calendar-check-outline' },
-    Insights: { active: 'chart-arc', inactive: 'chart-arc-outline' },
+    Insights: { active: 'chart-donut', inactive: 'chart-donut-variant' },
     Settings: { active: 'cog', inactive: 'cog-outline' },
 };
 

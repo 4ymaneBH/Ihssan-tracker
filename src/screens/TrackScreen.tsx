@@ -1,14 +1,14 @@
 // Track Screen - Full history and detailed views
-import React, { useState } from 'react';
+import React from 'react';
 import {
     View,
     Text,
     StyleSheet,
     ScrollView,
-    SafeAreaView,
-    TouchableOpacity,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context';
 import { useSalatStore, useHabitsStore } from '../store';
 import { getWeekDates, getDayAbbr, parseDate, formatNumber, isToday } from '../utils';
@@ -37,6 +37,31 @@ const TrackScreen: React.FC = () => {
     };
 
     const onTimePercent = getOnTimePercentage(7);
+
+    // Weekly stats configuration
+    const weeklyStats = [
+        {
+            icon: 'book-open-page-variant',
+            iconColor: theme.colors.success.main,
+            value: getWeeklyQuranPages(),
+            label: t('quran.pages'),
+            bgColor: theme.colors.cards.quran,
+        },
+        {
+            icon: 'heart',
+            iconColor: theme.colors.error.main,
+            value: getWeeklyCharityCount(),
+            label: t('charity.timesGiven'),
+            bgColor: theme.colors.cards.charity,
+        },
+        {
+            icon: 'moon-waning-crescent',
+            iconColor: theme.colors.info.main,
+            value: getWeeklyTahajjudNights(),
+            label: t('tahajjud.nights'),
+            bgColor: theme.colors.cards.tahajjud,
+        },
+    ];
 
     return (
         <SafeAreaView
@@ -127,7 +152,7 @@ const TrackScreen: React.FC = () => {
                     </View>
 
                     {/* Legend */}
-                    <View style={styles.legend}>
+                    <View style={[styles.legend, { borderTopColor: theme.colors.border }]}>
                         <View style={styles.legendItem}>
                             <View style={[styles.legendDot, { backgroundColor: theme.colors.success.main }]} />
                             <Text style={[styles.legendText, { color: theme.colors.textSecondary }]}>
@@ -156,35 +181,19 @@ const TrackScreen: React.FC = () => {
                     </Text>
 
                     <View style={styles.statsGrid}>
-                        <View style={[styles.statCard, { backgroundColor: theme.colors.cards.quran }]}>
-                            <Text style={styles.statEmoji}>📖</Text>
-                            <Text style={[styles.statValue, { color: theme.colors.text }]}>
-                                {formatNumber(getWeeklyQuranPages(), i18n.language)}
-                            </Text>
-                            <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
-                                {t('quran.pages')}
-                            </Text>
-                        </View>
-
-                        <View style={[styles.statCard, { backgroundColor: theme.colors.cards.charity }]}>
-                            <Text style={styles.statEmoji}>❤️</Text>
-                            <Text style={[styles.statValue, { color: theme.colors.text }]}>
-                                {formatNumber(getWeeklyCharityCount(), i18n.language)}
-                            </Text>
-                            <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
-                                {t('charity.timesGiven')}
-                            </Text>
-                        </View>
-
-                        <View style={[styles.statCard, { backgroundColor: theme.colors.cards.tahajjud }]}>
-                            <Text style={styles.statEmoji}>🌙</Text>
-                            <Text style={[styles.statValue, { color: theme.colors.text }]}>
-                                {formatNumber(getWeeklyTahajjudNights(), i18n.language)}
-                            </Text>
-                            <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
-                                {t('tahajjud.nights')}
-                            </Text>
-                        </View>
+                        {weeklyStats.map((stat) => (
+                            <View key={stat.icon} style={[styles.statCard, { backgroundColor: stat.bgColor }]}>
+                                <View style={[styles.statIconContainer, { backgroundColor: stat.iconColor + '20' }]}>
+                                    <MaterialCommunityIcons name={stat.icon as any} size={22} color={stat.iconColor} />
+                                </View>
+                                <Text style={[styles.statValue, { color: theme.colors.text }]}>
+                                    {formatNumber(stat.value, i18n.language)}
+                                </Text>
+                                <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
+                                    {stat.label}
+                                </Text>
+                            </View>
+                        ))}
                     </View>
                 </View>
 
@@ -283,7 +292,6 @@ const styles = StyleSheet.create({
         marginTop: 16,
         paddingTop: 16,
         borderTopWidth: 1,
-        borderTopColor: '#E5E7EB',
     },
     legendItem: {
         flexDirection: 'row',
@@ -309,8 +317,12 @@ const styles = StyleSheet.create({
         borderRadius: 14,
         alignItems: 'center',
     },
-    statEmoji: {
-        fontSize: 24,
+    statIconContainer: {
+        width: 44,
+        height: 44,
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
         marginBottom: 8,
     },
     statValue: {

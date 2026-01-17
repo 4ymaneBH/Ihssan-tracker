@@ -5,9 +5,10 @@ import {
     Text,
     StyleSheet,
     ScrollView,
-    SafeAreaView,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context';
 import { useSalatStore, useHabitsStore } from '../store';
 import { formatNumber, formatPercentage } from '../utils';
@@ -64,6 +65,54 @@ const InsightsScreen: React.FC = () => {
         return t('insights.keepGoing');
     };
 
+    // Stats configuration with icons
+    const stats = [
+        {
+            icon: 'mosque',
+            iconColor: theme.colors.primary,
+            title: t('insights.salatOnTime'),
+            subtitle: `${formatPercentage(salatOnTimePercent, i18n.language)} ${t('common.today')}`,
+            value: formatPercentage(salatOnTimePercent, i18n.language),
+            progressValue: salatOnTimePercent,
+            progressMax: 100,
+            progressColor: theme.colors.primary,
+            progressBg: theme.colors.primaryLight,
+        },
+        {
+            icon: 'book-open-page-variant',
+            iconColor: theme.colors.success.main,
+            title: t('insights.quranPages'),
+            subtitle: `${formatNumber(quranPages, i18n.language)}/14 ${t('quran.pages')}`,
+            value: formatNumber(quranPages, i18n.language),
+            progressValue: quranPages,
+            progressMax: 14,
+            progressColor: theme.colors.success.main,
+            progressBg: theme.colors.success.light,
+        },
+        {
+            icon: 'heart',
+            iconColor: theme.colors.error.main,
+            title: t('insights.charityCount'),
+            subtitle: `${formatNumber(charityCount, i18n.language)}/3 ${t('charity.thisWeek')}`,
+            value: formatNumber(charityCount, i18n.language),
+            progressValue: charityCount,
+            progressMax: 3,
+            progressColor: theme.colors.warning.main,
+            progressBg: theme.colors.warning.light,
+        },
+        {
+            icon: 'moon-waning-crescent',
+            iconColor: theme.colors.info.main,
+            title: t('insights.tahajjudNights'),
+            subtitle: `${formatNumber(tahajjudNights, i18n.language)}/2 ${t('tahajjud.nights')}`,
+            value: formatNumber(tahajjudNights, i18n.language),
+            progressValue: tahajjudNights,
+            progressMax: 2,
+            progressColor: theme.colors.info.main,
+            progressBg: theme.colors.info.light,
+        },
+    ];
+
     return (
         <SafeAreaView
             style={[styles.container, { backgroundColor: theme.colors.background }]}
@@ -97,8 +146,9 @@ const InsightsScreen: React.FC = () => {
                     </Text>
                     {streak > 0 && (
                         <View style={styles.streakRow}>
+                            <MaterialCommunityIcons name="fire" size={18} color={theme.colors.onPrimary} />
                             <Text style={[styles.streakText, { color: theme.colors.onPrimary }]}>
-                                🔥 {formatNumber(streak, i18n.language)} {t('habits.days')} {t('habits.streak')}
+                                {formatNumber(streak, i18n.language)} {t('habits.days')} {t('habits.streak')}
                             </Text>
                         </View>
                     )}
@@ -106,101 +156,34 @@ const InsightsScreen: React.FC = () => {
 
                 {/* Detailed Stats */}
                 <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
-                    {/* Salat */}
-                    <View style={styles.statRow}>
-                        <View style={styles.statInfo}>
-                            <Text style={styles.statEmoji}>🕌</Text>
-                            <View>
-                                <Text style={[styles.statTitle, { color: theme.colors.text }]}>
-                                    {t('insights.salatOnTime')}
-                                </Text>
-                                <Text style={[styles.statSubtitle, { color: theme.colors.textSecondary }]}>
-                                    {formatPercentage(salatOnTimePercent, i18n.language)} {t('common.today')}
-                                </Text>
-                            </View>
-                        </View>
-                        <Text style={[styles.statValue, { color: theme.colors.primary }]}>
-                            {formatPercentage(salatOnTimePercent, i18n.language)}
-                        </Text>
-                    </View>
-                    <ProgressBar
-                        value={salatOnTimePercent}
-                        maxValue={100}
-                        color={theme.colors.primary}
-                        backgroundColor={theme.colors.primaryLight}
-                    />
-
-                    {/* Qur'an */}
-                    <View style={[styles.statRow, { marginTop: 20 }]}>
-                        <View style={styles.statInfo}>
-                            <Text style={styles.statEmoji}>📖</Text>
-                            <View>
-                                <Text style={[styles.statTitle, { color: theme.colors.text }]}>
-                                    {t('insights.quranPages')}
-                                </Text>
-                                <Text style={[styles.statSubtitle, { color: theme.colors.textSecondary }]}>
-                                    {formatNumber(quranPages, i18n.language)}/14 {t('quran.pages')}
+                    {stats.map((stat, index) => (
+                        <View key={stat.icon} style={index > 0 ? { marginTop: 24 } : undefined}>
+                            <View style={styles.statRow}>
+                                <View style={styles.statInfo}>
+                                    <View style={[styles.iconContainer, { backgroundColor: stat.iconColor + '20' }]}>
+                                        <MaterialCommunityIcons name={stat.icon as any} size={22} color={stat.iconColor} />
+                                    </View>
+                                    <View>
+                                        <Text style={[styles.statTitle, { color: theme.colors.text }]}>
+                                            {stat.title}
+                                        </Text>
+                                        <Text style={[styles.statSubtitle, { color: theme.colors.textSecondary }]}>
+                                            {stat.subtitle}
+                                        </Text>
+                                    </View>
+                                </View>
+                                <Text style={[styles.statValue, { color: theme.colors.primary }]}>
+                                    {stat.value}
                                 </Text>
                             </View>
+                            <ProgressBar
+                                value={stat.progressValue}
+                                maxValue={stat.progressMax}
+                                color={stat.progressColor}
+                                backgroundColor={stat.progressBg}
+                            />
                         </View>
-                        <Text style={[styles.statValue, { color: theme.colors.primary }]}>
-                            {formatNumber(quranPages, i18n.language)}
-                        </Text>
-                    </View>
-                    <ProgressBar
-                        value={quranPages}
-                        maxValue={14}
-                        color={theme.colors.success.main}
-                        backgroundColor={theme.colors.success.light}
-                    />
-
-                    {/* Charity */}
-                    <View style={[styles.statRow, { marginTop: 20 }]}>
-                        <View style={styles.statInfo}>
-                            <Text style={styles.statEmoji}>❤️</Text>
-                            <View>
-                                <Text style={[styles.statTitle, { color: theme.colors.text }]}>
-                                    {t('insights.charityCount')}
-                                </Text>
-                                <Text style={[styles.statSubtitle, { color: theme.colors.textSecondary }]}>
-                                    {formatNumber(charityCount, i18n.language)}/3 {t('charity.thisWeek')}
-                                </Text>
-                            </View>
-                        </View>
-                        <Text style={[styles.statValue, { color: theme.colors.primary }]}>
-                            {formatNumber(charityCount, i18n.language)}
-                        </Text>
-                    </View>
-                    <ProgressBar
-                        value={charityCount}
-                        maxValue={3}
-                        color={theme.colors.warning.main}
-                        backgroundColor={theme.colors.warning.light}
-                    />
-
-                    {/* Tahajjud */}
-                    <View style={[styles.statRow, { marginTop: 20 }]}>
-                        <View style={styles.statInfo}>
-                            <Text style={styles.statEmoji}>🌙</Text>
-                            <View>
-                                <Text style={[styles.statTitle, { color: theme.colors.text }]}>
-                                    {t('insights.tahajjudNights')}
-                                </Text>
-                                <Text style={[styles.statSubtitle, { color: theme.colors.textSecondary }]}>
-                                    {formatNumber(tahajjudNights, i18n.language)}/2 {t('tahajjud.nights')}
-                                </Text>
-                            </View>
-                        </View>
-                        <Text style={[styles.statValue, { color: theme.colors.primary }]}>
-                            {formatNumber(tahajjudNights, i18n.language)}
-                        </Text>
-                    </View>
-                    <ProgressBar
-                        value={tahajjudNights}
-                        maxValue={2}
-                        color={theme.colors.info.main}
-                        backgroundColor={theme.colors.info.light}
-                    />
+                    ))}
                 </View>
 
                 <View style={styles.bottomSpacer} />
@@ -251,6 +234,9 @@ const styles = StyleSheet.create({
         opacity: 0.9,
     },
     streakRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
         marginTop: 16,
         paddingTop: 16,
         borderTopWidth: 1,
@@ -277,8 +263,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: 12,
     },
-    statEmoji: {
-        fontSize: 28,
+    iconContainer: {
+        width: 44,
+        height: 44,
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     statTitle: {
         fontSize: 16,

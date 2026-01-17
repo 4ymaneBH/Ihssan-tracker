@@ -40,11 +40,11 @@ const SalatCard: React.FC = () => {
         return theme.colors.border;
     };
 
-    const getStatusEmoji = (status: SalatStatus | undefined) => {
-        if (status === 'onTime') return '✓';
-        if (status === 'late') return '⏰';
-        if (status === 'missed') return '✗';
-        return '';
+    const getStatusIcon = (status: SalatStatus | undefined): string => {
+        if (status === 'onTime') return 'check-circle';
+        if (status === 'late') return 'clock-alert';
+        if (status === 'missed') return 'close-circle';
+        return 'circle-outline';
     };
 
     const cyclePrayerStatus = (prayer: SalatName) => {
@@ -78,8 +78,9 @@ const SalatCard: React.FC = () => {
                 </View>
                 {streak > 0 && (
                     <View style={[styles.streakBadge, { backgroundColor: theme.colors.primary }]}>
+                        <MaterialCommunityIcons name="fire" size={14} color={theme.colors.onPrimary} />
                         <Text style={[styles.streakText, { color: theme.colors.onPrimary }]}>
-                            🔥 {formatNumber(streak, i18n.language)}
+                            {formatNumber(streak, i18n.language)}
                         </Text>
                     </View>
                 )}
@@ -104,9 +105,11 @@ const SalatCard: React.FC = () => {
                             <Text style={[styles.prayerLabel, { color: theme.colors.text }]}>
                                 {prayer.label}
                             </Text>
-                            <Text style={[styles.prayerStatus, { color: getStatusColor(status) }]}>
-                                {getStatusEmoji(status)}
-                            </Text>
+                            <MaterialCommunityIcons
+                                name={getStatusIcon(status)}
+                                size={18}
+                                color={getStatusColor(status)}
+                            />
                         </TouchableOpacity>
                     );
                 })}
@@ -165,12 +168,12 @@ const AdhkarCard: React.FC = () => {
                     ]}
                     onPress={() => handleAdhkarPress('morning')}
                 >
-                    <Text style={styles.adhkarEmoji}>🌅</Text>
+                    <MaterialCommunityIcons name="weather-sunny" size={28} color={theme.colors.warning.main} />
                     <Text style={[styles.adhkarLabel, { color: theme.colors.text }]}>
                         {t('adhkar.morning')}
                     </Text>
                     {morningLog && (
-                        <Text style={[styles.checkmark, { color: theme.colors.success.main }]}>✓</Text>
+                        <MaterialCommunityIcons name="check-circle" size={20} color={theme.colors.success.main} />
                     )}
                 </TouchableOpacity>
 
@@ -185,12 +188,12 @@ const AdhkarCard: React.FC = () => {
                     ]}
                     onPress={() => handleAdhkarPress('evening')}
                 >
-                    <Text style={styles.adhkarEmoji}>🌆</Text>
+                    <MaterialCommunityIcons name="weather-night" size={28} color={theme.colors.primary} />
                     <Text style={[styles.adhkarLabel, { color: theme.colors.text }]}>
                         {t('adhkar.evening')}
                     </Text>
                     {eveningLog && (
-                        <Text style={[styles.checkmark, { color: theme.colors.success.main }]}>✓</Text>
+                        <MaterialCommunityIcons name="check-circle" size={20} color={theme.colors.success.main} />
                     )}
                 </TouchableOpacity>
             </View>
@@ -217,7 +220,9 @@ const QuranCard: React.FC = () => {
         >
             <View style={styles.cardHeader}>
                 <View style={styles.cardTitleRow}>
-                    <Text style={styles.cardEmoji}>📖</Text>
+                    <View style={[styles.iconContainer, { backgroundColor: theme.colors.primary + '20' }]}>
+                        <MaterialCommunityIcons name="book-open-page-variant" size={22} color={theme.colors.primary} />
+                    </View>
                     <Text style={[styles.cardTitle, { color: theme.colors.text }]}>
                         {t('quran.title')}
                     </Text>
@@ -264,10 +269,10 @@ const CharityCard: React.FC = () => {
     const weeklyCount = getWeeklyCharityCount();
 
     const charityTypes = [
-        { type: 'money' as const, emoji: '💰', label: t('charity.money') },
-        { type: 'food' as const, emoji: '🍞', label: t('charity.food') },
-        { type: 'time' as const, emoji: '⏱️', label: t('charity.time') },
-        { type: 'help' as const, emoji: '🤝', label: t('charity.help') },
+        { type: 'money' as const, icon: 'cash-multiple', label: t('charity.money') },
+        { type: 'food' as const, icon: 'food-apple', label: t('charity.food') },
+        { type: 'time' as const, icon: 'clock-outline', label: t('charity.time') },
+        { type: 'help' as const, icon: 'hand-heart', label: t('charity.help') },
     ];
 
     return (
@@ -276,7 +281,9 @@ const CharityCard: React.FC = () => {
         >
             <View style={styles.cardHeader}>
                 <View style={styles.cardTitleRow}>
-                    <Text style={styles.cardEmoji}>❤️</Text>
+                    <View style={[styles.iconContainer, { backgroundColor: theme.colors.error.main + '20' }]}>
+                        <MaterialCommunityIcons name="heart" size={22} color={theme.colors.error.main} />
+                    </View>
                     <Text style={[styles.cardTitle, { color: theme.colors.text }]}>
                         {t('charity.sadaqah')}
                     </Text>
@@ -293,7 +300,7 @@ const CharityCard: React.FC = () => {
                         style={[styles.charityItem, { backgroundColor: theme.colors.surface }]}
                         onPress={() => logCharity(charity.type)}
                     >
-                        <Text style={styles.charityEmoji}>{charity.emoji}</Text>
+                        <MaterialCommunityIcons name={charity.icon as any} size={24} color={theme.colors.primary} />
                         <Text style={[styles.charityLabel, { color: theme.colors.text }]}>
                             {charity.label}
                         </Text>
@@ -319,7 +326,9 @@ const TahajjudCard: React.FC = () => {
         >
             <View style={styles.cardHeader}>
                 <View style={styles.cardTitleRow}>
-                    <Text style={styles.cardEmoji}>🌙</Text>
+                    <View style={[styles.iconContainer, { backgroundColor: theme.colors.primary + '20' }]}>
+                        <MaterialCommunityIcons name="moon-waning-crescent" size={22} color={theme.colors.primary} />
+                    </View>
                     <Text style={[styles.cardTitle, { color: theme.colors.text }]}>
                         {t('tahajjud.title')}
                     </Text>
@@ -353,7 +362,7 @@ const TahajjudCard: React.FC = () => {
                         },
                     ]}
                 >
-                    {todayLog?.completed ? `✓ ${t('tahajjud.completed')}` : t('tahajjud.nightPrayer')}
+                    {todayLog?.completed ? t('tahajjud.completed') : t('tahajjud.nightPrayer')}
                 </Text>
             </TouchableOpacity>
         </View>
