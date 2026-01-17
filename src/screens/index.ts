@@ -5,3 +5,4 @@ export { default as TrackScreen } from './TrackScreen';
 export { default as InsightsScreen } from './InsightsScreen';
 export { default as SettingsScreen } from './SettingsScreen';
 export { default as CustomHabitsScreen } from './CustomHabitsScreen';
+export { default as AdhkarScreen } from './AdhkarScreen';

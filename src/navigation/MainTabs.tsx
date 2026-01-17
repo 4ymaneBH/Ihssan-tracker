@@ -1,8 +1,9 @@
-// Bottom Tab Navigation
+// Bottom Tab Navigation with Material Icons
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { MainTabParamList } from '../types';
 import { useTheme } from '../context';
 
@@ -14,25 +15,17 @@ import SettingsScreen from '../screens/SettingsScreen';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
-// Simple icon components using emoji
-const TabIcon: React.FC<{ name: string; focused: boolean }> = ({
-    name,
-    focused,
-}) => {
-    const icons: Record<string, string> = {
-        today: '📋',
-        track: '📊',
-        insights: '💡',
-        settings: '⚙️',
-    };
+// Tab icon mapping
+type IconName = 'view-dashboard' | 'view-dashboard-outline' |
+    'calendar-check' | 'calendar-check-outline' |
+    'chart-arc' | 'chart-arc-outline' |
+    'cog' | 'cog-outline';
 
-    return (
-        <View style={[styles.iconContainer, focused && styles.iconFocused]}>
-            <Text style={[styles.iconText, { opacity: focused ? 1 : 0.7 }]}>
-                {icons[name] || '📌'}
-            </Text>
-        </View>
-    );
+const tabIcons: Record<string, { active: IconName; inactive: IconName }> = {
+    Today: { active: 'view-dashboard', inactive: 'view-dashboard-outline' },
+    Track: { active: 'calendar-check', inactive: 'calendar-check-outline' },
+    Insights: { active: 'chart-arc', inactive: 'chart-arc-outline' },
+    Settings: { active: 'cog', inactive: 'cog-outline' },
 };
 
 const MainTabs: React.FC = () => {
@@ -41,7 +34,7 @@ const MainTabs: React.FC = () => {
 
     return (
         <Tab.Navigator
-            screenOptions={{
+            screenOptions={({ route }) => ({
                 headerShown: false,
                 tabBarStyle: {
                     backgroundColor: theme.colors.tabBarBackground,
@@ -49,23 +42,36 @@ const MainTabs: React.FC = () => {
                     height: 80,
                     paddingBottom: 20,
                     paddingTop: 10,
+                    elevation: 8,
+                    shadowColor: theme.colors.text,
+                    shadowOffset: { width: 0, height: -2 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 8,
                 },
-                tabBarActiveTintColor: theme.colors.tabBarActive,
+                tabBarActiveTintColor: theme.colors.primary,
                 tabBarInactiveTintColor: theme.colors.tabBarInactive,
                 tabBarLabelStyle: {
                     fontSize: 12,
                     fontWeight: '500',
                 },
-            }}
+                tabBarIcon: ({ focused, color, size }) => {
+                    const icons = tabIcons[route.name];
+                    const iconName = focused ? icons.active : icons.inactive;
+                    return (
+                        <MaterialCommunityIcons
+                            name={iconName}
+                            size={24}
+                            color={color}
+                        />
+                    );
+                },
+            })}
         >
             <Tab.Screen
                 name="Today"
                 component={TodayScreen}
                 options={{
                     tabBarLabel: t('common.today'),
-                    tabBarIcon: ({ focused }) => (
-                        <TabIcon name="today" focused={focused} />
-                    ),
                 }}
             />
             <Tab.Screen
@@ -73,9 +79,6 @@ const MainTabs: React.FC = () => {
                 component={TrackScreen}
                 options={{
                     tabBarLabel: t('common.track'),
-                    tabBarIcon: ({ focused }) => (
-                        <TabIcon name="track" focused={focused} />
-                    ),
                 }}
             />
             <Tab.Screen
@@ -83,9 +86,6 @@ const MainTabs: React.FC = () => {
                 component={InsightsScreen}
                 options={{
                     tabBarLabel: t('common.insights'),
-                    tabBarIcon: ({ focused }) => (
-                        <TabIcon name="insights" focused={focused} />
-                    ),
                 }}
             />
             <Tab.Screen
@@ -93,9 +93,6 @@ const MainTabs: React.FC = () => {
                 component={SettingsScreen}
                 options={{
                     tabBarLabel: t('common.settings'),
-                    tabBarIcon: ({ focused }) => (
-                        <TabIcon name="settings" focused={focused} />
-                    ),
                 }}
             />
         </Tab.Navigator>
@@ -108,16 +105,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         width: 40,
         height: 40,
-    },
-    iconFocused: {},
-    icon: {
-        width: 24,
-        height: 24,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    iconText: {
-        fontSize: 20,
     },
 });
 

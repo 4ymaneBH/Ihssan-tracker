@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context';
 import { useSalatStore, useHabitsStore } from '../store';
 import { getDateString, formatNumber } from '../utils';
@@ -68,7 +69,9 @@ const SalatCard: React.FC = () => {
         >
             <View style={styles.cardHeader}>
                 <View style={styles.cardTitleRow}>
-                    <Text style={styles.cardEmoji}>🕌</Text>
+                    <View style={[styles.iconContainer, { backgroundColor: theme.colors.primary + '20' }]}>
+                        <MaterialCommunityIcons name="mosque" size={22} color={theme.colors.primary} />
+                    </View>
                     <Text style={[styles.cardTitle, { color: theme.colors.text }]}>
                         {t('salat.title')}
                     </Text>
@@ -141,7 +144,9 @@ const AdhkarCard: React.FC = () => {
         >
             <View style={styles.cardHeader}>
                 <View style={styles.cardTitleRow}>
-                    <Text style={styles.cardEmoji}>📿</Text>
+                    <View style={[styles.iconContainer, { backgroundColor: theme.colors.primary + '20' }]}>
+                        <MaterialCommunityIcons name="hands-pray" size={22} color={theme.colors.primary} />
+                    </View>
                     <Text style={[styles.cardTitle, { color: theme.colors.text }]}>
                         {t('adhkar.title')}
                     </Text>
@@ -433,13 +438,17 @@ const styles = StyleSheet.create({
     cardTitleRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 8,
+        gap: 10,
     },
-    cardEmoji: {
-        fontSize: 24,
+    iconContainer: {
+        width: 40,
+        height: 40,
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     cardTitle: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: '600',
     },
     cardSubtext: {
