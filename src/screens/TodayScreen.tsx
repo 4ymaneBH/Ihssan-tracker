@@ -10,10 +10,14 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../context';
 import { useSalatStore, useHabitsStore } from '../store';
 import { getDateString, formatNumber } from '../utils';
-import { SalatName, SalatStatus } from '../types';
+import { SalatName, SalatStatus, RootStackParamList } from '../types';
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 // Salat Card Component
 const SalatCard: React.FC = () => {
@@ -124,21 +128,18 @@ const SalatCard: React.FC = () => {
 
 // Adhkar Card Component
 const AdhkarCard: React.FC = () => {
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const { theme } = useTheme();
-    const { logAdhkar, getAdhkarLog } = useHabitsStore();
+    const navigation = useNavigation<NavigationProp>();
+    const { getAdhkarLog } = useHabitsStore();
 
     const today = getDateString(new Date());
     const morningLog = getAdhkarLog(today, 'morning');
     const eveningLog = getAdhkarLog(today, 'evening');
 
     const handleAdhkarPress = (category: 'morning' | 'evening') => {
-        const currentLog = category === 'morning' ? morningLog : eveningLog;
-        const isComplete = currentLog?.itemsCompleted === currentLog?.totalItems;
-
-        if (!currentLog || !isComplete) {
-            logAdhkar(today, category, 10, 10); // Mark as complete
-        }
+        // Navigate to AdhkarScreen with category
+        navigation.navigate('Adhkar', { category });
     };
 
     return (
@@ -205,6 +206,7 @@ const AdhkarCard: React.FC = () => {
 const QuranCard: React.FC = () => {
     const { t, i18n } = useTranslation();
     const { theme } = useTheme();
+    const navigation = useNavigation<NavigationProp>();
     const { logQuranReading, getTodayQuranLog, getWeeklyQuranPages } = useHabitsStore();
 
     const todayLog = getTodayQuranLog();
@@ -212,6 +214,10 @@ const QuranCard: React.FC = () => {
 
     const handleAddPages = (pages: number) => {
         logQuranReading(pages);
+    };
+
+    const handleOpenQuranScreen = () => {
+        navigation.navigate('Quran');
     };
 
     return (
@@ -256,6 +262,17 @@ const QuranCard: React.FC = () => {
                     ))}
                 </View>
             </View>
+
+            {/* View Details Button */}
+            <TouchableOpacity
+                style={[styles.viewDetailsButton, { backgroundColor: theme.colors.surface }]}
+                onPress={handleOpenQuranScreen}
+            >
+                <Text style={[styles.viewDetailsText, { color: theme.colors.primary }]}>
+                    {i18n.language === 'ar' ? 'عرض التفاصيل' : 'View Details'}
+                </Text>
+                <MaterialCommunityIcons name="chevron-right" size={20} color={theme.colors.primary} />
+            </TouchableOpacity>
         </View>
     );
 };
@@ -315,10 +332,15 @@ const CharityCard: React.FC = () => {
 const TahajjudCard: React.FC = () => {
     const { t, i18n } = useTranslation();
     const { theme } = useTheme();
+    const navigation = useNavigation<NavigationProp>();
     const { logTahajjud, getTodayTahajjud, getWeeklyTahajjudNights } = useHabitsStore();
 
     const todayLog = getTodayTahajjud();
     const weeklyNights = getWeeklyTahajjudNights();
+
+    const handleOpenTahajjudScreen = () => {
+        navigation.navigate('Tahajjud');
+    };
 
     return (
         <View
@@ -364,6 +386,17 @@ const TahajjudCard: React.FC = () => {
                 >
                     {todayLog?.completed ? t('tahajjud.completed') : t('tahajjud.nightPrayer')}
                 </Text>
+            </TouchableOpacity>
+
+            {/* View Details Link */}
+            <TouchableOpacity
+                style={styles.viewDetailsLink}
+                onPress={handleOpenTahajjudScreen}
+            >
+                <Text style={[styles.viewDetailsLinkText, { color: theme.colors.primary }]}>
+                    {i18n.language === 'ar' ? 'عرض الأسبوع' : 'View Week'}
+                </Text>
+                <MaterialCommunityIcons name="chevron-right" size={18} color={theme.colors.primary} />
             </TouchableOpacity>
         </View>
     );
@@ -586,6 +619,31 @@ const styles = StyleSheet.create({
     },
     bottomSpacer: {
         height: 24,
+    },
+    // View Details
+    viewDetailsButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 4,
+        paddingVertical: 12,
+        borderRadius: 12,
+        marginTop: 12,
+    },
+    viewDetailsText: {
+        fontSize: 14,
+        fontWeight: '600',
+    },
+    viewDetailsLink: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 2,
+        marginTop: 12,
+    },
+    viewDetailsLinkText: {
+        fontSize: 13,
+        fontWeight: '500',
     },
 });
 

@@ -141,6 +141,9 @@ export interface WeeklyInsights {
 export type RootStackParamList = {
     Onboarding: undefined;
     Main: undefined;
+    Adhkar: { category?: 'morning' | 'evening' };
+    Tahajjud: undefined;
+    Quran: undefined;
 };
 
 export type MainTabParamList = {

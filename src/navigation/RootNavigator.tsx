@@ -1,4 +1,4 @@
-// Root Navigator - handles onboarding vs main app flow
+// Root Navigator - handles onboarding vs main app flow with detail screens
 import React from 'react';
 import { NavigationContainer, DefaultTheme, DarkTheme, Theme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -8,6 +8,9 @@ import { useTheme } from '../context';
 
 // Screens
 import OnboardingScreen from '../screens/OnboardingScreen';
+import AdhkarScreen from '../screens/AdhkarScreen';
+import TahajjudScreen from '../screens/TahajjudScreen';
+import QuranScreen from '../screens/QuranScreen';
 import MainTabs from './MainTabs';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -40,7 +43,24 @@ const RootNavigator: React.FC = () => {
                 {!onboardingComplete ? (
                     <Stack.Screen name="Onboarding" component={OnboardingScreen} />
                 ) : (
-                    <Stack.Screen name="Main" component={MainTabs} />
+                    <>
+                        <Stack.Screen name="Main" component={MainTabs} />
+                        <Stack.Screen
+                            name="Adhkar"
+                            component={AdhkarScreen}
+                            options={{ presentation: 'card' }}
+                        />
+                        <Stack.Screen
+                            name="Tahajjud"
+                            component={TahajjudScreen}
+                            options={{ presentation: 'card' }}
+                        />
+                        <Stack.Screen
+                            name="Quran"
+                            component={QuranScreen}
+                            options={{ presentation: 'card' }}
+                        />
+                    </>
                 )}
             </Stack.Navigator>
         </NavigationContainer>
@@ -48,5 +68,3 @@ const RootNavigator: React.FC = () => {
 };
 
 export default RootNavigator;
-
-
