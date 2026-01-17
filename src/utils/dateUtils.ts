@@ -85,7 +85,7 @@ export const getRelativeDay = (dateString: string, locale: string = 'en'): strin
 };
 
 /**
- * Convert Western numerals to Arabic numerals
+ * Convert Western numerals to Arabic numerals (kept for backward compatibility)
  */
 export const toArabicNumerals = (num: number | string): string => {
     const arabicNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
@@ -93,22 +93,21 @@ export const toArabicNumerals = (num: number | string): string => {
 };
 
 /**
- * Format number based on locale
+ * Format number based on locale - always uses Western digits (0-9) for consistency
  */
-export const formatNumber = (num: number, locale: string = 'en'): string => {
-    if (locale === 'ar') {
-        return toArabicNumerals(num);
-    }
+export const formatNumber = (num: number, _locale: string = 'en'): string => {
+    // Always use Western digits (0-9) even in Arabic mode for better readability
     return String(num);
 };
 
 /**
- * Format percentage
+ * Format percentage - always uses Western digits
  */
 export const formatPercentage = (value: number, locale: string = 'en'): string => {
-    const formatted = `${Math.round(value)}%`;
+    const rounded = Math.round(value);
     if (locale === 'ar') {
-        return `٪${toArabicNumerals(Math.round(value))}`;
+        // In Arabic, percentage sign comes before the number
+        return `%${rounded}`;
     }
-    return formatted;
+    return `${rounded}%`;
 };

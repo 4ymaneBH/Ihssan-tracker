@@ -65,19 +65,21 @@ export const colors = {
     },
 };
 
-// Light theme
+// Light theme - improved contrast
 export const lightTheme = {
-    background: colors.neutral[0],
-    backgroundSecondary: colors.neutral[50],
+    background: colors.neutral[50],           // Slightly darker background for contrast
+    backgroundSecondary: colors.neutral[100],
     surface: colors.neutral[0],
     surfaceElevated: colors.neutral[0],
     text: colors.neutral[900],
-    textSecondary: colors.neutral[600],
+    textSecondary: colors.neutral[500],       // Slightly darker for readability
     textTertiary: colors.neutral[400],
-    border: colors.neutral[200],
-    borderLight: colors.neutral[100],
+    border: colors.neutral[300],              // Stronger border for visibility
+    borderLight: colors.neutral[200],
+    divider: colors.neutral[200],             // New: section dividers
+    cardBorder: colors.neutral[200],          // New: subtle card outlines
     primary: colors.primary[600],
-    primaryLight: colors.primary[50],
+    primaryLight: colors.primary[100],        // Slightly more visible
     onPrimary: colors.neutral[0],
     tabBarBackground: colors.neutral[0],
     tabBarBorder: colors.neutral[200],
@@ -105,6 +107,8 @@ export const darkTheme = {
     textTertiary: colors.neutral[500],
     border: colors.neutral[800],
     borderLight: colors.neutral[700],
+    divider: colors.neutral[800],             // Match light theme structure
+    cardBorder: colors.neutral[700],          // Subtle card outlines
     primary: colors.primary[400],
     primaryLight: colors.primary[900],
     onPrimary: colors.neutral[900],

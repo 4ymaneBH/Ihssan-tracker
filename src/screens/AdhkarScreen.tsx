@@ -1,33 +1,38 @@
-// Adhkar Reading Screen - View and track adhkar completion
-import React, { useState, useCallback } from 'react';
+// Adhkar Screen - Horizontal carousel with category tabs
+import React, { useState, useCallback, useRef } from 'react';
 import {
     View,
     Text,
     StyleSheet,
-    ScrollView,
     TouchableOpacity,
+    FlatList,
     Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../context';
 import { useHabitsStore } from '../store';
-import { getAdhkarByCategory, Dhikr } from '../data/adhkarContent';
+import { getAdhkarByCategory, Dhikr, AdhkarCategory, adhkarCategories } from '../data/adhkarContent';
 import { getDateString } from '../utils';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const CARD_WIDTH = SCREEN_WIDTH - 48; // 24px margin each side
+const CARD_MARGIN = 8;
 
 // Single Dhikr Card Component
 interface DhikrCardProps {
     dhikr: Dhikr;
     index: number;
-    isCompleted: boolean;
+    total: number;
     onComplete: () => void;
 }
 
 const DhikrCard: React.FC<DhikrCardProps> = ({
     dhikr,
     index,
-    isCompleted,
+    total,
     onComplete,
 }) => {
     const { theme } = useTheme();
@@ -50,31 +55,33 @@ const DhikrCard: React.FC<DhikrCardProps> = ({
 
     return (
         <TouchableOpacity
-            activeOpacity={0.9}
+            activeOpacity={0.95}
             onPress={handleTap}
             disabled={isDone}
             style={[
                 styles.dhikrCard,
                 {
+                    width: CARD_WIDTH,
                     backgroundColor: isDone
                         ? theme.colors.success.light
                         : theme.colors.surface,
                     borderColor: isDone
                         ? theme.colors.success.main
-                        : theme.colors.border,
+                        : theme.colors.cardBorder,
+                    shadowColor: theme.colors.text,
                 },
             ]}
         >
-            {/* Counter Badge */}
-            <View style={styles.counterRow}>
+            {/* Card number and counter */}
+            <View style={styles.cardHeader}>
                 <View
                     style={[
                         styles.indexBadge,
-                        { backgroundColor: theme.colors.primary + '20' },
+                        { backgroundColor: theme.colors.primary + '15' },
                     ]}
                 >
                     <Text style={[styles.indexText, { color: theme.colors.primary }]}>
-                        {index + 1}
+                        {index + 1}/{total}
                     </Text>
                 </View>
                 <View style={styles.repeatInfo}>
@@ -84,7 +91,7 @@ const DhikrCard: React.FC<DhikrCardProps> = ({
                     {isDone && (
                         <MaterialCommunityIcons
                             name="check-circle"
-                            size={20}
+                            size={22}
                             color={theme.colors.success.main}
                         />
                     )}
@@ -130,7 +137,11 @@ const DhikrCard: React.FC<DhikrCardProps> = ({
             {/* Reference */}
             {dhikr.reference && (
                 <View style={styles.referenceRow}>
-                    <MaterialCommunityIcons name="book-open-variant" size={14} color={theme.colors.textTertiary} />
+                    <MaterialCommunityIcons
+                        name="book-open-variant"
+                        size={14}
+                        color={theme.colors.textTertiary}
+                    />
                     <Text style={[styles.referenceText, { color: theme.colors.textTertiary }]}>
                         {dhikr.reference}
                     </Text>
@@ -157,7 +168,7 @@ const DhikrCard: React.FC<DhikrCardProps> = ({
             {/* Tap hint */}
             {!isDone && (
                 <Text style={[styles.tapHint, { color: theme.colors.textTertiary }]}>
-                    Tap to count
+                    {isArabic ? 'اضغط للعد' : 'Tap to count'}
                 </Text>
             )}
         </TouchableOpacity>
@@ -168,7 +179,7 @@ const DhikrCard: React.FC<DhikrCardProps> = ({
 interface AdhkarScreenProps {
     route?: {
         params?: {
-            category?: 'morning' | 'evening';
+            category?: AdhkarCategory;
         };
     };
 }
@@ -176,12 +187,15 @@ interface AdhkarScreenProps {
 const AdhkarScreen: React.FC<AdhkarScreenProps> = ({ route }) => {
     const { t, i18n } = useTranslation();
     const { theme } = useTheme();
+    const navigation = useNavigation();
     const { logAdhkar } = useHabitsStore();
+    const flatListRef = useRef<FlatList>(null);
 
-    const category = route?.params?.category || 'morning';
-    const adhkarList = getAdhkarByCategory(category);
+    const initialCategory = route?.params?.category || 'morning';
+    const [activeCategory, setActiveCategory] = useState<AdhkarCategory>(initialCategory);
     const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
 
+    const adhkarList = getAdhkarByCategory(activeCategory);
     const today = getDateString(new Date());
     const isArabic = i18n.language === 'ar';
 
@@ -189,24 +203,47 @@ const AdhkarScreen: React.FC<AdhkarScreenProps> = ({ route }) => {
         setCompletedIds((prev) => new Set([...prev, dhikrId]));
     }, []);
 
+    const handleCategoryChange = (category: AdhkarCategory) => {
+        setActiveCategory(category);
+        setCompletedIds(new Set()); // Reset completed when switching categories
+        flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+    };
+
     const completedCount = completedIds.size;
     const totalCount = adhkarList.length;
     const isAllComplete = completedCount === totalCount;
 
     // Log to store when all complete
     React.useEffect(() => {
-        if (isAllComplete) {
-            logAdhkar(today, category, totalCount, totalCount);
+        if (isAllComplete && (activeCategory === 'morning' || activeCategory === 'evening')) {
+            logAdhkar(today, activeCategory, totalCount, totalCount);
         }
-    }, [isAllComplete, today, category, totalCount, logAdhkar]);
+    }, [isAllComplete, today, activeCategory, totalCount, logAdhkar]);
 
-    const getCategoryIcon = () => {
-        return category === 'morning' ? 'weather-sunny' : 'weather-night';
+    const getCategoryIcon = (category: AdhkarCategory) => {
+        switch (category) {
+            case 'morning': return 'weather-sunny';
+            case 'evening': return 'weather-night';
+            case 'general': return 'hands-pray';
+        }
     };
 
-    const getCategoryTitle = () => {
-        return category === 'morning' ? t('adhkar.morning') : t('adhkar.evening');
+    const getCategoryLabel = (category: AdhkarCategory) => {
+        switch (category) {
+            case 'morning': return isArabic ? 'الصباح' : 'Morning';
+            case 'evening': return isArabic ? 'المساء' : 'Evening';
+            case 'general': return isArabic ? 'عامة' : 'General';
+        }
     };
+
+    const renderItem = ({ item, index }: { item: Dhikr; index: number }) => (
+        <DhikrCard
+            dhikr={item}
+            index={index}
+            total={adhkarList.length}
+            onComplete={() => handleComplete(item.id)}
+        />
+    );
 
     return (
         <SafeAreaView
@@ -214,16 +251,19 @@ const AdhkarScreen: React.FC<AdhkarScreenProps> = ({ route }) => {
         >
             {/* Header */}
             <View style={styles.header}>
-                <View style={styles.headerTitleRow}>
+                <TouchableOpacity
+                    style={styles.backButton}
+                    onPress={() => navigation.goBack()}
+                >
                     <MaterialCommunityIcons
-                        name={getCategoryIcon()}
-                        size={28}
-                        color={theme.colors.primary}
+                        name="arrow-left"
+                        size={24}
+                        color={theme.colors.text}
                     />
-                    <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
-                        {getCategoryTitle()}
-                    </Text>
-                </View>
+                </TouchableOpacity>
+                <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
+                    {t('adhkar.title')}
+                </Text>
                 <View
                     style={[
                         styles.progressBadge,
@@ -240,69 +280,98 @@ const AdhkarScreen: React.FC<AdhkarScreenProps> = ({ route }) => {
                 </View>
             </View>
 
-            {/* Instructions */}
-            <View style={[styles.instructions, { backgroundColor: theme.colors.surface }]}>
-                <MaterialCommunityIcons
-                    name="gesture-tap"
-                    size={20}
-                    color={theme.colors.textSecondary}
-                />
-                <Text style={[styles.instructionsText, { color: theme.colors.textSecondary }]}>
-                    {isArabic ? 'اضغط على كل ذكر للعد' : 'Tap each dhikr to count'}
-                </Text>
-            </View>
-
-            {/* Adhkar List */}
-            <ScrollView
-                style={styles.scrollView}
-                contentContainerStyle={styles.scrollContent}
-                showsVerticalScrollIndicator={false}
-            >
-                {adhkarList.map((dhikr, index) => (
-                    <DhikrCard
-                        key={dhikr.id}
-                        dhikr={dhikr}
-                        index={index}
-                        isCompleted={completedIds.has(dhikr.id)}
-                        onComplete={() => handleComplete(dhikr.id)}
-                    />
-                ))}
-
-                {/* Completion message */}
-                {isAllComplete && (
-                    <View
+            {/* Category Tabs */}
+            <View style={[styles.tabsContainer, { borderBottomColor: theme.colors.divider }]}>
+                {adhkarCategories.map((category) => (
+                    <TouchableOpacity
+                        key={category}
                         style={[
-                            styles.completionCard,
-                            { backgroundColor: theme.colors.success.light },
+                            styles.tab,
+                            activeCategory === category && {
+                                backgroundColor: theme.colors.primaryLight,
+                                borderColor: theme.colors.primary,
+                            },
                         ]}
+                        onPress={() => handleCategoryChange(category)}
                     >
                         <MaterialCommunityIcons
-                            name="check-decagram"
-                            size={48}
-                            color={theme.colors.success.main}
+                            name={getCategoryIcon(category)}
+                            size={20}
+                            color={
+                                activeCategory === category
+                                    ? theme.colors.primary
+                                    : theme.colors.textSecondary
+                            }
                         />
                         <Text
-                            style={[styles.completionTitle, { color: theme.colors.success.dark }]}
+                            style={[
+                                styles.tabText,
+                                {
+                                    color:
+                                        activeCategory === category
+                                            ? theme.colors.primary
+                                            : theme.colors.textSecondary,
+                                },
+                            ]}
                         >
-                            {isArabic ? 'ما شاء الله!' : 'Masha Allah!'}
+                            {getCategoryLabel(category)}
                         </Text>
-                        <Text
-                            style={[styles.completionText, { color: theme.colors.success.dark }]}
-                        >
-                            {isArabic
-                                ? 'لقد أكملت جميع الأذكار'
-                                : 'You have completed all adhkar'}
-                        </Text>
-                    </View>
-                )}
+                    </TouchableOpacity>
+                ))}
+            </View>
 
-                <View style={styles.bottomSpacer} />
-            </ScrollView>
+            {/* Horizontal Carousel */}
+            <FlatList
+                ref={flatListRef}
+                data={adhkarList}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.id}
+                horizontal
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                snapToInterval={CARD_WIDTH + CARD_MARGIN * 2}
+                snapToAlignment="center"
+                decelerationRate="fast"
+                contentContainerStyle={styles.carouselContent}
+            />
+
+            {/* Completion message */}
+            {isAllComplete && (
+                <View
+                    style={[
+                        styles.completionBanner,
+                        { backgroundColor: theme.colors.success.light },
+                    ]}
+                >
+                    <MaterialCommunityIcons
+                        name="check-decagram"
+                        size={24}
+                        color={theme.colors.success.main}
+                    />
+                    <Text
+                        style={[styles.completionText, { color: theme.colors.success.dark }]}
+                    >
+                        {isArabic ? 'ما شاء الله! تم إتمام جميع الأذكار' : 'Masha Allah! All adhkar completed'}
+                    </Text>
+                </View>
+            )}
+
+            {/* Swipe hint */}
+            {!isAllComplete && (
+                <View style={styles.swipeHint}>
+                    <MaterialCommunityIcons
+                        name="gesture-swipe-horizontal"
+                        size={20}
+                        color={theme.colors.textTertiary}
+                    />
+                    <Text style={[styles.swipeHintText, { color: theme.colors.textTertiary }]}>
+                        {isArabic ? 'اسحب للتنقل' : 'Swipe to navigate'}
+                    </Text>
+                </View>
+            )}
         </SafeAreaView>
     );
 };
-
-const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
     container: {
@@ -310,69 +379,81 @@ const styles = StyleSheet.create({
     },
     header: {
         flexDirection: 'row',
+        alignItems: 'center',
         justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 20,
-        paddingVertical: 16,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
     },
-    headerTitleRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 10,
+    backButton: {
+        padding: 8,
     },
     headerTitle: {
-        fontSize: 24,
-        fontWeight: '700',
-    },
-    progressBadge: {
-        paddingHorizontal: 14,
-        paddingVertical: 8,
-        borderRadius: 20,
-    },
-    progressText: {
-        fontSize: 14,
+        fontSize: 20,
         fontWeight: '600',
     },
-    instructions: {
+    progressBadge: {
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 16,
+    },
+    progressText: {
+        fontSize: 13,
+        fontWeight: '600',
+    },
+    // Tabs
+    tabsContainer: {
+        flexDirection: 'row',
+        paddingHorizontal: 16,
+        paddingBottom: 12,
+        gap: 8,
+        borderBottomWidth: 1,
+    },
+    tab: {
+        flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 8,
-        marginHorizontal: 16,
+        gap: 6,
         paddingVertical: 10,
         borderRadius: 12,
-        marginBottom: 8,
+        borderWidth: 1,
+        borderColor: 'transparent',
     },
-    instructionsText: {
+    tabText: {
         fontSize: 14,
+        fontWeight: '600',
     },
-    scrollView: {
-        flex: 1,
+    // Carousel
+    carouselContent: {
+        paddingHorizontal: 24,
+        paddingVertical: 16,
+        alignItems: 'flex-start',
     },
-    scrollContent: {
-        padding: 16,
-        gap: 16,
-    },
+    // Card
     dhikrCard: {
-        borderRadius: 16,
+        marginHorizontal: CARD_MARGIN,
+        borderRadius: 20,
         padding: 20,
         borderWidth: 1,
+        // Shadow
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 12,
+        elevation: 4,
     },
-    counterRow: {
+    cardHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 16,
     },
     indexBadge: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        alignItems: 'center',
-        justifyContent: 'center',
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 12,
     },
     indexText: {
-        fontSize: 14,
+        fontSize: 13,
         fontWeight: '600',
     },
     repeatInfo: {
@@ -382,11 +463,11 @@ const styles = StyleSheet.create({
     },
     countText: {
         fontSize: 16,
-        fontWeight: '600',
+        fontWeight: '700',
     },
     arabicText: {
         fontSize: 22,
-        lineHeight: 40,
+        lineHeight: 42,
         fontFamily: 'System',
         marginBottom: 16,
     },
@@ -411,36 +492,45 @@ const styles = StyleSheet.create({
         fontSize: 12,
     },
     progressTrack: {
-        height: 4,
-        borderRadius: 2,
+        height: 6,
+        borderRadius: 3,
         overflow: 'hidden',
         marginTop: 8,
     },
     progressFill: {
         height: '100%',
-        borderRadius: 2,
+        borderRadius: 3,
     },
     tapHint: {
         fontSize: 12,
         textAlign: 'center',
-        marginTop: 10,
+        marginTop: 12,
     },
-    completionCard: {
-        borderRadius: 20,
-        padding: 32,
+    // Completion
+    completionBanner: {
+        flexDirection: 'row',
         alignItems: 'center',
-        gap: 12,
-    },
-    completionTitle: {
-        fontSize: 24,
-        fontWeight: '700',
+        justifyContent: 'center',
+        gap: 8,
+        marginHorizontal: 16,
+        marginBottom: 16,
+        paddingVertical: 14,
+        borderRadius: 14,
     },
     completionText: {
-        fontSize: 16,
-        textAlign: 'center',
+        fontSize: 15,
+        fontWeight: '600',
     },
-    bottomSpacer: {
-        height: 40,
+    // Swipe hint
+    swipeHint: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 6,
+        paddingBottom: 16,
+    },
+    swipeHintText: {
+        fontSize: 13,
     },
 });
 

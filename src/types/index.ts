@@ -141,7 +141,7 @@ export interface WeeklyInsights {
 export type RootStackParamList = {
     Onboarding: undefined;
     Main: undefined;
-    Adhkar: { category?: 'morning' | 'evening' };
+    Adhkar: { category?: 'morning' | 'evening' | 'general' };
     Tahajjud: undefined;
     Quran: undefined;
 };
