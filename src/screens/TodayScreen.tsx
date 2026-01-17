@@ -1,5 +1,5 @@
 // Today Screen - Main Dashboard
-import React from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
@@ -16,6 +16,7 @@ import { useTheme } from '../context';
 import { useSalatStore, useHabitsStore } from '../store';
 import { getDateString, formatNumber } from '../utils';
 import { SalatName, SalatStatus, RootStackParamList } from '../types';
+import { ResetModal } from '../components';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -24,6 +25,7 @@ const SalatCard: React.FC = () => {
     const { t, i18n } = useTranslation();
     const { theme } = useTheme();
     const { logPrayer, getTodayLog, getPrayerStreak } = useSalatStore();
+    const [showReset, setShowReset] = useState(false);
 
     const todayLog = getTodayLog();
     const streak = getPrayerStreak();
@@ -80,14 +82,19 @@ const SalatCard: React.FC = () => {
                         {t('salat.title')}
                     </Text>
                 </View>
-                {streak > 0 && (
-                    <View style={[styles.streakBadge, { backgroundColor: theme.colors.primary }]}>
-                        <MaterialCommunityIcons name="fire" size={14} color={theme.colors.onPrimary} />
-                        <Text style={[styles.streakText, { color: theme.colors.onPrimary }]}>
-                            {formatNumber(streak, i18n.language)}
-                        </Text>
-                    </View>
-                )}
+                <View style={styles.cardActions}>
+                    {streak > 0 && (
+                        <View style={[styles.streakBadge, { backgroundColor: theme.colors.primary }]}>
+                            <MaterialCommunityIcons name="fire" size={14} color={theme.colors.onPrimary} />
+                            <Text style={[styles.streakText, { color: theme.colors.onPrimary }]}>
+                                {formatNumber(streak, i18n.language)}
+                            </Text>
+                        </View>
+                    )}
+                    <TouchableOpacity onPress={() => setShowReset(true)} style={styles.menuButton}>
+                        <MaterialCommunityIcons name="dots-vertical" size={20} color={theme.colors.textSecondary} />
+                    </TouchableOpacity>
+                </View>
             </View>
 
             <View style={styles.prayerGrid}>
@@ -122,6 +129,13 @@ const SalatCard: React.FC = () => {
             <Text style={[styles.cardSubtext, { color: theme.colors.textSecondary }]}>
                 {formatNumber(completedCount, i18n.language)}/5 {t('salat.prayersCompleted')}
             </Text>
+
+            <ResetModal
+                visible={showReset}
+                onClose={() => setShowReset(false)}
+                habitType="salat"
+                habitName={t('salat.title')}
+            />
         </View>
     );
 };
@@ -132,6 +146,7 @@ const AdhkarCard: React.FC = () => {
     const { theme } = useTheme();
     const navigation = useNavigation<NavigationProp>();
     const { getAdhkarLog } = useHabitsStore();
+    const [showReset, setShowReset] = useState(false);
 
     const today = getDateString(new Date());
     const morningLog = getAdhkarLog(today, 'morning');
@@ -155,6 +170,9 @@ const AdhkarCard: React.FC = () => {
                         {t('adhkar.title')}
                     </Text>
                 </View>
+                <TouchableOpacity onPress={() => setShowReset(true)} style={styles.menuButton}>
+                    <MaterialCommunityIcons name="dots-vertical" size={20} color={theme.colors.textSecondary} />
+                </TouchableOpacity>
             </View>
 
             <View style={styles.adhkarRow}>
@@ -198,6 +216,13 @@ const AdhkarCard: React.FC = () => {
                     )}
                 </TouchableOpacity>
             </View>
+
+            <ResetModal
+                visible={showReset}
+                onClose={() => setShowReset(false)}
+                habitType="adhkar-morning"
+                habitName={t('adhkar.title')}
+            />
         </View>
     );
 };
@@ -208,6 +233,7 @@ const QuranCard: React.FC = () => {
     const { theme } = useTheme();
     const navigation = useNavigation<NavigationProp>();
     const { logQuranReading, getTodayQuranLog, getWeeklyQuranPages } = useHabitsStore();
+    const [showReset, setShowReset] = useState(false);
 
     const todayLog = getTodayQuranLog();
     const weeklyPages = getWeeklyQuranPages();
@@ -233,9 +259,14 @@ const QuranCard: React.FC = () => {
                         {t('quran.title')}
                     </Text>
                 </View>
-                <Text style={[styles.weeklyCount, { color: theme.colors.textSecondary }]}>
-                    {formatNumber(weeklyPages, i18n.language)} {t('quran.pages')} this week
-                </Text>
+                <View style={styles.cardActions}>
+                    <Text style={[styles.weeklyCount, { color: theme.colors.textSecondary }]}>
+                        {formatNumber(weeklyPages, i18n.language)} {t('quran.pages')} this week
+                    </Text>
+                    <TouchableOpacity onPress={() => setShowReset(true)} style={styles.menuButton}>
+                        <MaterialCommunityIcons name="dots-vertical" size={20} color={theme.colors.textSecondary} />
+                    </TouchableOpacity>
+                </View>
             </View>
 
             <View style={styles.quranContent}>
@@ -273,6 +304,13 @@ const QuranCard: React.FC = () => {
                 </Text>
                 <MaterialCommunityIcons name="chevron-right" size={20} color={theme.colors.primary} />
             </TouchableOpacity>
+
+            <ResetModal
+                visible={showReset}
+                onClose={() => setShowReset(false)}
+                habitType="quran"
+                habitName={t('quran.title')}
+            />
         </View>
     );
 };
@@ -282,6 +320,7 @@ const CharityCard: React.FC = () => {
     const { t, i18n } = useTranslation();
     const { theme } = useTheme();
     const { logCharity, getWeeklyCharityCount } = useHabitsStore();
+    const [showReset, setShowReset] = useState(false);
 
     const weeklyCount = getWeeklyCharityCount();
 
@@ -305,9 +344,14 @@ const CharityCard: React.FC = () => {
                         {t('charity.sadaqah')}
                     </Text>
                 </View>
-                <Text style={[styles.weeklyCount, { color: theme.colors.textSecondary }]}>
-                    {formatNumber(weeklyCount, i18n.language)} {t('charity.thisWeek')}
-                </Text>
+                <View style={styles.cardActions}>
+                    <Text style={[styles.weeklyCount, { color: theme.colors.textSecondary }]}>
+                        {formatNumber(weeklyCount, i18n.language)} {t('charity.thisWeek')}
+                    </Text>
+                    <TouchableOpacity onPress={() => setShowReset(true)} style={styles.menuButton}>
+                        <MaterialCommunityIcons name="dots-vertical" size={20} color={theme.colors.textSecondary} />
+                    </TouchableOpacity>
+                </View>
             </View>
 
             <View style={styles.charityGrid}>
@@ -324,6 +368,13 @@ const CharityCard: React.FC = () => {
                     </TouchableOpacity>
                 ))}
             </View>
+
+            <ResetModal
+                visible={showReset}
+                onClose={() => setShowReset(false)}
+                habitType="charity"
+                habitName={t('charity.sadaqah')}
+            />
         </View>
     );
 };
@@ -334,6 +385,7 @@ const TahajjudCard: React.FC = () => {
     const { theme } = useTheme();
     const navigation = useNavigation<NavigationProp>();
     const { logTahajjud, getTodayTahajjud, getWeeklyTahajjudNights } = useHabitsStore();
+    const [showReset, setShowReset] = useState(false);
 
     const todayLog = getTodayTahajjud();
     const weeklyNights = getWeeklyTahajjudNights();
@@ -355,9 +407,14 @@ const TahajjudCard: React.FC = () => {
                         {t('tahajjud.title')}
                     </Text>
                 </View>
-                <Text style={[styles.weeklyCount, { color: theme.colors.textSecondary }]}>
-                    {formatNumber(weeklyNights, i18n.language)} {t('tahajjud.nights')} {t('tahajjud.thisWeek')}
-                </Text>
+                <View style={styles.cardActions}>
+                    <Text style={[styles.weeklyCount, { color: theme.colors.textSecondary }]}>
+                        {formatNumber(weeklyNights, i18n.language)} {t('tahajjud.nights')} {t('tahajjud.thisWeek')}
+                    </Text>
+                    <TouchableOpacity onPress={() => setShowReset(true)} style={styles.menuButton}>
+                        <MaterialCommunityIcons name="dots-vertical" size={20} color={theme.colors.textSecondary} />
+                    </TouchableOpacity>
+                </View>
             </View>
 
             <TouchableOpacity
@@ -398,6 +455,13 @@ const TahajjudCard: React.FC = () => {
                 </Text>
                 <MaterialCommunityIcons name="chevron-right" size={18} color={theme.colors.primary} />
             </TouchableOpacity>
+
+            <ResetModal
+                visible={showReset}
+                onClose={() => setShowReset(false)}
+                habitType="tahajjud"
+                habitName={t('tahajjud.title')}
+            />
         </View>
     );
 };
@@ -415,10 +479,6 @@ const CustomHabitsCard: React.FC = () => {
 
     const todayHabits = getTodayCustomHabits();
     const today = getDateString(new Date());
-
-    if (todayHabits.length === 0) {
-        return null; // Don't show card if no habits scheduled
-    }
 
     const handleToggleHabit = (habitId: string, targetCount: number) => {
         const log = getCustomHabitLog(today, habitId);
@@ -439,7 +499,7 @@ const CustomHabitsCard: React.FC = () => {
                         <MaterialCommunityIcons name="checkbox-multiple-marked" size={22} color="#8B5CF6" />
                     </View>
                     <Text style={[styles.cardTitle, { color: theme.colors.text }]}>
-                        {isArabic ? 'العادات' : 'Habits'}
+                        {isArabic ? 'العادات المخصصة' : 'Custom Habits'}
                     </Text>
                 </View>
                 <TouchableOpacity onPress={handleOpenCustomHabits}>
@@ -447,47 +507,60 @@ const CustomHabitsCard: React.FC = () => {
                 </TouchableOpacity>
             </View>
 
-            {/* Habit Items */}
-            {todayHabits.map((habit) => {
-                const log = getCustomHabitLog(today, habit.id);
-                const isComplete = (log?.count || 0) >= habit.targetCount;
-                const habitName = isArabic ? (habit.nameAr || habit.name) : habit.name;
+            {/* Empty State */}
+            {todayHabits.length === 0 ? (
+                <TouchableOpacity
+                    style={[styles.emptyHabitState, { backgroundColor: theme.colors.background, borderColor: theme.colors.border }]}
+                    onPress={handleOpenCustomHabits}
+                >
+                    <MaterialCommunityIcons name="plus-circle-outline" size={24} color={theme.colors.textSecondary} />
+                    <Text style={[styles.emptyHabitText, { color: theme.colors.textSecondary }]}>
+                        {isArabic ? 'أضف عادتك الأولى' : 'Add your first habit'}
+                    </Text>
+                </TouchableOpacity>
+            ) : (
+                /* Habit Items */
+                todayHabits.map((habit) => {
+                    const log = getCustomHabitLog(today, habit.id);
+                    const isComplete = (log?.count || 0) >= habit.targetCount;
+                    const habitName = isArabic ? (habit.nameAr || habit.name) : habit.name;
 
-                return (
-                    <TouchableOpacity
-                        key={habit.id}
-                        style={[
-                            styles.customHabitItem,
-                            {
-                                backgroundColor: isComplete ? habit.color + '15' : theme.colors.background,
-                                borderColor: isComplete ? habit.color : theme.colors.border,
-                            },
-                        ]}
-                        onPress={() => handleToggleHabit(habit.id, habit.targetCount)}
-                    >
-                        <View style={[styles.customHabitIcon, { backgroundColor: habit.color + '20' }]}>
-                            <MaterialCommunityIcons
-                                name={habit.icon as any}
-                                size={20}
-                                color={habit.color}
-                            />
-                        </View>
-                        <Text
-                            style={[styles.customHabitName, { color: theme.colors.text }]}
-                            numberOfLines={1}
+                    return (
+                        <TouchableOpacity
+                            key={habit.id}
+                            style={[
+                                styles.customHabitItem,
+                                {
+                                    backgroundColor: isComplete ? habit.color + '15' : theme.colors.background,
+                                    borderColor: isComplete ? habit.color : theme.colors.border,
+                                },
+                            ]}
+                            onPress={() => handleToggleHabit(habit.id, habit.targetCount)}
                         >
-                            {habitName}
-                        </Text>
-                        {isComplete && (
-                            <MaterialCommunityIcons
-                                name="check-circle"
-                                size={20}
-                                color={habit.color}
-                            />
-                        )}
-                    </TouchableOpacity>
-                );
-            })}
+                            <View style={[styles.customHabitIcon, { backgroundColor: habit.color + '20' }]}>
+                                <MaterialCommunityIcons
+                                    name={habit.icon as any}
+                                    size={20}
+                                    color={habit.color}
+                                />
+                            </View>
+                            <Text
+                                style={[styles.customHabitName, { color: theme.colors.text }]}
+                                numberOfLines={1}
+                            >
+                                {habitName}
+                            </Text>
+                            {isComplete && (
+                                <MaterialCommunityIcons
+                                    name="check-circle"
+                                    size={20}
+                                    color={habit.color}
+                                />
+                            )}
+                        </TouchableOpacity>
+                    );
+                })
+            )}
         </View>
     );
 };
@@ -780,6 +853,30 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 15,
         fontWeight: '500',
+    },
+    emptyHabitState: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 20,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderStyle: 'dashed',
+        marginTop: 10,
+        gap: 10,
+    },
+    emptyHabitText: {
+        fontSize: 14,
+        fontWeight: '500',
+    },
+    // Reset menu styles
+    cardActions: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+    },
+    menuButton: {
+        padding: 4,
     },
 });
 

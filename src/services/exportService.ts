@@ -19,6 +19,8 @@ export interface DayData {
     quranMinutes: number;
     charityCount: number;
     tahajjud: boolean;
+    customHabitsCompleted: number;
+    customHabitsTotal: number;
 }
 
 export interface MonthlyData {
@@ -36,6 +38,8 @@ export interface MonthlyData {
         totalQuranMinutes: number;
         totalCharity: number;
         tahajjudNights: number;
+        customHabitsCompleted: number;
+        customHabitsTotal: number;
     };
 }
 
@@ -68,6 +72,8 @@ export const gatherMonthlyData = (
         quranLogs: Record<string, any>;
         charityLogs: any[];
         tahajjudLogs: Record<string, any>;
+        customHabits?: any[];
+        customHabitLogs?: any[];
     },
     locale: string = 'en'
 ): MonthlyData => {
@@ -83,6 +89,8 @@ export const gatherMonthlyData = (
     let totalQuranMinutes = 0;
     let totalCharity = 0;
     let tahajjudNights = 0;
+    let totalCustomCompleted = 0;
+    let totalCustomHabits = 0;
 
     for (const date of dates) {
         const salatLog = salatLogs[date];
@@ -135,6 +143,21 @@ export const gatherMonthlyData = (
         const didTahajjud = tahajjudLog?.completed || false;
         if (didTahajjud) tahajjudNights++;
 
+        // Custom habits
+        const activeCustomHabits = (habitsState.customHabits || []).filter((h: any) => h.isActive);
+        const customLogs = habitsState.customHabitLogs || [];
+        let dayCustomCompleted = 0;
+        const dayCustomTotal = activeCustomHabits.length;
+
+        activeCustomHabits.forEach((habit: any) => {
+            const log = customLogs.find((l: any) => l.habitId === habit.id && l.date === date);
+            if (log && (log.count >= habit.targetCount || log.completed)) {
+                dayCustomCompleted++;
+            }
+        });
+        totalCustomCompleted += dayCustomCompleted;
+        totalCustomHabits += dayCustomTotal;
+
         days.push({
             date,
             ...dayPrayers,
@@ -144,6 +167,8 @@ export const gatherMonthlyData = (
             quranMinutes: minutes,
             charityCount: charityForDay,
             tahajjud: didTahajjud,
+            customHabitsCompleted: dayCustomCompleted,
+            customHabitsTotal: dayCustomTotal,
         });
     }
 
@@ -162,6 +187,8 @@ export const gatherMonthlyData = (
             totalQuranMinutes,
             totalCharity,
             tahajjudNights,
+            customHabitsCompleted: totalCustomCompleted,
+            customHabitsTotal: totalCustomHabits,
         },
     };
 };
@@ -181,6 +208,7 @@ export const generateCSV = (data: MonthlyData): string => {
         'Quran Minutes',
         'Charity',
         'Tahajjud',
+        'Custom Habits',
     ];
 
     const rows = data.days.map(day => [
@@ -196,6 +224,7 @@ export const generateCSV = (data: MonthlyData): string => {
         day.quranMinutes.toString(),
         day.charityCount.toString(),
         day.tahajjud ? 'Yes' : 'No',
+        `${day.customHabitsCompleted}/${day.customHabitsTotal}`,
     ]);
 
     // Add summary row
@@ -209,6 +238,7 @@ export const generateCSV = (data: MonthlyData): string => {
     rows.push(['Quran Pages', data.summary.totalQuranPages.toString()]);
     rows.push(['Charity Acts', data.summary.totalCharity.toString()]);
     rows.push(['Tahajjud Nights', data.summary.tahajjudNights.toString()]);
+    rows.push(['Custom Habits', `${data.summary.customHabitsCompleted}/${data.summary.customHabitsTotal}`]);
 
     const csvContent = [
         headers.join(','),
@@ -234,6 +264,7 @@ export const generatePDFHTML = (data: MonthlyData): string => {
       <td>${day.quranPages}</td>
       <td>${day.charityCount}</td>
       <td>${day.tahajjud ? 'Y' : '-'}</td>
+      <td>${day.customHabitsCompleted}/${day.customHabitsTotal}</td>
     </tr>
   `).join('');
 
@@ -337,6 +368,10 @@ export const generatePDFHTML = (data: MonthlyData): string => {
       <div class="stat-value">${summary.tahajjudNights}</div>
       <div class="stat-label">Tahajjud Nights</div>
     </div>
+    <div class="stat-card">
+      <div class="stat-value">${summary.customHabitsCompleted}/${summary.customHabitsTotal}</div>
+      <div class="stat-label">Custom Habits</div>
+    </div>
   </div>
   
   <h2>Daily Breakdown</h2>
@@ -353,6 +388,7 @@ export const generatePDFHTML = (data: MonthlyData): string => {
         <th>Quran</th>
         <th>Charity</th>
         <th>Tahajjud</th>
+        <th>Custom</th>
       </tr>
     </thead>
     <tbody>

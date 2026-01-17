@@ -5,14 +5,17 @@ import {
     Text,
     StyleSheet,
     ScrollView,
+    TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../context';
 import { useSalatStore, useHabitsStore } from '../store';
 import { getWeekDates, getDayAbbr, parseDate, formatNumber, isToday } from '../utils';
 import { SalatName, SalatStatus } from '../types';
+import CustomHabitsScreen from './CustomHabitsScreen';
 
 const TrackScreen: React.FC = () => {
     const { t, i18n } = useTranslation();
@@ -197,6 +200,23 @@ const TrackScreen: React.FC = () => {
                     </View>
                 </View>
 
+                {/* Custom Habits Section */}
+                <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
+                    <View style={styles.sectionHeader}>
+                        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+                            {i18n.language === 'ar' ? 'العادات المخصصة' : 'Custom Habits'}
+                        </Text>
+                    </View>
+                    <Text style={[styles.sectionDesc, { color: theme.colors.textSecondary }]}>
+                        {i18n.language === 'ar'
+                            ? 'أنشئ عادات مخصصة وتتبعها يومياً'
+                            : 'Create custom habits and track them daily'}
+                    </Text>
+                </View>
+
+                {/* Render CustomHabitsScreen inline */}
+                <CustomHabitsScreen />
+
                 <View style={styles.bottomSpacer} />
             </ScrollView>
         </SafeAreaView>
@@ -336,6 +356,10 @@ const styles = StyleSheet.create({
     },
     bottomSpacer: {
         height: 24,
+    },
+    sectionDesc: {
+        fontSize: 13,
+        marginTop: 4,
     },
 });
 
