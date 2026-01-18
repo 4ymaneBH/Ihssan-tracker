@@ -58,14 +58,14 @@ export interface AdhkarItem {
     textTranslation?: string;
     count: number;
     targetCount: number;
-    category: 'morning' | 'evening' | 'custom';
+    category: 'morning' | 'evening' | 'general' | 'sleep' | 'custom';
 }
 
 // Adhkar log
 export interface AdhkarLog {
     id: string;
     date: string;
-    category: 'morning' | 'evening';
+    category: 'morning' | 'evening' | 'general' | 'sleep';
     itemsCompleted: number;
     totalItems: number;
     createdAt: number;
@@ -141,7 +141,7 @@ export interface WeeklyInsights {
 export type RootStackParamList = {
     Onboarding: undefined;
     Main: undefined;
-    Adhkar: { category?: 'morning' | 'evening' | 'general' };
+    Adhkar: { category?: 'morning' | 'evening' | 'general' | 'sleep' };
     Tahajjud: undefined;
     Quran: undefined;
     Profile: undefined;

@@ -7,7 +7,7 @@ export interface Dhikr {
     transliteration: string;
     translation: string;
     repeatCount: number;
-    category: 'morning' | 'evening' | 'general' | 'both';
+    category: 'morning' | 'evening' | 'general' | 'sleep' | 'both';
     reference?: string;
 }
 
@@ -285,18 +285,62 @@ export const generalAdhkar: Dhikr[] = [
     },
 ];
 
-// Get adhkar by category - updated to support 'general'
-export const getAdhkarByCategory = (category: 'morning' | 'evening' | 'general'): Dhikr[] => {
+// Sleep Adhkar (أذكار النّوم)
+export const sleepAdhkar: Dhikr[] = [
+    {
+        id: 'sleep-1',
+        arabic: 'بِسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا',
+        transliteration: 'Bismika Allahumma amutu wa ahya.',
+        translation: 'In Your Name, O Allah, I die and I live.',
+        repeatCount: 1,
+        category: 'sleep',
+        reference: 'Bukhari',
+    },
+    {
+        id: 'sleep-2',
+        arabic: 'الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا، وَكَفَانَا، وَآوَانَا، فَكَمْ مِمَّنْ لاَ كَافِيَ لَهُ وَلاَ مُؤْوِيَ',
+        transliteration: 'Alhamdu lillahil-ladhi at\'amana wa saqana, wa kafana, wa awana, fakam mimman la kafiya lahu wa la mu\'wi.',
+        translation: 'Praise is to Allah Who has provided us with food and drink, sufficed us and gave us an abode, for how many are there with no provision and no home.',
+        repeatCount: 1,
+        category: 'sleep',
+        reference: 'Muslim',
+    },
+    ...morningAdhkar.filter(d => d.id === 'morning-1'), // Ayat al-Kursi
+    ...morningAdhkar.filter(d => ['morning-2', 'morning-3', 'morning-4'].includes(d.id)), // 3 Quls
+    {
+        id: 'sleep-3',
+        arabic: 'سُبْحَانَ اللهِ (33)، الْحَمْدُ لِلَّهِ (33)، اللهُ أَكْبَرُ (34)',
+        transliteration: 'SubhanAllah (33), Alhamdulillah (33), Allahu Akbar (34)',
+        translation: 'Glory be to Allah (33), Praise be to Allah (33), Allah is the Greatest (34)',
+        repeatCount: 1,
+        category: 'sleep',
+        reference: 'Bukhari & Muslim (Tasbih Fatimah)',
+    },
+    {
+        id: 'sleep-4',
+        arabic: 'اللَّهُمَّ أَسْلَمْتُ نَفْسِي إِلَيْكَ، وَفَوَّضْتُ أَمْرِي إِلَيْكَ، وَوَجَّهْتُ وَجْهِي إِلَيْكَ، وَأَلْجَأْتُ ظَهْرِي إِلَيْكَ، رَغْبَةً وَرَهْبَةً إِلَيْكَ، لاَ مَلْجَأَ وَلاَ مَنْجَا مِنْكَ إِلاَّ إِلَيْكَ، آمَنْتُ بِكِتَابِكَ الَّذِي أَنْزَلْتَ، وَبِنَبِيِّكَ الَّذِي أَرْسَلْتَ',
+        transliteration: 'Allahumma aslamtu nafsi ilayk, wa fawwad-tu amri ilayk, wa wajjahtu wajhi ilayk, wa alja\'tu zahri ilayk, raghbatan wa rahbatan ilayk, la malja\'a wa la manja minka illa ilayk. Amantu bi-kitabikal-ladhi anzalt, wa bi-nabiyyikal-ladhi arsalt.',
+        translation: 'O Allah, I have submitted myself to You, entrusted my affair to You, turned my face to You, and retreated to You, in hope and fear of You. There is no refuge and no escape from You except to You. I believe in Your Book which You have revealed and in Your Prophet whom You have sent.',
+        repeatCount: 1,
+        category: 'sleep',
+        reference: 'Bukhari & Muslim',
+    },
+];
+
+// Get adhkar by category - updated to support 'general' and 'sleep'
+export const getAdhkarByCategory = (category: 'morning' | 'evening' | 'general' | 'sleep'): Dhikr[] => {
     if (category === 'morning') return morningAdhkar;
     if (category === 'evening') return eveningAdhkar;
+    if (category === 'sleep') return sleepAdhkar;
     return generalAdhkar;
 };
 
 // Get total adhkar count for a category
-export const getAdhkarCount = (category: 'morning' | 'evening' | 'general'): number => {
+export const getAdhkarCount = (category: 'morning' | 'evening' | 'general' | 'sleep'): number => {
     return getAdhkarByCategory(category).length;
 };
 
 // Get all categories
-export const adhkarCategories = ['morning', 'evening', 'general'] as const;
+export const adhkarCategories = ['morning', 'evening', 'sleep', 'general'] as const;
 export type AdhkarCategory = typeof adhkarCategories[number];
+

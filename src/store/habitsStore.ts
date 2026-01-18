@@ -31,8 +31,8 @@ interface HabitsState {
     customHabitLogs: CustomHabitLog[];
 
     // Adhkar actions
-    logAdhkar: (date: string, category: 'morning' | 'evening', itemsCompleted: number, totalItems: number) => void;
-    getAdhkarLog: (date: string, category: 'morning' | 'evening') => AdhkarLog | null;
+    logAdhkar: (date: string, category: 'morning' | 'evening' | 'general' | 'sleep', itemsCompleted: number, totalItems: number) => void;
+    getAdhkarLog: (date: string, category: 'morning' | 'evening' | 'general' | 'sleep') => AdhkarLog | null;
 
     // Qur'an actions
     logQuranReading: (pages: number, minutes?: number, notes?: string) => void;
@@ -59,7 +59,7 @@ interface HabitsState {
     getTodayCustomHabits: () => CustomHabit[];
 
     // Reset actions
-    resetAdhkarToday: (category: 'morning' | 'evening') => void;
+    resetAdhkarToday: (category: 'morning' | 'evening' | 'general' | 'sleep') => void;
     resetAdhkarHistory: () => void;
     resetQuranToday: () => void;
     resetQuranHistory: () => void;

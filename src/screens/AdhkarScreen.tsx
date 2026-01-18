@@ -224,7 +224,7 @@ const AdhkarScreen: React.FC<AdhkarScreenProps> = ({ route }) => {
 
     // Log to store when all complete
     React.useEffect(() => {
-        if (isAllComplete && (activeCategory === 'morning' || activeCategory === 'evening')) {
+        if (isAllComplete) {
             logAdhkar(today, activeCategory, totalCount, totalCount);
         }
     }, [isAllComplete, today, activeCategory, totalCount, logAdhkar]);
@@ -233,6 +233,7 @@ const AdhkarScreen: React.FC<AdhkarScreenProps> = ({ route }) => {
         switch (category) {
             case 'morning': return 'weather-sunny';
             case 'evening': return 'weather-night';
+            case 'sleep': return 'bed';
             case 'general': return 'hands-pray';
         }
     };
@@ -241,6 +242,7 @@ const AdhkarScreen: React.FC<AdhkarScreenProps> = ({ route }) => {
         switch (category) {
             case 'morning': return isArabic ? 'الصباح' : 'Morning';
             case 'evening': return isArabic ? 'المساء' : 'Evening';
+            case 'sleep': return isArabic ? 'النّوم' : 'Sleep';
             case 'general': return isArabic ? 'عامة' : 'General';
         }
     };
