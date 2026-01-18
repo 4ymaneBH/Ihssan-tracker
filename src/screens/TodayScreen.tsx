@@ -14,7 +14,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../context';
-import { useSalatStore, useHabitsStore } from '../store';
+import { useSalatStore, useHabitsStore, useUserPreferencesStore } from '../store';
 import { getDateString, formatNumber } from '../utils';
 import { SalatName, SalatStatus, RootStackParamList } from '../types';
 import { ResetModal, AppCard, PrayerPill, QuickActionButton } from '../components';
@@ -266,11 +266,12 @@ const QuranCard: React.FC = () => {
     const { theme } = useTheme();
     const navigation = useNavigation<NavigationProp>();
     const { logQuranReading, getTodayQuranLog, getWeeklyQuranPages } = useHabitsStore();
+    const { goals } = useUserPreferencesStore();
     const [showReset, setShowReset] = useState(false);
 
     const todayLog = getTodayQuranLog();
     const weeklyPages = getWeeklyQuranPages();
-    const weeklyGoal = 20; // Default goal
+    const weeklyGoal = goals.quranPagesPerDay * 7; // Calculate weekly goal from daily goal
     const isArabic = i18n.language === 'ar';
 
     const handleAddPages = (pages: number) => {
@@ -366,9 +367,11 @@ const CharityCard: React.FC = () => {
     const { t, i18n } = useTranslation();
     const { theme } = useTheme();
     const { logCharity, getWeeklyCharityCount } = useHabitsStore();
+    const { goals } = useUserPreferencesStore();
     const [showReset, setShowReset] = useState(false);
 
     const weeklyCount = getWeeklyCharityCount();
+    const weeklyGoal = goals.charityPerWeek;
     const isArabic = i18n.language === 'ar';
 
     const charityTypes = [
@@ -379,8 +382,8 @@ const CharityCard: React.FC = () => {
     ];
 
     const weeklyText = isArabic
-        ? `${formatNumber(weeklyCount, i18n.language)} ${t('charity.thisWeek')}`
-        : `${formatNumber(weeklyCount, i18n.language)} ${t('charity.thisWeek')}`;
+        ? `${formatNumber(weeklyCount, i18n.language)}/${formatNumber(weeklyGoal, i18n.language)} ${t('charity.thisWeek')}`
+        : `${formatNumber(weeklyCount, i18n.language)}/${formatNumber(weeklyGoal, i18n.language)} ${t('charity.thisWeek')}`;
 
     return (
         <AppCard backgroundColor={theme.colors.cards.charity}>
@@ -432,10 +435,12 @@ const TahajjudCard: React.FC = () => {
     const { theme } = useTheme();
     const navigation = useNavigation<NavigationProp>();
     const { logTahajjud, getTodayTahajjud, getWeeklyTahajjudNights } = useHabitsStore();
+    const { goals } = useUserPreferencesStore();
     const [showReset, setShowReset] = useState(false);
 
     const todayLog = getTodayTahajjud();
     const weeklyNights = getWeeklyTahajjudNights();
+    const weeklyGoal = goals.tahajjudNightsPerWeek;
     const isArabic = i18n.language === 'ar';
 
     const handleOpenTahajjudScreen = () => {
@@ -443,8 +448,8 @@ const TahajjudCard: React.FC = () => {
     };
 
     const weeklyText = isArabic
-        ? `${formatNumber(weeklyNights, i18n.language)} ${t('tahajjud.nights')} ${t('tahajjud.thisWeek')}`
-        : `${formatNumber(weeklyNights, i18n.language)} ${t('tahajjud.nights')} ${t('tahajjud.thisWeek')}`;
+        ? `${formatNumber(weeklyNights, i18n.language)}/${formatNumber(weeklyGoal, i18n.language)} ${t('tahajjud.nights')} ${t('tahajjud.thisWeek')}`
+        : `${formatNumber(weeklyNights, i18n.language)}/${formatNumber(weeklyGoal, i18n.language)} ${t('tahajjud.nights')} ${t('tahajjud.thisWeek')}`;
 
     return (
         <AppCard backgroundColor={theme.colors.cards.tahajjud}>

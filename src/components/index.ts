@@ -9,3 +9,4 @@ export { HabitType } from './ResetModal';
 export { AppCard } from './AppCard';
 export { PrayerPill } from './PrayerPill';
 export { QuickActionButton } from './QuickActionButton';
+export { GoalsModal } from './GoalsModal';

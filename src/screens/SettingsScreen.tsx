@@ -1,5 +1,5 @@
 // Settings Screen
-import React from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context';
 import { useUserPreferencesStore } from '../store';
+import { GoalsModal } from '../components';
 
 interface SettingRowProps {
     iconName: string;
@@ -79,10 +80,12 @@ const SettingRow: React.FC<SettingRowProps> = ({
 const SettingsScreen: React.FC = () => {
     const { t, i18n } = useTranslation();
     const { theme } = useTheme();
+    const [showGoalsModal, setShowGoalsModal] = useState(false);
     const {
         language,
         notificationsEnabled,
         hideCharityAmounts,
+        goals,
         setLanguage,
         setTheme,
         setNotificationsEnabled,
@@ -90,6 +93,7 @@ const SettingsScreen: React.FC = () => {
     } = useUserPreferencesStore();
 
     const userTheme = useUserPreferencesStore((state) => state.theme);
+    const isArabic = i18n.language === 'ar';
 
     const handleLanguageChange = () => {
         Alert.alert(
@@ -179,6 +183,34 @@ const SettingsScreen: React.FC = () => {
                     />
                 </View>
 
+                {/* Goals Section - Premium Card */}
+                <TouchableOpacity
+                    style={[styles.goalsCard, { backgroundColor: theme.colors.surface }]}
+                    onPress={() => setShowGoalsModal(true)}
+                    activeOpacity={0.7}
+                >
+                    <View style={styles.goalsCardContent}>
+                        <View style={[styles.goalsIconContainer, { backgroundColor: theme.colors.primary + '15' }]}>
+                            <MaterialCommunityIcons name="target" size={28} color={theme.colors.primary} />
+                        </View>
+                        <View style={styles.goalsTextContainer}>
+                            <Text style={[styles.goalsTitle, { color: theme.colors.text }]}>
+                                {isArabic ? 'أهدافك الأسبوعية' : 'Your Weekly Goals'}
+                            </Text>
+                            <Text style={[styles.goalsSubtitle, { color: theme.colors.textSecondary }]}>
+                                {isArabic
+                                    ? `${goals.quranPagesPerDay} صفحات • ${goals.charityPerWeek} صدقات • ${goals.tahajjudNightsPerWeek} ليالي`
+                                    : `${goals.quranPagesPerDay} pages • ${goals.charityPerWeek} charity • ${goals.tahajjudNightsPerWeek} nights`}
+                            </Text>
+                        </View>
+                        <MaterialCommunityIcons
+                            name="chevron-right"
+                            size={24}
+                            color={theme.colors.textTertiary}
+                        />
+                    </View>
+                </TouchableOpacity>
+
                 {/* Notifications Section */}
                 <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
                     <Text style={[styles.sectionTitle, { color: theme.colors.textSecondary }]}>
@@ -264,6 +296,12 @@ const SettingsScreen: React.FC = () => {
 
                 <View style={styles.bottomSpacer} />
             </ScrollView>
+
+            {/* Goals Modal */}
+            <GoalsModal
+                visible={showGoalsModal}
+                onClose={() => setShowGoalsModal(false)}
+            />
         </SafeAreaView>
     );
 };
@@ -349,6 +387,35 @@ const styles = StyleSheet.create({
     },
     bottomSpacer: {
         height: 24,
+    },
+    // Goals Card Styles
+    goalsCard: {
+        borderRadius: 16,
+        padding: 16,
+        marginBottom: 0,
+    },
+    goalsCardContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 14,
+    },
+    goalsIconContainer: {
+        width: 52,
+        height: 52,
+        borderRadius: 14,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    goalsTextContainer: {
+        flex: 1,
+    },
+    goalsTitle: {
+        fontSize: 17,
+        fontWeight: '600',
+    },
+    goalsSubtitle: {
+        fontSize: 13,
+        marginTop: 4,
     },
 });
 

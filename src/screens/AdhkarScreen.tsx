@@ -6,6 +6,7 @@ import {
     StyleSheet,
     TouchableOpacity,
     Dimensions,
+    ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -55,10 +56,7 @@ const DhikrCard: React.FC<DhikrCardProps> = ({
 
     return (
         <View style={styles.cardWrapper}>
-            <TouchableOpacity
-                activeOpacity={0.98}
-                onPress={handleTap}
-                disabled={isDone}
+            <View
                 style={[
                     styles.dhikrCard,
                     {
@@ -91,55 +89,66 @@ const DhikrCard: React.FC<DhikrCardProps> = ({
                     </View>
                 </View>
 
-                {/* Card Content */}
-                <View style={styles.cardScrollInner}>
-                    {/* Arabic Text - Qur'an-like styling */}
-                    <Text
-                        style={[
-                            styles.arabicText,
-                            { color: theme.colors.text },
-                        ]}
+                {/* Scrollable Card Content */}
+                <ScrollView
+                    style={styles.cardScrollContent}
+                    contentContainerStyle={styles.cardScrollInner}
+                    showsVerticalScrollIndicator={true}
+                    nestedScrollEnabled={true}
+                >
+                    <TouchableOpacity
+                        activeOpacity={0.98}
+                        onPress={handleTap}
+                        disabled={isDone}
                     >
-                        {dhikr.arabic}
-                    </Text>
+                        {/* Arabic Text - Qur'an-like styling */}
+                        <Text
+                            style={[
+                                styles.arabicText,
+                                { color: theme.colors.text },
+                            ]}
+                        >
+                            {dhikr.arabic}
+                        </Text>
 
-                    {/* Transliteration */}
-                    <Text
-                        style={[
-                            styles.transliterationText,
-                            { color: theme.colors.textSecondary },
-                        ]}
-                    >
-                        {dhikr.transliteration}
-                    </Text>
+                        {/* Transliteration */}
+                        <Text
+                            style={[
+                                styles.transliterationText,
+                                { color: theme.colors.textSecondary },
+                            ]}
+                        >
+                            {dhikr.transliteration}
+                        </Text>
 
-                    {/* Translation */}
-                    <Text
-                        style={[
-                            styles.translationText,
-                            {
-                                color: theme.colors.textSecondary,
-                                textAlign: isArabic ? 'right' : 'left',
-                            },
-                        ]}
-                    >
-                        {dhikr.translation}
-                    </Text>
+                        {/* Translation */}
+                        <Text
+                            style={[
+                                styles.translationText,
+                                {
+                                    color: theme.colors.textSecondary,
+                                    textAlign: isArabic ? 'right' : 'left',
+                                },
+                            ]}
+                        >
+                            {dhikr.translation}
+                        </Text>
 
-                    {/* Reference */}
-                    {dhikr.reference && (
-                        <View style={[styles.referenceRow, { borderTopColor: theme.colors.border }]}>
-                            <MaterialCommunityIcons
-                                name="book-open-variant"
-                                size={14}
-                                color={theme.colors.textTertiary}
-                            />
-                            <Text style={[styles.referenceText, { color: theme.colors.textTertiary }]}>
-                                {dhikr.reference}
-                            </Text>
-                        </View>
-                    )}
-                </View>
+                        {/* Reference */}
+                        {dhikr.reference && (
+                            <View style={[styles.referenceRow, { borderTopColor: theme.colors.border }]}>
+                                <MaterialCommunityIcons
+                                    name="book-open-variant"
+                                    size={14}
+                                    color={theme.colors.textTertiary}
+                                />
+                                <Text style={[styles.referenceText, { color: theme.colors.textTertiary }]}>
+                                    {dhikr.reference}
+                                </Text>
+                            </View>
+                        )}
+                    </TouchableOpacity>
+                </ScrollView>
 
                 {/* Progress bar - fixed at bottom */}
                 <View style={[styles.progressTrack, { backgroundColor: isDark ? theme.colors.border : theme.colors.borderLight }]}>
@@ -160,7 +169,7 @@ const DhikrCard: React.FC<DhikrCardProps> = ({
                         {isArabic ? 'اضغط للعد' : 'Tap to count'}
                     </Text>
                 )}
-            </TouchableOpacity>
+            </View>
         </View>
     );
 };
@@ -477,10 +486,10 @@ const styles = StyleSheet.create({
     },
     // Scrollable content
     cardScrollContent: {
-        maxHeight: 350,
+        flex: 1,
+        minHeight: 200,
     },
     cardScrollInner: {
-        flexGrow: 1,
         paddingBottom: 16,
     },
     // Arabic text - Qur'an-like style with Amiri font
