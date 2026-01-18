@@ -39,20 +39,21 @@ const MainTabs: React.FC = () => {
                 tabBarStyle: {
                     backgroundColor: theme.colors.tabBarBackground,
                     borderTopColor: theme.colors.tabBarBorder,
+                    borderTopWidth: 1,
                     height: 80,
                     paddingBottom: 20,
                     paddingTop: 10,
-                    elevation: 8,
+                    elevation: 0,
                     shadowColor: theme.colors.text,
                     shadowOffset: { width: 0, height: -2 },
-                    shadowOpacity: 0.1,
+                    shadowOpacity: 0.06,
                     shadowRadius: 8,
                 },
                 tabBarActiveTintColor: theme.colors.primary,
                 tabBarInactiveTintColor: theme.colors.tabBarInactive,
                 tabBarLabelStyle: {
                     fontSize: 12,
-                    fontWeight: '500',
+                    fontWeight: '600',
                 },
                 tabBarIcon: ({ focused, color, size }) => {
                     const icons = tabIcons[route.name];
@@ -60,7 +61,7 @@ const MainTabs: React.FC = () => {
                     return (
                         <MaterialCommunityIcons
                             name={iconName}
-                            size={24}
+                            size={focused ? 26 : 24}
                             color={color}
                         />
                     );

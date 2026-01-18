@@ -6,3 +6,6 @@ export { default as StreakBadge } from './StreakBadge';
 export { default as ExportModal } from './ExportModal';
 export { default as ResetModal } from './ResetModal';
 export { HabitType } from './ResetModal';
+export { AppCard } from './AppCard';
+export { PrayerPill } from './PrayerPill';
+export { QuickActionButton } from './QuickActionButton';

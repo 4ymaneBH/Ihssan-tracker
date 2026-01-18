@@ -5,7 +5,7 @@ export * from './spacing';
 
 import { lightTheme, darkTheme, Theme } from './colors';
 import { typography, fontFamilies, fontSizes, lineHeights } from './typography';
-import { spacing, borderRadius, shadows, layout } from './spacing';
+import { spacing, borderRadius, shadows, layout, componentSizes, borderWidth } from './spacing';
 
 export const theme = {
     light: {
@@ -16,8 +16,10 @@ export const theme = {
         lineHeights,
         spacing,
         borderRadius,
+        borderWidth,
         shadows,
         layout,
+        componentSizes,
     },
     dark: {
         colors: darkTheme,
@@ -27,8 +29,10 @@ export const theme = {
         lineHeights,
         spacing,
         borderRadius,
+        borderWidth,
         shadows,
         layout,
+        componentSizes,
     },
 };
 

@@ -1,4 +1,4 @@
-// Today Screen - Main Dashboard
+// Today Screen - Main Dashboard - Premium Redesign
 import React, { useState } from 'react';
 import {
     View,
@@ -6,6 +6,7 @@ import {
     StyleSheet,
     ScrollView,
     TouchableOpacity,
+    I18nManager,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -16,11 +17,95 @@ import { useTheme } from '../context';
 import { useSalatStore, useHabitsStore } from '../store';
 import { getDateString, formatNumber } from '../utils';
 import { SalatName, SalatStatus, RootStackParamList } from '../types';
-import { ResetModal } from '../components';
+import { ResetModal, AppCard, PrayerPill, QuickActionButton } from '../components';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-// Salat Card Component
+// ========================================
+// Card Header Component - Reusable
+// ========================================
+interface CardHeaderProps {
+    title: string;
+    icon: string;
+    iconColor: string;
+    badge?: React.ReactNode;
+    onMenuPress?: () => void;
+    subtitle?: string;
+}
+
+const CardHeader: React.FC<CardHeaderProps> = ({
+    title,
+    icon,
+    iconColor,
+    badge,
+    onMenuPress,
+    subtitle,
+}) => {
+    const { theme } = useTheme();
+
+    return (
+        <View style={styles.cardHeader}>
+            <View style={styles.cardTitleRow}>
+                <View style={[styles.iconContainer, { backgroundColor: iconColor + '20' }]}>
+                    <MaterialCommunityIcons name={icon as any} size={22} color={iconColor} />
+                </View>
+                <View>
+                    <Text style={[styles.cardTitle, { color: theme.colors.text }]}>
+                        {title}
+                    </Text>
+                    {subtitle && (
+                        <Text style={[styles.cardSubtitle, { color: theme.colors.textSecondary }]}>
+                            {subtitle}
+                        </Text>
+                    )}
+                </View>
+            </View>
+            <View style={styles.cardActions}>
+                {badge}
+                {onMenuPress && (
+                    <TouchableOpacity onPress={onMenuPress} style={styles.menuButton}>
+                        <MaterialCommunityIcons
+                            name="dots-vertical"
+                            size={20}
+                            color={theme.colors.textSecondary}
+                        />
+                    </TouchableOpacity>
+                )}
+            </View>
+        </View>
+    );
+};
+
+// ========================================
+// Progress Bar Component
+// ========================================
+interface ProgressBarProps {
+    progress: number; // 0-1
+    height?: number;
+}
+
+const ProgressBar: React.FC<ProgressBarProps> = ({ progress, height = 6 }) => {
+    const { theme } = useTheme();
+    const clampedProgress = Math.min(Math.max(progress, 0), 1);
+
+    return (
+        <View style={[styles.progressBarContainer, { height, backgroundColor: theme.colors.progressBarBackground }]}>
+            <View
+                style={[
+                    styles.progressBarFill,
+                    {
+                        width: `${clampedProgress * 100}%`,
+                        backgroundColor: theme.colors.progressBarFill,
+                    },
+                ]}
+            />
+        </View>
+    );
+};
+
+// ========================================
+// Salat Card Component - Premium Redesign
+// ========================================
 const SalatCard: React.FC = () => {
     const { t, i18n } = useTranslation();
     const { theme } = useTheme();
@@ -39,20 +124,6 @@ const SalatCard: React.FC = () => {
         { key: 'isha', label: t('salat.isha') },
     ];
 
-    const getStatusColor = (status: SalatStatus | undefined) => {
-        if (status === 'onTime') return theme.colors.success.main;
-        if (status === 'late') return theme.colors.warning.main;
-        if (status === 'missed') return theme.colors.error.main;
-        return theme.colors.border;
-    };
-
-    const getStatusIcon = (status: SalatStatus | undefined): string => {
-        if (status === 'onTime') return 'check-circle';
-        if (status === 'late') return 'clock-alert';
-        if (status === 'missed') return 'close-circle';
-        return 'circle-outline';
-    };
-
     const cyclePrayerStatus = (prayer: SalatName) => {
         const currentStatus = todayLog?.[prayer];
         let newStatus: SalatStatus;
@@ -69,66 +140,56 @@ const SalatCard: React.FC = () => {
         (p) => todayLog?.[p.key] && todayLog[p.key] !== 'missed'
     ).length;
 
-    return (
-        <View
-            style={[styles.card, { backgroundColor: theme.colors.cards.salat }]}
-        >
-            <View style={styles.cardHeader}>
-                <View style={styles.cardTitleRow}>
-                    <View style={[styles.iconContainer, { backgroundColor: theme.colors.primary + '20' }]}>
-                        <MaterialCommunityIcons name="mosque" size={22} color={theme.colors.primary} />
-                    </View>
-                    <Text style={[styles.cardTitle, { color: theme.colors.text }]}>
-                        {t('salat.title')}
-                    </Text>
-                </View>
-                <View style={styles.cardActions}>
-                    {streak > 0 && (
-                        <View style={[styles.streakBadge, { backgroundColor: theme.colors.primary }]}>
-                            <MaterialCommunityIcons name="fire" size={14} color={theme.colors.onPrimary} />
-                            <Text style={[styles.streakText, { color: theme.colors.onPrimary }]}>
-                                {formatNumber(streak, i18n.language)}
-                            </Text>
-                        </View>
-                    )}
-                    <TouchableOpacity onPress={() => setShowReset(true)} style={styles.menuButton}>
-                        <MaterialCommunityIcons name="dots-vertical" size={20} color={theme.colors.textSecondary} />
-                    </TouchableOpacity>
-                </View>
-            </View>
-
-            <View style={styles.prayerGrid}>
-                {prayers.map((prayer) => {
-                    const status = todayLog?.[prayer.key];
-                    return (
-                        <TouchableOpacity
-                            key={prayer.key}
-                            style={[
-                                styles.prayerItem,
-                                {
-                                    backgroundColor: theme.colors.surface,
-                                    borderColor: getStatusColor(status),
-                                    borderWidth: status ? 2 : 1,
-                                },
-                            ]}
-                            onPress={() => cyclePrayerStatus(prayer.key)}
-                        >
-                            <Text style={[styles.prayerLabel, { color: theme.colors.text }]}>
-                                {prayer.label}
-                            </Text>
-                            <MaterialCommunityIcons
-                                name={getStatusIcon(status)}
-                                size={18}
-                                color={getStatusColor(status)}
-                            />
-                        </TouchableOpacity>
-                    );
-                })}
-            </View>
-
-            <Text style={[styles.cardSubtext, { color: theme.colors.textSecondary }]}>
-                {formatNumber(completedCount, i18n.language)}/5 {t('salat.prayersCompleted')}
+    const streakBadge = streak > 0 ? (
+        <View style={[styles.streakBadge, { backgroundColor: theme.colors.primary }]}>
+            <MaterialCommunityIcons name="fire" size={14} color={theme.colors.onPrimary} />
+            <Text style={[styles.streakText, { color: theme.colors.onPrimary }]}>
+                {formatNumber(streak, i18n.language)}
             </Text>
+        </View>
+    ) : null;
+
+    return (
+        <AppCard backgroundColor={theme.colors.cards.salat}>
+            <CardHeader
+                title={t('salat.title')}
+                icon="mosque"
+                iconColor={theme.colors.accents.salat}
+                badge={streakBadge}
+                onMenuPress={() => setShowReset(true)}
+            />
+
+            {/* Progress indicator */}
+            <View style={styles.progressSection}>
+                <Text style={[styles.progressLabel, { color: theme.colors.textSecondary }]}>
+                    {formatNumber(completedCount, i18n.language)}/5 {t('salat.prayersCompleted')}
+                </Text>
+                <ProgressBar progress={completedCount / 5} />
+            </View>
+
+            {/* Prayer Pills - 2 rows */}
+            <View style={styles.prayerGrid}>
+                <View style={styles.prayerRow}>
+                    {prayers.slice(0, 2).map((prayer) => (
+                        <PrayerPill
+                            key={prayer.key}
+                            label={prayer.label}
+                            status={todayLog?.[prayer.key]}
+                            onPress={() => cyclePrayerStatus(prayer.key)}
+                        />
+                    ))}
+                </View>
+                <View style={styles.prayerRow}>
+                    {prayers.slice(2).map((prayer) => (
+                        <PrayerPill
+                            key={prayer.key}
+                            label={prayer.label}
+                            status={todayLog?.[prayer.key]}
+                            onPress={() => cyclePrayerStatus(prayer.key)}
+                        />
+                    ))}
+                </View>
+            </View>
 
             <ResetModal
                 visible={showReset}
@@ -136,13 +197,15 @@ const SalatCard: React.FC = () => {
                 habitType="salat"
                 habitName={t('salat.title')}
             />
-        </View>
+        </AppCard>
     );
 };
 
-// Adhkar Card Component
+// ========================================
+// Adhkar Card Component - Premium Redesign
+// ========================================
 const AdhkarCard: React.FC = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { theme } = useTheme();
     const navigation = useNavigation<NavigationProp>();
     const { getAdhkarLog } = useHabitsStore();
@@ -151,70 +214,38 @@ const AdhkarCard: React.FC = () => {
     const today = getDateString(new Date());
     const morningLog = getAdhkarLog(today, 'morning');
     const eveningLog = getAdhkarLog(today, 'evening');
+    const isArabic = i18n.language === 'ar';
 
     const handleAdhkarPress = (category: 'morning' | 'evening') => {
-        // Navigate to AdhkarScreen with category
         navigation.navigate('Adhkar', { category });
     };
 
     return (
-        <View
-            style={[styles.card, { backgroundColor: theme.colors.cards.adhkar }]}
-        >
-            <View style={styles.cardHeader}>
-                <View style={styles.cardTitleRow}>
-                    <View style={[styles.iconContainer, { backgroundColor: theme.colors.primary + '20' }]}>
-                        <MaterialCommunityIcons name="hands-pray" size={22} color={theme.colors.primary} />
-                    </View>
-                    <Text style={[styles.cardTitle, { color: theme.colors.text }]}>
-                        {t('adhkar.title')}
-                    </Text>
-                </View>
-                <TouchableOpacity onPress={() => setShowReset(true)} style={styles.menuButton}>
-                    <MaterialCommunityIcons name="dots-vertical" size={20} color={theme.colors.textSecondary} />
-                </TouchableOpacity>
-            </View>
+        <AppCard backgroundColor={theme.colors.cards.adhkar}>
+            <CardHeader
+                title={t('adhkar.title')}
+                icon="hands-pray"
+                iconColor={theme.colors.accents.adhkar}
+                onMenuPress={() => setShowReset(true)}
+            />
 
-            <View style={styles.adhkarRow}>
-                <TouchableOpacity
-                    style={[
-                        styles.adhkarItem,
-                        {
-                            backgroundColor: theme.colors.surface,
-                            borderColor: morningLog ? theme.colors.success.main : theme.colors.border,
-                            borderWidth: morningLog ? 2 : 1,
-                        },
-                    ]}
+            <View style={styles.adhkarButtons}>
+                <QuickActionButton
+                    label={t('adhkar.morning')}
+                    icon="weather-sunny"
+                    iconColor={theme.colors.warning.main}
+                    completed={!!morningLog}
+                    subtitle={isArabic ? 'ابدأ الآن' : 'Start now'}
                     onPress={() => handleAdhkarPress('morning')}
-                >
-                    <MaterialCommunityIcons name="weather-sunny" size={28} color={theme.colors.warning.main} />
-                    <Text style={[styles.adhkarLabel, { color: theme.colors.text }]}>
-                        {t('adhkar.morning')}
-                    </Text>
-                    {morningLog && (
-                        <MaterialCommunityIcons name="check-circle" size={20} color={theme.colors.success.main} />
-                    )}
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={[
-                        styles.adhkarItem,
-                        {
-                            backgroundColor: theme.colors.surface,
-                            borderColor: eveningLog ? theme.colors.success.main : theme.colors.border,
-                            borderWidth: eveningLog ? 2 : 1,
-                        },
-                    ]}
+                />
+                <QuickActionButton
+                    label={t('adhkar.evening')}
+                    icon="weather-night"
+                    iconColor={theme.colors.primary}
+                    completed={!!eveningLog}
+                    subtitle={isArabic ? 'ابدأ الآن' : 'Start now'}
                     onPress={() => handleAdhkarPress('evening')}
-                >
-                    <MaterialCommunityIcons name="weather-night" size={28} color={theme.colors.primary} />
-                    <Text style={[styles.adhkarLabel, { color: theme.colors.text }]}>
-                        {t('adhkar.evening')}
-                    </Text>
-                    {eveningLog && (
-                        <MaterialCommunityIcons name="check-circle" size={20} color={theme.colors.success.main} />
-                    )}
-                </TouchableOpacity>
+                />
             </View>
 
             <ResetModal
@@ -223,11 +254,13 @@ const AdhkarCard: React.FC = () => {
                 habitType="adhkar-morning"
                 habitName={t('adhkar.title')}
             />
-        </View>
+        </AppCard>
     );
 };
 
-// Qur'an Card Component
+// ========================================
+// Qur'an Card Component - Premium Tracker Block
+// ========================================
 const QuranCard: React.FC = () => {
     const { t, i18n } = useTranslation();
     const { theme } = useTheme();
@@ -237,6 +270,8 @@ const QuranCard: React.FC = () => {
 
     const todayLog = getTodayQuranLog();
     const weeklyPages = getWeeklyQuranPages();
+    const weeklyGoal = 20; // Default goal
+    const isArabic = i18n.language === 'ar';
 
     const handleAddPages = (pages: number) => {
         logQuranReading(pages);
@@ -246,36 +281,41 @@ const QuranCard: React.FC = () => {
         navigation.navigate('Quran');
     };
 
+    const weeklyText = isArabic
+        ? `هذا الأسبوع: ${formatNumber(weeklyPages, i18n.language)} صفحات`
+        : `This week: ${formatNumber(weeklyPages, i18n.language)} pages`;
+
     return (
-        <View
-            style={[styles.card, { backgroundColor: theme.colors.cards.quran }]}
-        >
-            <View style={styles.cardHeader}>
-                <View style={styles.cardTitleRow}>
-                    <View style={[styles.iconContainer, { backgroundColor: theme.colors.primary + '20' }]}>
-                        <MaterialCommunityIcons name="book-open-page-variant" size={22} color={theme.colors.primary} />
-                    </View>
-                    <Text style={[styles.cardTitle, { color: theme.colors.text }]}>
-                        {t('quran.title')}
-                    </Text>
-                </View>
-                <View style={styles.cardActions}>
-                    <Text style={[styles.weeklyCount, { color: theme.colors.textSecondary }]}>
-                        {formatNumber(weeklyPages, i18n.language)} {t('quran.pages')} this week
-                    </Text>
-                    <TouchableOpacity onPress={() => setShowReset(true)} style={styles.menuButton}>
-                        <MaterialCommunityIcons name="dots-vertical" size={20} color={theme.colors.textSecondary} />
-                    </TouchableOpacity>
-                </View>
+        <AppCard backgroundColor={theme.colors.cards.quran}>
+            <CardHeader
+                title={t('quran.title')}
+                icon="book-open-page-variant"
+                iconColor={theme.colors.accents.quran}
+                subtitle={weeklyText}
+                onMenuPress={() => setShowReset(true)}
+            />
+
+            {/* Weekly Progress */}
+            <View style={styles.quranProgress}>
+                <ProgressBar progress={weeklyPages / weeklyGoal} height={8} />
+                <Text style={[styles.goalText, { color: theme.colors.textSecondary }]}>
+                    {isArabic
+                        ? `الهدف: ${formatNumber(weeklyGoal, i18n.language)} صفحة/أسبوع`
+                        : `Goal: ${formatNumber(weeklyGoal, i18n.language)} pages/week`}
+                </Text>
             </View>
 
+            {/* Today's Count & Quick Actions */}
             <View style={styles.quranContent}>
                 <View style={styles.quranToday}>
                     <Text style={[styles.quranTodayLabel, { color: theme.colors.textSecondary }]}>
-                        {t('common.today')}:
+                        {t('common.today')}
                     </Text>
                     <Text style={[styles.quranTodayValue, { color: theme.colors.text }]}>
-                        {formatNumber(todayLog?.pages || 0, i18n.language)} {t('quran.pages')}
+                        {formatNumber(todayLog?.pages || 0, i18n.language)}
+                    </Text>
+                    <Text style={[styles.quranTodayUnit, { color: theme.colors.textSecondary }]}>
+                        {t('quran.pages')}
                     </Text>
                 </View>
 
@@ -283,7 +323,10 @@ const QuranCard: React.FC = () => {
                     {[1, 2, 5].map((pages) => (
                         <TouchableOpacity
                             key={pages}
-                            style={[styles.quranButton, { backgroundColor: theme.colors.surface }]}
+                            style={[styles.quranButton, {
+                                backgroundColor: theme.colors.surface,
+                                borderColor: theme.colors.cardBorder,
+                            }]}
                             onPress={() => handleAddPages(pages)}
                         >
                             <Text style={[styles.quranButtonText, { color: theme.colors.primary }]}>
@@ -294,15 +337,16 @@ const QuranCard: React.FC = () => {
                 </View>
             </View>
 
-            {/* View Details Button */}
-            <TouchableOpacity
-                style={[styles.viewDetailsButton, { backgroundColor: theme.colors.surface }]}
-                onPress={handleOpenQuranScreen}
-            >
-                <Text style={[styles.viewDetailsText, { color: theme.colors.primary }]}>
-                    {i18n.language === 'ar' ? 'عرض التفاصيل' : 'View Details'}
+            {/* View Details Link */}
+            <TouchableOpacity style={styles.viewDetailsLink} onPress={handleOpenQuranScreen}>
+                <Text style={[styles.viewDetailsLinkText, { color: theme.colors.primary }]}>
+                    {isArabic ? 'عرض التفاصيل' : 'View Details'}
                 </Text>
-                <MaterialCommunityIcons name="chevron-right" size={20} color={theme.colors.primary} />
+                <MaterialCommunityIcons
+                    name={I18nManager.isRTL ? 'chevron-left' : 'chevron-right'}
+                    size={18}
+                    color={theme.colors.primary}
+                />
             </TouchableOpacity>
 
             <ResetModal
@@ -311,11 +355,13 @@ const QuranCard: React.FC = () => {
                 habitType="quran"
                 habitName={t('quran.title')}
             />
-        </View>
+        </AppCard>
     );
 };
 
+// ========================================
 // Charity Card Component
+// ========================================
 const CharityCard: React.FC = () => {
     const { t, i18n } = useTranslation();
     const { theme } = useTheme();
@@ -323,6 +369,7 @@ const CharityCard: React.FC = () => {
     const [showReset, setShowReset] = useState(false);
 
     const weeklyCount = getWeeklyCharityCount();
+    const isArabic = i18n.language === 'ar';
 
     const charityTypes = [
         { type: 'money' as const, icon: 'cash-multiple', label: t('charity.money') },
@@ -331,37 +378,35 @@ const CharityCard: React.FC = () => {
         { type: 'help' as const, icon: 'hand-heart', label: t('charity.help') },
     ];
 
+    const weeklyText = isArabic
+        ? `${formatNumber(weeklyCount, i18n.language)} ${t('charity.thisWeek')}`
+        : `${formatNumber(weeklyCount, i18n.language)} ${t('charity.thisWeek')}`;
+
     return (
-        <View
-            style={[styles.card, { backgroundColor: theme.colors.cards.charity }]}
-        >
-            <View style={styles.cardHeader}>
-                <View style={styles.cardTitleRow}>
-                    <View style={[styles.iconContainer, { backgroundColor: theme.colors.error.main + '20' }]}>
-                        <MaterialCommunityIcons name="heart" size={22} color={theme.colors.error.main} />
-                    </View>
-                    <Text style={[styles.cardTitle, { color: theme.colors.text }]}>
-                        {t('charity.sadaqah')}
-                    </Text>
-                </View>
-                <View style={styles.cardActions}>
-                    <Text style={[styles.weeklyCount, { color: theme.colors.textSecondary }]}>
-                        {formatNumber(weeklyCount, i18n.language)} {t('charity.thisWeek')}
-                    </Text>
-                    <TouchableOpacity onPress={() => setShowReset(true)} style={styles.menuButton}>
-                        <MaterialCommunityIcons name="dots-vertical" size={20} color={theme.colors.textSecondary} />
-                    </TouchableOpacity>
-                </View>
-            </View>
+        <AppCard backgroundColor={theme.colors.cards.charity}>
+            <CardHeader
+                title={t('charity.sadaqah')}
+                icon="heart"
+                iconColor={theme.colors.accents.charity}
+                subtitle={weeklyText}
+                onMenuPress={() => setShowReset(true)}
+            />
 
             <View style={styles.charityGrid}>
                 {charityTypes.map((charity) => (
                     <TouchableOpacity
                         key={charity.type}
-                        style={[styles.charityItem, { backgroundColor: theme.colors.surface }]}
+                        style={[styles.charityItem, {
+                            backgroundColor: theme.colors.surface,
+                            borderColor: theme.colors.cardBorder,
+                        }]}
                         onPress={() => logCharity(charity.type)}
                     >
-                        <MaterialCommunityIcons name={charity.icon as any} size={24} color={theme.colors.primary} />
+                        <MaterialCommunityIcons
+                            name={charity.icon as any}
+                            size={28}
+                            color={theme.colors.accents.charity}
+                        />
                         <Text style={[styles.charityLabel, { color: theme.colors.text }]}>
                             {charity.label}
                         </Text>
@@ -375,11 +420,13 @@ const CharityCard: React.FC = () => {
                 habitType="charity"
                 habitName={t('charity.sadaqah')}
             />
-        </View>
+        </AppCard>
     );
 };
 
+// ========================================
 // Tahajjud Card Component
+// ========================================
 const TahajjudCard: React.FC = () => {
     const { t, i18n } = useTranslation();
     const { theme } = useTheme();
@@ -389,33 +436,25 @@ const TahajjudCard: React.FC = () => {
 
     const todayLog = getTodayTahajjud();
     const weeklyNights = getWeeklyTahajjudNights();
+    const isArabic = i18n.language === 'ar';
 
     const handleOpenTahajjudScreen = () => {
         navigation.navigate('Tahajjud');
     };
 
+    const weeklyText = isArabic
+        ? `${formatNumber(weeklyNights, i18n.language)} ${t('tahajjud.nights')} ${t('tahajjud.thisWeek')}`
+        : `${formatNumber(weeklyNights, i18n.language)} ${t('tahajjud.nights')} ${t('tahajjud.thisWeek')}`;
+
     return (
-        <View
-            style={[styles.card, { backgroundColor: theme.colors.cards.tahajjud }]}
-        >
-            <View style={styles.cardHeader}>
-                <View style={styles.cardTitleRow}>
-                    <View style={[styles.iconContainer, { backgroundColor: theme.colors.primary + '20' }]}>
-                        <MaterialCommunityIcons name="moon-waning-crescent" size={22} color={theme.colors.primary} />
-                    </View>
-                    <Text style={[styles.cardTitle, { color: theme.colors.text }]}>
-                        {t('tahajjud.title')}
-                    </Text>
-                </View>
-                <View style={styles.cardActions}>
-                    <Text style={[styles.weeklyCount, { color: theme.colors.textSecondary }]}>
-                        {formatNumber(weeklyNights, i18n.language)} {t('tahajjud.nights')} {t('tahajjud.thisWeek')}
-                    </Text>
-                    <TouchableOpacity onPress={() => setShowReset(true)} style={styles.menuButton}>
-                        <MaterialCommunityIcons name="dots-vertical" size={20} color={theme.colors.textSecondary} />
-                    </TouchableOpacity>
-                </View>
-            </View>
+        <AppCard backgroundColor={theme.colors.cards.tahajjud}>
+            <CardHeader
+                title={t('tahajjud.title')}
+                icon="moon-waning-crescent"
+                iconColor={theme.colors.accents.tahajjud}
+                subtitle={weeklyText}
+                onMenuPress={() => setShowReset(true)}
+            />
 
             <TouchableOpacity
                 style={[
@@ -426,18 +465,24 @@ const TahajjudCard: React.FC = () => {
                             : theme.colors.surface,
                         borderColor: todayLog?.completed
                             ? theme.colors.success.main
-                            : theme.colors.border,
+                            : theme.colors.cardBorder,
                     },
                 ]}
                 onPress={() => logTahajjud(!todayLog?.completed)}
             >
+                {todayLog?.completed && (
+                    <MaterialCommunityIcons
+                        name="check-circle"
+                        size={20}
+                        color="#FFFFFF"
+                        style={{ marginRight: 8 }}
+                    />
+                )}
                 <Text
                     style={[
                         styles.tahajjudButtonText,
                         {
-                            color: todayLog?.completed
-                                ? theme.colors.onPrimary
-                                : theme.colors.text,
+                            color: todayLog?.completed ? '#FFFFFF' : theme.colors.text,
                         },
                     ]}
                 >
@@ -445,15 +490,16 @@ const TahajjudCard: React.FC = () => {
                 </Text>
             </TouchableOpacity>
 
-            {/* View Details Link */}
-            <TouchableOpacity
-                style={styles.viewDetailsLink}
-                onPress={handleOpenTahajjudScreen}
-            >
+            {/* View Week Link */}
+            <TouchableOpacity style={styles.viewDetailsLink} onPress={handleOpenTahajjudScreen}>
                 <Text style={[styles.viewDetailsLinkText, { color: theme.colors.primary }]}>
-                    {i18n.language === 'ar' ? 'عرض الأسبوع' : 'View Week'}
+                    {isArabic ? 'عرض الأسبوع' : 'View Week'}
                 </Text>
-                <MaterialCommunityIcons name="chevron-right" size={18} color={theme.colors.primary} />
+                <MaterialCommunityIcons
+                    name={I18nManager.isRTL ? 'chevron-left' : 'chevron-right'}
+                    size={18}
+                    color={theme.colors.primary}
+                />
             </TouchableOpacity>
 
             <ResetModal
@@ -462,14 +508,16 @@ const TahajjudCard: React.FC = () => {
                 habitType="tahajjud"
                 habitName={t('tahajjud.title')}
             />
-        </View>
+        </AppCard>
     );
 };
 
+// ========================================
 // Custom Habits Card Component
+// ========================================
 const CustomHabitsCard: React.FC = () => {
     const { t, i18n } = useTranslation();
-    const { theme } = useTheme();
+    const { theme, isDark } = useTheme();
     const navigation = useNavigation<NavigationProp>();
     const isArabic = i18n.language === 'ar';
 
@@ -492,17 +540,21 @@ const CustomHabitsCard: React.FC = () => {
     };
 
     return (
-        <View style={[styles.card, { backgroundColor: theme.colors.surface }]}>
+        <AppCard backgroundColor={theme.colors.cards.custom}>
             <View style={styles.cardHeader}>
                 <View style={styles.cardTitleRow}>
-                    <View style={[styles.iconContainer, { backgroundColor: '#8B5CF6' + '20' }]}>
-                        <MaterialCommunityIcons name="checkbox-multiple-marked" size={22} color="#8B5CF6" />
+                    <View style={[styles.iconContainer, { backgroundColor: theme.colors.accents.custom + '20' }]}>
+                        <MaterialCommunityIcons
+                            name="checkbox-multiple-marked"
+                            size={22}
+                            color={theme.colors.accents.custom}
+                        />
                     </View>
                     <Text style={[styles.cardTitle, { color: theme.colors.text }]}>
                         {isArabic ? 'العادات المخصصة' : 'Custom Habits'}
                     </Text>
                 </View>
-                <TouchableOpacity onPress={handleOpenCustomHabits}>
+                <TouchableOpacity onPress={handleOpenCustomHabits} style={styles.addButton}>
                     <MaterialCommunityIcons name="plus" size={22} color={theme.colors.primary} />
                 </TouchableOpacity>
             </View>
@@ -510,65 +562,76 @@ const CustomHabitsCard: React.FC = () => {
             {/* Empty State */}
             {todayHabits.length === 0 ? (
                 <TouchableOpacity
-                    style={[styles.emptyHabitState, { backgroundColor: theme.colors.background, borderColor: theme.colors.border }]}
+                    style={[styles.emptyHabitState, {
+                        backgroundColor: isDark ? theme.colors.surface : theme.colors.background,
+                        borderColor: theme.colors.cardBorder,
+                    }]}
                     onPress={handleOpenCustomHabits}
                 >
-                    <MaterialCommunityIcons name="plus-circle-outline" size={24} color={theme.colors.textSecondary} />
+                    <MaterialCommunityIcons
+                        name="plus-circle-outline"
+                        size={24}
+                        color={theme.colors.textSecondary}
+                    />
                     <Text style={[styles.emptyHabitText, { color: theme.colors.textSecondary }]}>
                         {isArabic ? 'أضف عادتك الأولى' : 'Add your first habit'}
                     </Text>
                 </TouchableOpacity>
             ) : (
                 /* Habit Items */
-                todayHabits.map((habit) => {
-                    const log = getCustomHabitLog(today, habit.id);
-                    const isComplete = (log?.count || 0) >= habit.targetCount;
-                    const habitName = isArabic ? (habit.nameAr || habit.name) : habit.name;
+                <View style={styles.habitsContainer}>
+                    {todayHabits.map((habit) => {
+                        const log = getCustomHabitLog(today, habit.id);
+                        const isComplete = (log?.count || 0) >= habit.targetCount;
+                        const habitName = isArabic ? (habit.nameAr || habit.name) : habit.name;
 
-                    return (
-                        <TouchableOpacity
-                            key={habit.id}
-                            style={[
-                                styles.customHabitItem,
-                                {
-                                    backgroundColor: isComplete ? habit.color + '15' : theme.colors.background,
-                                    borderColor: isComplete ? habit.color : theme.colors.border,
-                                },
-                            ]}
-                            onPress={() => handleToggleHabit(habit.id, habit.targetCount)}
-                        >
-                            <View style={[styles.customHabitIcon, { backgroundColor: habit.color + '20' }]}>
-                                <MaterialCommunityIcons
-                                    name={habit.icon as any}
-                                    size={20}
-                                    color={habit.color}
-                                />
-                            </View>
-                            <Text
-                                style={[styles.customHabitName, { color: theme.colors.text }]}
-                                numberOfLines={1}
+                        return (
+                            <TouchableOpacity
+                                key={habit.id}
+                                style={[
+                                    styles.customHabitItem,
+                                    {
+                                        backgroundColor: isComplete ? habit.color + '15' : theme.colors.surface,
+                                        borderColor: isComplete ? habit.color : theme.colors.cardBorder,
+                                    },
+                                ]}
+                                onPress={() => handleToggleHabit(habit.id, habit.targetCount)}
                             >
-                                {habitName}
-                            </Text>
-                            {isComplete && (
-                                <MaterialCommunityIcons
-                                    name="check-circle"
-                                    size={20}
-                                    color={habit.color}
-                                />
-                            )}
-                        </TouchableOpacity>
-                    );
-                })
+                                <View style={[styles.customHabitIcon, { backgroundColor: habit.color + '20' }]}>
+                                    <MaterialCommunityIcons
+                                        name={habit.icon as any}
+                                        size={20}
+                                        color={habit.color}
+                                    />
+                                </View>
+                                <Text
+                                    style={[styles.customHabitName, { color: theme.colors.text }]}
+                                    numberOfLines={1}
+                                >
+                                    {habitName}
+                                </Text>
+                                {isComplete && (
+                                    <MaterialCommunityIcons
+                                        name="check-circle"
+                                        size={20}
+                                        color={habit.color}
+                                    />
+                                )}
+                            </TouchableOpacity>
+                        );
+                    })}
+                </View>
             )}
-        </View>
+        </AppCard>
     );
 };
 
+// ========================================
 // Main Today Screen
+// ========================================
 const TodayScreen: React.FC = () => {
     const { t, i18n } = useTranslation();
-    const { theme } = useTheme();
+    const { theme, isDark } = useTheme();
     const navigation = useNavigation<NavigationProp>();
 
     const today = new Date();
@@ -585,6 +648,7 @@ const TodayScreen: React.FC = () => {
         <SafeAreaView
             style={[styles.container, { backgroundColor: theme.colors.background }]}
         >
+            {/* Header */}
             <View style={styles.header}>
                 <View>
                     <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
@@ -595,13 +659,18 @@ const TodayScreen: React.FC = () => {
                     </Text>
                 </View>
                 <TouchableOpacity
-                    style={[styles.profileButton, { backgroundColor: theme.colors.surface }]}
+                    style={[styles.profileButton, {
+                        backgroundColor: theme.colors.surface,
+                        borderColor: isDark ? 'transparent' : theme.colors.cardBorder,
+                        borderWidth: isDark ? 0 : 1,
+                    }]}
                     onPress={handleOpenProfile}
                 >
-                    <MaterialCommunityIcons name="account-circle" size={32} color={theme.colors.primary} />
+                    <MaterialCommunityIcons name="account-circle" size={28} color={theme.colors.primary} />
                 </TouchableOpacity>
             </View>
 
+            {/* Content */}
             <ScrollView
                 style={styles.scrollView}
                 contentContainerStyle={styles.scrollContent}
@@ -620,6 +689,9 @@ const TodayScreen: React.FC = () => {
     );
 };
 
+// ========================================
+// Styles
+// ========================================
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -630,15 +702,16 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         paddingHorizontal: 20,
         paddingTop: 16,
-        paddingBottom: 12,
+        paddingBottom: 16,
     },
     headerTitle: {
-        fontSize: 28,
-        fontWeight: '700',
+        fontSize: 32,
+        fontWeight: '800',
     },
     headerDate: {
         fontSize: 14,
         marginTop: 4,
+        fontWeight: '400',
     },
     scrollView: {
         flex: 1,
@@ -647,20 +720,18 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         gap: 16,
     },
-    card: {
-        borderRadius: 20,
-        padding: 20,
-    },
+    // Card Header
     cardHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         marginBottom: 16,
     },
     cardTitleRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 10,
+        gap: 12,
+        flex: 1,
     },
     iconContainer: {
         width: 40,
@@ -671,87 +742,95 @@ const styles = StyleSheet.create({
     },
     cardTitle: {
         fontSize: 18,
-        fontWeight: '600',
+        fontWeight: '700',
     },
-    cardSubtext: {
-        fontSize: 14,
-        textAlign: 'center',
-        marginTop: 12,
+    cardSubtitle: {
+        fontSize: 13,
+        marginTop: 2,
     },
+    cardActions: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+    },
+    menuButton: {
+        padding: 4,
+    },
+    addButton: {
+        padding: 4,
+    },
+    // Progress Bar
+    progressBarContainer: {
+        borderRadius: 4,
+        overflow: 'hidden',
+    },
+    progressBarFill: {
+        height: '100%',
+        borderRadius: 4,
+    },
+    progressSection: {
+        marginBottom: 16,
+        gap: 8,
+    },
+    progressLabel: {
+        fontSize: 13,
+        fontWeight: '500',
+    },
+    // Streak Badge
     streakBadge: {
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 20,
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 16,
+        gap: 4,
     },
     streakText: {
-        fontSize: 14,
+        fontSize: 13,
         fontWeight: '600',
     },
-    weeklyCount: {
-        fontSize: 13,
-    },
-    // Prayer grid
+    // Prayer Grid
     prayerGrid: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
         gap: 10,
+    },
+    prayerRow: {
+        flexDirection: 'row',
         justifyContent: 'center',
-    },
-    prayerItem: {
-        width: 60,
-        height: 70,
-        borderRadius: 12,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    prayerLabel: {
-        fontSize: 12,
-        fontWeight: '500',
-    },
-    prayerStatus: {
-        fontSize: 16,
-        fontWeight: '700',
-        marginTop: 4,
+        gap: 10,
+        flexWrap: 'wrap',
     },
     // Adhkar
-    adhkarRow: {
-        flexDirection: 'row',
+    adhkarButtons: {
         gap: 12,
     },
-    adhkarItem: {
-        flex: 1,
-        padding: 16,
-        borderRadius: 14,
-        alignItems: 'center',
+    // Qur'an
+    quranProgress: {
+        marginBottom: 16,
+        gap: 6,
     },
-    adhkarEmoji: {
-        fontSize: 28,
-        marginBottom: 8,
-    },
-    adhkarLabel: {
-        fontSize: 14,
-        fontWeight: '500',
+    goalText: {
+        fontSize: 12,
         textAlign: 'center',
     },
-    checkmark: {
-        fontSize: 20,
-        fontWeight: '700',
-        marginTop: 8,
-    },
-    // Qur'an
     quranContent: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
     },
-    quranToday: {},
+    quranToday: {
+        alignItems: 'flex-start',
+    },
     quranTodayLabel: {
-        fontSize: 13,
+        fontSize: 12,
     },
     quranTodayValue: {
-        fontSize: 24,
+        fontSize: 28,
         fontWeight: '700',
-        marginTop: 4,
+        marginTop: 2,
+    },
+    quranTodayUnit: {
+        fontSize: 12,
+        marginTop: 2,
     },
     quranButtons: {
         flexDirection: 'row',
@@ -760,7 +839,8 @@ const styles = StyleSheet.create({
     quranButton: {
         paddingHorizontal: 16,
         paddingVertical: 10,
-        borderRadius: 10,
+        borderRadius: 12,
+        borderWidth: 1,
     },
     quranButtonText: {
         fontSize: 16,
@@ -769,62 +849,50 @@ const styles = StyleSheet.create({
     // Charity
     charityGrid: {
         flexDirection: 'row',
+        flexWrap: 'wrap',
         gap: 10,
     },
     charityItem: {
-        flex: 1,
-        padding: 14,
+        width: '48%',
+        flexGrow: 1,
+        padding: 16,
         borderRadius: 12,
         alignItems: 'center',
-    },
-    charityEmoji: {
-        fontSize: 24,
-        marginBottom: 6,
+        borderWidth: 1,
+        gap: 8,
     },
     charityLabel: {
-        fontSize: 11,
+        fontSize: 13,
         fontWeight: '500',
         textAlign: 'center',
     },
     // Tahajjud
     tahajjudButton: {
+        flexDirection: 'row',
         padding: 18,
         borderRadius: 14,
         alignItems: 'center',
+        justifyContent: 'center',
         borderWidth: 1,
     },
     tahajjudButtonText: {
         fontSize: 16,
         fontWeight: '600',
     },
-    bottomSpacer: {
-        height: 24,
-    },
-    // View Details
-    viewDetailsButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 4,
-        paddingVertical: 12,
-        borderRadius: 12,
-        marginTop: 12,
-    },
-    viewDetailsText: {
-        fontSize: 14,
-        fontWeight: '600',
-    },
+    // View Details Link
     viewDetailsLink: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 2,
-        marginTop: 12,
+        gap: 4,
+        marginTop: 14,
+        paddingVertical: 4,
     },
     viewDetailsLinkText: {
-        fontSize: 13,
+        fontSize: 14,
         fontWeight: '500',
     },
+    // Profile Button
     profileButton: {
         width: 44,
         height: 44,
@@ -833,13 +901,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     // Custom Habits
+    habitsContainer: {
+        gap: 10,
+    },
     customHabitItem: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 14,
         borderRadius: 12,
         borderWidth: 1,
-        marginTop: 10,
         gap: 12,
     },
     customHabitIcon: {
@@ -858,25 +928,18 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 20,
+        padding: 24,
         borderRadius: 12,
         borderWidth: 1,
         borderStyle: 'dashed',
-        marginTop: 10,
         gap: 10,
     },
     emptyHabitText: {
         fontSize: 14,
         fontWeight: '500',
     },
-    // Reset menu styles
-    cardActions: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 8,
-    },
-    menuButton: {
-        padding: 4,
+    bottomSpacer: {
+        height: 24,
     },
 });
 

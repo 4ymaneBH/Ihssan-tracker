@@ -1,8 +1,8 @@
 // Color palette for Ihssan Tracker
-// Inspired by calm, spiritual Islamic aesthetics with teal primary
+// Premium, calm Islamic aesthetic with enhanced light-mode contrast
 
 export const colors = {
-    // Primary - Teal (from reference design)
+    // Primary - Teal (spiritual, calming)
     primary: {
         50: '#F0FDFA',
         100: '#CCFBF1',
@@ -54,32 +54,32 @@ export const colors = {
         dark: '#2563EB',
     },
 
-    // Card background colors (pastel palette from reference)
-    cards: {
-        salat: '#E8F5F3',      // Soft teal
-        adhkar: '#FFF7ED',     // Soft orange/peach
-        quran: '#FEF3C7',      // Soft yellow
-        charity: '#FCE7F3',    // Soft pink
-        tahajjud: '#EDE9FE',   // Soft purple
-        custom: '#E0F2FE',     // Soft blue
+    // Card accent colors (for icon backgrounds only)
+    accents: {
+        salat: '#0D9488',      // Teal
+        adhkar: '#F59E0B',     // Orange
+        quran: '#EAB308',      // Yellow
+        charity: '#EC4899',    // Pink
+        tahajjud: '#8B5CF6',   // Purple
+        custom: '#3B82F6',     // Blue
     },
 };
 
-// Light theme - improved contrast
+// Light theme - enhanced contrast with card borders
 export const lightTheme = {
-    background: colors.neutral[50],           // Slightly darker background for contrast
-    backgroundSecondary: colors.neutral[100],
-    surface: colors.neutral[0],
+    background: colors.neutral[100],          // Slightly gray background for contrast
+    backgroundSecondary: colors.neutral[200],
+    surface: colors.neutral[0],               // Pure white cards
     surfaceElevated: colors.neutral[0],
     text: colors.neutral[900],
-    textSecondary: colors.neutral[500],       // Slightly darker for readability
+    textSecondary: colors.neutral[500],
     textTertiary: colors.neutral[400],
-    border: colors.neutral[300],              // Stronger border for visibility
+    border: colors.neutral[200],
     borderLight: colors.neutral[200],
-    divider: colors.neutral[200],             // New: section dividers
-    cardBorder: colors.neutral[200],          // New: subtle card outlines
+    divider: colors.neutral[200],
+    cardBorder: colors.neutral[200],          // Visible card outlines
     primary: colors.primary[600],
-    primaryLight: colors.primary[100],        // Slightly more visible
+    primaryLight: colors.primary[100],
     onPrimary: colors.neutral[0],
     tabBarBackground: colors.neutral[0],
     tabBarBorder: colors.neutral[200],
@@ -92,8 +92,20 @@ export const lightTheme = {
     warning: colors.warning,
     error: colors.error,
     info: colors.info,
-    // Card colors
-    cards: colors.cards,
+    // Accent colors for icons
+    accents: colors.accents,
+    // Card backgrounds - all white in light mode for clean look
+    cards: {
+        salat: colors.neutral[0],
+        adhkar: colors.neutral[0],
+        quran: colors.neutral[0],
+        charity: colors.neutral[0],
+        tahajjud: colors.neutral[0],
+        custom: colors.neutral[0],
+    },
+    // Progress bar colors
+    progressBarBackground: colors.neutral[200],
+    progressBarFill: colors.primary[500],
 };
 
 // Dark theme
@@ -107,8 +119,8 @@ export const darkTheme = {
     textTertiary: colors.neutral[500],
     border: colors.neutral[800],
     borderLight: colors.neutral[700],
-    divider: colors.neutral[800],             // Match light theme structure
-    cardBorder: colors.neutral[700],          // Subtle card outlines
+    divider: colors.neutral[800],
+    cardBorder: colors.neutral[700],
     primary: colors.primary[400],
     primaryLight: colors.primary[900],
     onPrimary: colors.neutral[900],
@@ -123,15 +135,20 @@ export const darkTheme = {
     warning: colors.warning,
     error: colors.error,
     info: colors.info,
-    // Dark mode card colors
+    // Accent colors for icons
+    accents: colors.accents,
+    // Dark mode card colors - subtle color tints
     cards: {
-        salat: '#134E4A',
-        adhkar: '#451A03',
-        quran: '#422006',
-        charity: '#500724',
-        tahajjud: '#2E1065',
-        custom: '#0C4A6E',
+        salat: '#0F2927',
+        adhkar: '#1C1708',
+        quran: '#1A1606',
+        charity: '#1F0A14',
+        tahajjud: '#1A1033',
+        custom: '#0E1A2E',
     },
+    // Progress bar colors
+    progressBarBackground: colors.neutral[700],
+    progressBarFill: colors.primary[400],
 };
 
 export type Theme = typeof lightTheme;
