@@ -179,7 +179,7 @@ const DuaScreen: React.FC = () => {
                 {/* Expanded Content */}
                 {isExpanded && (
                     <View style={styles.expandedContent}>
-                        {/* Transliteration */}
+                        {/* Transliteration - only for non-Arabic */}
                         {!isArabic && (
                             <View style={styles.transliterationSection}>
                                 <Text style={[styles.sectionLabel, { color: theme.colors.textSecondary }]}>
@@ -190,16 +190,6 @@ const DuaScreen: React.FC = () => {
                                 </Text>
                             </View>
                         )}
-
-                        {/* Translation */}
-                        <View style={styles.translationSection}>
-                            <Text style={[styles.sectionLabel, { color: theme.colors.textSecondary }]}>
-                                {isArabic ? 'المعنى' : 'Translation'}
-                            </Text>
-                            <Text style={[styles.translationText, { color: theme.colors.text }]}>
-                                {isArabic ? dua.translationAr : dua.translation}
-                            </Text>
-                        </View>
 
                         {/* Reference & Actions */}
                         <View style={[styles.duaFooter, { borderTopColor: theme.colors.border }]}>
@@ -468,10 +458,10 @@ const styles = StyleSheet.create({
         fontWeight: '700',
     },
     arabicText: {
-        fontSize: 22,
-        lineHeight: 38,
+        fontSize: 24,
+        lineHeight: 42,
         textAlign: 'right',
-        fontFamily: 'System',
+        fontFamily: 'Amiri',
         marginBottom: 12,
     },
     occasionBadge: {
