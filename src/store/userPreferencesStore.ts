@@ -18,6 +18,7 @@ interface UserPreferencesState extends UserPreferences {
     setQuietHours: (start: string, end: string) => void;
     setHideCharityAmounts: (hide: boolean) => void;
     setGoals: (goals: Partial<UserPreferences['goals']>) => void;
+    setRamadanMode: (enabled: boolean) => void;
     reset: () => void;
 }
 
@@ -34,6 +35,7 @@ const defaultPreferences: UserPreferences = {
         charityPerWeek: 3,
         tahajjudNightsPerWeek: 2,
     },
+    ramadanModeEnabled: false,
 };
 
 export const useUserPreferencesStore = create<UserPreferencesState>()(
@@ -74,6 +76,10 @@ export const useUserPreferencesStore = create<UserPreferencesState>()(
                 set((state) => ({
                     goals: { ...state.goals, ...goals },
                 }));
+            },
+
+            setRamadanMode: (enabled) => {
+                set({ ramadanModeEnabled: enabled });
             },
 
             reset: () => {

@@ -259,6 +259,88 @@ const AdhkarCard: React.FC = () => {
 };
 
 // ========================================
+// Du'a Card Component - Quick Access
+// ========================================
+const DuaCard: React.FC = () => {
+    const { i18n } = useTranslation();
+    const { theme } = useTheme();
+    const navigation = useNavigation<NavigationProp>();
+    const isArabic = i18n.language === 'ar';
+
+    const handleOpenDuas = () => {
+        navigation.navigate('Dua');
+    };
+
+    return (
+        <AppCard backgroundColor={theme.colors.cards.adhkar} onPress={handleOpenDuas}>
+            <View style={styles.duaCardContent}>
+                <View style={[styles.iconContainer, { backgroundColor: theme.colors.info.main + '20' }]}>
+                    <MaterialCommunityIcons
+                        name="book-open-page-variant"
+                        size={24}
+                        color={theme.colors.info.main}
+                    />
+                </View>
+                <View style={styles.duaCardText}>
+                    <Text style={[styles.cardTitle, { color: theme.colors.text }]}>
+                        {isArabic ? 'الأدعية' : "Du'a Collection"}
+                    </Text>
+                    <Text style={[styles.duaCardSubtitle, { color: theme.colors.textSecondary }]}>
+                        {isArabic ? 'أدعية لكل مناسبة' : 'Supplications for all occasions'}
+                    </Text>
+                </View>
+                <MaterialCommunityIcons
+                    name="chevron-right"
+                    size={24}
+                    color={theme.colors.textTertiary}
+                />
+            </View>
+        </AppCard>
+    );
+};
+
+// ========================================
+// Ramadan Card Component - Quick Access
+// ========================================
+const RamadanCard: React.FC = () => {
+    const { i18n } = useTranslation();
+    const { theme } = useTheme();
+    const navigation = useNavigation<NavigationProp>();
+    const isArabic = i18n.language === 'ar';
+
+    const handleOpenRamadan = () => {
+        navigation.navigate('Ramadan');
+    };
+
+    return (
+        <AppCard backgroundColor={theme.colors.info.main + '10'} onPress={handleOpenRamadan}>
+            <View style={styles.duaCardContent}>
+                <View style={[styles.iconContainer, { backgroundColor: theme.colors.info.main + '20' }]}>
+                    <MaterialCommunityIcons
+                        name="moon-waning-crescent"
+                        size={24}
+                        color={theme.colors.info.main}
+                    />
+                </View>
+                <View style={styles.duaCardText}>
+                    <Text style={[styles.cardTitle, { color: theme.colors.text }]}>
+                        {isArabic ? 'رمضان' : 'Ramadan'}
+                    </Text>
+                    <Text style={[styles.duaCardSubtitle, { color: theme.colors.textSecondary }]}>
+                        {isArabic ? 'تتبع السحور والإفطار والتراويح' : 'Track Suhoor, Iftar & Taraweeh'}
+                    </Text>
+                </View>
+                <MaterialCommunityIcons
+                    name="chevron-right"
+                    size={24}
+                    color={theme.colors.textTertiary}
+                />
+            </View>
+        </AppCard>
+    );
+};
+
+// ========================================
 // Qur'an Card Component - Premium Tracker Block
 // ========================================
 const QuranCard: React.FC = () => {
@@ -638,6 +720,7 @@ const TodayScreen: React.FC = () => {
     const { t, i18n } = useTranslation();
     const { theme, isDark } = useTheme();
     const navigation = useNavigation<NavigationProp>();
+    const { ramadanModeEnabled } = useUserPreferencesStore();
 
     const today = new Date();
     const formattedDate = today.toLocaleDateString(
@@ -681,12 +764,15 @@ const TodayScreen: React.FC = () => {
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
             >
+                {ramadanModeEnabled && <RamadanCard />}
                 <SalatCard />
                 <AdhkarCard />
+                <DuaCard />
                 <QuranCard />
                 <CharityCard />
                 <TahajjudCard />
                 <CustomHabitsCard />
+
 
                 <View style={styles.bottomSpacer} />
             </ScrollView>
@@ -943,6 +1029,19 @@ const styles = StyleSheet.create({
     emptyHabitText: {
         fontSize: 14,
         fontWeight: '500',
+    },
+    // Du'a Card
+    duaCardContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 14,
+    },
+    duaCardText: {
+        flex: 1,
+    },
+    duaCardSubtitle: {
+        fontSize: 13,
+        marginTop: 2,
     },
     bottomSpacer: {
         height: 24,

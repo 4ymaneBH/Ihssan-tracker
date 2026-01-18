@@ -9,6 +9,8 @@ import { useTheme } from '../context';
 // Screens
 import OnboardingScreen from '../screens/OnboardingScreen';
 import AdhkarScreen from '../screens/AdhkarScreen';
+import DuaScreen from '../screens/DuaScreen';
+import RamadanScreen from '../screens/RamadanScreen';
 import TahajjudScreen from '../screens/TahajjudScreen';
 import QuranScreen from '../screens/QuranScreen';
 import ProfileScreen from '../screens/ProfileScreen';
@@ -49,6 +51,16 @@ const RootNavigator: React.FC = () => {
                         <Stack.Screen
                             name="Adhkar"
                             component={AdhkarScreen}
+                            options={{ presentation: 'card' }}
+                        />
+                        <Stack.Screen
+                            name="Dua"
+                            component={DuaScreen}
+                            options={{ presentation: 'card' }}
+                        />
+                        <Stack.Screen
+                            name="Ramadan"
+                            component={RamadanScreen}
                             options={{ presentation: 'card' }}
                         />
                         <Stack.Screen

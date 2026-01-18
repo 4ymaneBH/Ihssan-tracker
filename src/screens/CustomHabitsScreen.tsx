@@ -375,8 +375,14 @@ const CustomHabitsScreen: React.FC = () => {
         const isComplete = count >= habit.targetCount;
         const habitName = isArabic ? habit.nameAr : habit.name;
 
+        const handleToggleComplete = () => {
+            // Toggle between 0 and targetCount
+            const newCount = isComplete ? 0 : habit.targetCount;
+            logCustomHabit(habit.id, newCount);
+        };
+
         return (
-            <TouchableOpacity
+            <View
                 style={[
                     styles.habitCard,
                     {
@@ -385,26 +391,41 @@ const CustomHabitsScreen: React.FC = () => {
                         borderWidth: isComplete ? 2 : 1,
                     },
                 ]}
-                onPress={() => handleLogHabit(habit.id)}
-                onLongPress={() => handleEditHabit(habit)}
             >
-                <View style={[styles.habitIcon, { backgroundColor: habit.color + '20' }]}>
-                    <MaterialCommunityIcons name={habit.icon as any} size={24} color={habit.color} />
-                </View>
-                <View style={styles.habitInfo}>
-                    <Text style={[styles.habitName, { color: theme.colors.text }]}>
-                        {habitName}
-                    </Text>
-                    <Text style={[styles.habitProgress, { color: theme.colors.textSecondary }]}>
-                        {formatNumber(count, i18n.language)} / {formatNumber(habit.targetCount, i18n.language)}
-                    </Text>
-                </View>
-                {isComplete && (
-                    <View style={[styles.checkBadge, { backgroundColor: habit.color }]}>
-                        <MaterialCommunityIcons name="check" size={16} color="#FFFFFF" />
+                <TouchableOpacity
+                    style={styles.habitMainContent}
+                    onPress={() => handleLogHabit(habit.id)}
+                    onLongPress={() => handleEditHabit(habit)}
+                >
+                    <View style={[styles.habitIcon, { backgroundColor: habit.color + '20' }]}>
+                        <MaterialCommunityIcons name={habit.icon as any} size={24} color={habit.color} />
                     </View>
-                )}
-            </TouchableOpacity>
+                    <View style={styles.habitInfo}>
+                        <Text style={[styles.habitName, { color: theme.colors.text }]}>
+                            {habitName}
+                        </Text>
+                        <Text style={[styles.habitProgress, { color: theme.colors.textSecondary }]}>
+                            {formatNumber(count, i18n.language)} / {formatNumber(habit.targetCount, i18n.language)}
+                        </Text>
+                    </View>
+                </TouchableOpacity>
+
+                {/* Checkbox for quick toggle */}
+                <TouchableOpacity
+                    style={[
+                        styles.checkboxButton,
+                        {
+                            backgroundColor: isComplete ? habit.color : 'transparent',
+                            borderColor: isComplete ? habit.color : theme.colors.border,
+                        },
+                    ]}
+                    onPress={handleToggleComplete}
+                >
+                    {isComplete && (
+                        <MaterialCommunityIcons name="check" size={18} color="#FFFFFF" />
+                    )}
+                </TouchableOpacity>
+            </View>
         );
     };
 
@@ -507,6 +528,20 @@ const styles = StyleSheet.create({
     habitProgress: {
         fontSize: 14,
         marginTop: 4,
+    },
+    habitMainContent: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    checkboxButton: {
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        borderWidth: 2,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginLeft: 12,
     },
     checkBadge: {
         width: 28,

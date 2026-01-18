@@ -86,11 +86,13 @@ const SettingsScreen: React.FC = () => {
         language,
         notificationsEnabled,
         hideCharityAmounts,
+        ramadanModeEnabled,
         goals,
         setLanguage,
         setTheme,
         setNotificationsEnabled,
         setHideCharityAmounts,
+        setRamadanMode,
     } = useUserPreferencesStore();
 
     const userTheme = useUserPreferencesStore((state) => state.theme);
@@ -170,7 +172,27 @@ const SettingsScreen: React.FC = () => {
                     </View>
                 </TouchableOpacity>
 
-                {/* Notifications Section */}
+                {/* Ramadan Mode Section */}
+                <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
+                    <Text style={[styles.sectionTitle, { color: theme.colors.textSecondary }]}>
+                        {isArabic ? 'رمضان' : 'Ramadan'}
+                    </Text>
+
+                    <SettingRow
+                        iconName="moon-waning-crescent"
+                        iconColor={theme.colors.info.main}
+                        label={isArabic ? 'وضع رمضان' : 'Ramadan Mode'}
+                        rightElement={
+                            <Switch
+                                value={ramadanModeEnabled}
+                                onValueChange={setRamadanMode}
+                                trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
+                                thumbColor="#FFFFFF"
+                            />
+                        }
+                    />
+                </View>
+
                 <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
                     <Text style={[styles.sectionTitle, { color: theme.colors.textSecondary }]}>
                         {t('settings.notifications')}
@@ -188,16 +210,6 @@ const SettingsScreen: React.FC = () => {
                                 thumbColor="#FFFFFF"
                             />
                         }
-                    />
-
-                    <View style={[styles.divider, { backgroundColor: theme.colors.borderLight }]} />
-
-                    <SettingRow
-                        iconName="moon-waning-crescent"
-                        iconColor={theme.colors.info.main}
-                        label={t('settings.quietHours')}
-                        value="22:00 - 06:00"
-                        onPress={() => { }}
                     />
                 </View>
 
@@ -227,14 +239,6 @@ const SettingsScreen: React.FC = () => {
                     <Text style={[styles.sectionTitle, { color: theme.colors.textSecondary }]}>
                         {t('settings.about')}
                     </Text>
-
-                    <SettingRow
-                        iconName="information-outline"
-                        label={t('settings.about')}
-                        onPress={() => { }}
-                    />
-
-                    <View style={[styles.divider, { backgroundColor: theme.colors.borderLight }]} />
 
                     <SettingRow
                         iconName="cellphone"
@@ -288,19 +292,6 @@ const SettingsScreen: React.FC = () => {
                 onSelect={(val: string) => setTheme(val as 'light' | 'dark')}
             />
 
-            {/* Language Modal */}
-            <SelectionModal
-                visible={activeModal === 'language'}
-                onClose={() => setActiveModal(null)}
-                title={t('settings.language')}
-                options={[
-                    { label: 'English', value: 'en', icon: 'ab-testing' },
-                    { label: 'العربية', value: 'ar', icon: 'abjad-arabic' },
-                ]}
-                selectedValue={language}
-                onSelect={(val) => setLanguage(val as 'en' | 'ar')}
-            />
-
             {/* Theme Modal */}
             <SelectionModal
                 visible={activeModal === 'theme'}
@@ -311,7 +302,7 @@ const SettingsScreen: React.FC = () => {
                     { label: t('onboarding.darkTheme'), value: 'dark', icon: 'weather-night', iconColor: theme.colors.info.main },
                 ]}
                 selectedValue={userTheme}
-                onSelect={(val) => setTheme(val as 'light' | 'dark')}
+                onSelect={(val: string) => setTheme(val as 'light' | 'dark')}
             />
         </SafeAreaView>
     );
