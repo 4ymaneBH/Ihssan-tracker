@@ -10,6 +10,8 @@ import {
     FlatList,
     Share,
     Dimensions,
+    Image,
+    ImageSourcePropType,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -42,6 +44,20 @@ const categoryStyles: Record<DuaCategory, { bgColor: string; accentColor: string
     gratitude: { bgColor: '#FDE047', accentColor: '#A16207', icon: 'hand-heart' },
     anxiety: { bgColor: '#BAE6FD', accentColor: '#0369A1', icon: 'meditation' },
     sleep: { bgColor: '#C4B5FD', accentColor: '#5B21B6', icon: 'bed' },
+};
+
+// Category illustrations
+const categoryImages: Record<DuaCategory, ImageSourcePropType> = {
+    daily: require('../../assets/illustrations/dua_daily.png'),
+    morning_evening: require('../../assets/illustrations/dua_morning_evening.png'),
+    prayer: require('../../assets/illustrations/dua_prayer.png'),
+    travel: require('../../assets/illustrations/dua_travel.png'),
+    food: require('../../assets/illustrations/dua_food.png'),
+    protection: require('../../assets/illustrations/dua_protection.png'),
+    forgiveness: require('../../assets/illustrations/dua_forgiveness.png'),
+    gratitude: require('../../assets/illustrations/dua_gratitude.png'),
+    anxiety: require('../../assets/illustrations/dua_anxiety.png'),
+    sleep: require('../../assets/illustrations/dua_sleep.png'),
 };
 
 const DuaScreen: React.FC = () => {
@@ -106,11 +122,12 @@ const DuaScreen: React.FC = () => {
         }
     };
 
-    // Render category card
+    // Render category card with illustration as background
     const renderCategoryCard = (category: DuaCategory, isLarge: boolean = false) => {
         const style = categoryStyles[category];
         const label = getCategoryLabel(category, isArabic);
         const duaCount = getDuasByCategory(category).length;
+        const image = categoryImages[category];
 
         return (
             <TouchableOpacity
@@ -120,24 +137,34 @@ const DuaScreen: React.FC = () => {
                     { backgroundColor: isDark ? theme.colors.surface : style.bgColor },
                 ]}
                 onPress={() => handleCategoryPress(category)}
-                activeOpacity={0.8}
+                activeOpacity={0.85}
             >
-                <View style={[styles.categoryIconBg, { backgroundColor: style.accentColor + '20' }]}>
-                    <MaterialCommunityIcons
-                        name={style.icon as any}
-                        size={isLarge ? 36 : 28}
-                        color={style.accentColor}
-                    />
+                {/* Background Illustration */}
+                <Image
+                    source={image}
+                    style={[
+                        styles.illustrationBackground,
+                        isLarge && styles.largeIllustrationBackground,
+                        isDark && { opacity: 0.6 },
+                    ]}
+                    resizeMode="cover"
+                />
+                {/* Text overlay at bottom */}
+                <View style={[
+                    styles.categoryTextOverlay,
+                    { backgroundColor: isDark ? 'rgba(30, 30, 35, 0.9)' : 'rgba(255, 255, 255, 0.85)' },
+                ]}>
+                    <Text style={[styles.categoryLabel, { color: theme.colors.text }]} numberOfLines={2}>
+                        {label}
+                    </Text>
+                    <Text style={[styles.categoryCount, { color: theme.colors.textSecondary }]}>
+                        {isArabic ? `${duaCount} أدعية` : `${duaCount} du'as`}
+                    </Text>
                 </View>
-                <Text style={[styles.categoryLabel, { color: theme.colors.text }]} numberOfLines={2}>
-                    {label}
-                </Text>
-                <Text style={[styles.categoryCount, { color: theme.colors.textSecondary }]}>
-                    {isArabic ? `${duaCount} أدعية` : `${duaCount} du'as`}
-                </Text>
             </TouchableOpacity>
         );
     };
+
 
     // Render du'a card
     const renderDuaCard = ({ item: dua, index }: { item: Dua; index: number }) => {
@@ -384,11 +411,6 @@ const styles = StyleSheet.create({
     featuredSection: {
         marginBottom: 16,
     },
-    largeCategoryCard: {
-        borderRadius: 20,
-        padding: 24,
-        minHeight: 140,
-    },
     // Category Grid
     categoryGrid: {
         flexDirection: 'row',
@@ -397,25 +419,47 @@ const styles = StyleSheet.create({
     },
     categoryCard: {
         width: CARD_WIDTH,
-        borderRadius: 16,
-        padding: 16,
-        minHeight: 120,
+        borderRadius: 20,
+        minHeight: 180,
+        overflow: 'hidden',
+        position: 'relative',
     },
-    categoryIconBg: {
-        width: 48,
-        height: 48,
-        borderRadius: 14,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 12,
+    largeCategoryCard: {
+        borderRadius: 24,
+        minHeight: 180,
+        overflow: 'hidden',
+        position: 'relative',
+    },
+    illustrationBackground: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100%',
+        height: '100%',
+        opacity: 0.85,
+    },
+    largeIllustrationBackground: {
+        opacity: 0.9,
+    },
+    categoryTextOverlay: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        paddingHorizontal: 16,
+        paddingVertical: 14,
+        backgroundColor: 'rgba(255, 255, 255, 0.85)',
     },
     categoryLabel: {
-        fontSize: 15,
-        fontWeight: '600',
-        marginBottom: 4,
+        fontSize: 16,
+        fontWeight: '700',
+        marginBottom: 2,
     },
     categoryCount: {
         fontSize: 12,
+        opacity: 0.7,
     },
     // Search
     searchContainer: {
