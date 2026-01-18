@@ -7,14 +7,13 @@ import {
     ScrollView,
     TouchableOpacity,
     Switch,
-    Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context';
 import { useUserPreferencesStore } from '../store';
-import { GoalsModal } from '../components';
+import { GoalsModal, SelectionModal } from '../components';
 
 interface SettingRowProps {
     iconName: string;
@@ -81,6 +80,8 @@ const SettingsScreen: React.FC = () => {
     const { t, i18n } = useTranslation();
     const { theme } = useTheme();
     const [showGoalsModal, setShowGoalsModal] = useState(false);
+    const [activeModal, setActiveModal] = useState<'language' | 'theme' | null>(null);
+
     const {
         language,
         notificationsEnabled,
@@ -94,48 +95,6 @@ const SettingsScreen: React.FC = () => {
 
     const userTheme = useUserPreferencesStore((state) => state.theme);
     const isArabic = i18n.language === 'ar';
-
-    const handleLanguageChange = () => {
-        Alert.alert(
-            t('settings.language'),
-            '',
-            [
-                {
-                    text: 'English',
-                    onPress: () => setLanguage('en'),
-                },
-                {
-                    text: 'العربية',
-                    onPress: () => setLanguage('ar'),
-                },
-                {
-                    text: t('common.cancel'),
-                    style: 'cancel',
-                },
-            ]
-        );
-    };
-
-    const handleThemeChange = () => {
-        Alert.alert(
-            t('settings.theme'),
-            '',
-            [
-                {
-                    text: t('onboarding.lightTheme'),
-                    onPress: () => setTheme('light'),
-                },
-                {
-                    text: t('onboarding.darkTheme'),
-                    onPress: () => setTheme('dark'),
-                },
-                {
-                    text: t('common.cancel'),
-                    style: 'cancel',
-                },
-            ]
-        );
-    };
 
     const getThemeLabel = () => {
         if (userTheme === 'light') return t('onboarding.lightTheme');
@@ -169,7 +128,7 @@ const SettingsScreen: React.FC = () => {
                         iconColor={theme.colors.info.main}
                         label={t('settings.language')}
                         value={language === 'en' ? 'English' : 'العربية'}
-                        onPress={handleLanguageChange}
+                        onPress={() => setActiveModal('language')}
                     />
 
                     <View style={[styles.divider, { backgroundColor: theme.colors.borderLight }]} />
@@ -179,7 +138,7 @@ const SettingsScreen: React.FC = () => {
                         iconColor={userTheme === 'dark' ? theme.colors.info.main : theme.colors.warning.main}
                         label={t('settings.theme')}
                         value={getThemeLabel()}
-                        onPress={handleThemeChange}
+                        onPress={() => setActiveModal('theme')}
                     />
                 </View>
 
@@ -301,6 +260,58 @@ const SettingsScreen: React.FC = () => {
             <GoalsModal
                 visible={showGoalsModal}
                 onClose={() => setShowGoalsModal(false)}
+            />
+
+            {/* Language Modal */}
+            <SelectionModal
+                visible={activeModal === 'language'}
+                onClose={() => setActiveModal(null)}
+                title={t('settings.language')}
+                options={[
+                    { label: 'English', value: 'en', icon: 'ab-testing' },
+                    { label: 'العربية', value: 'ar', icon: 'abjad-arabic' },
+                ]}
+                selectedValue={language}
+                onSelect={(val: string) => setLanguage(val as 'en' | 'ar')}
+            />
+
+            {/* Theme Modal */}
+            <SelectionModal
+                visible={activeModal === 'theme'}
+                onClose={() => setActiveModal(null)}
+                title={t('settings.theme')}
+                options={[
+                    { label: t('onboarding.lightTheme'), value: 'light', icon: 'white-balance-sunny', iconColor: theme.colors.warning.main },
+                    { label: t('onboarding.darkTheme'), value: 'dark', icon: 'weather-night', iconColor: theme.colors.info.main },
+                ]}
+                selectedValue={userTheme}
+                onSelect={(val: string) => setTheme(val as 'light' | 'dark')}
+            />
+
+            {/* Language Modal */}
+            <SelectionModal
+                visible={activeModal === 'language'}
+                onClose={() => setActiveModal(null)}
+                title={t('settings.language')}
+                options={[
+                    { label: 'English', value: 'en', icon: 'ab-testing' },
+                    { label: 'العربية', value: 'ar', icon: 'abjad-arabic' },
+                ]}
+                selectedValue={language}
+                onSelect={(val) => setLanguage(val as 'en' | 'ar')}
+            />
+
+            {/* Theme Modal */}
+            <SelectionModal
+                visible={activeModal === 'theme'}
+                onClose={() => setActiveModal(null)}
+                title={t('settings.theme')}
+                options={[
+                    { label: t('onboarding.lightTheme'), value: 'light', icon: 'white-balance-sunny', iconColor: theme.colors.warning.main },
+                    { label: t('onboarding.darkTheme'), value: 'dark', icon: 'weather-night', iconColor: theme.colors.info.main },
+                ]}
+                selectedValue={userTheme}
+                onSelect={(val) => setTheme(val as 'light' | 'dark')}
             />
         </SafeAreaView>
     );

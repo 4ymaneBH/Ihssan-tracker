@@ -38,22 +38,23 @@ const MainTabs: React.FC = () => {
                 headerShown: false,
                 tabBarStyle: {
                     backgroundColor: theme.colors.tabBarBackground,
-                    borderTopColor: theme.colors.tabBarBorder,
-                    borderTopWidth: 1,
-                    height: 80,
-                    paddingBottom: 20,
-                    paddingTop: 10,
-                    elevation: 0,
-                    shadowColor: theme.colors.text,
-                    shadowOffset: { width: 0, height: -2 },
-                    shadowOpacity: 0.06,
-                    shadowRadius: 8,
+                    borderTopColor: theme.colors.tabBarBorder, // Ensure this color is subtle in theme
+                    borderTopWidth: 0.5, // Thinner border for elegance
+                    height: 85, // Taller for more breathing room
+                    paddingBottom: 24, // Optimized for iPhone home indicator
+                    paddingTop: 12,
+                    elevation: 8, // Subtle elevation
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: -4 },
+                    shadowOpacity: 0.04, // Very subtle shadow
+                    shadowRadius: 16, // Soft diffusion
                 },
                 tabBarActiveTintColor: theme.colors.primary,
                 tabBarInactiveTintColor: theme.colors.tabBarInactive,
                 tabBarLabelStyle: {
                     fontSize: 12,
-                    fontWeight: '600',
+                    fontWeight: '600', // Medium-Bold for readability
+                    marginTop: 4,
                 },
                 tabBarIcon: ({ focused, color, size }) => {
                     const icons = tabIcons[route.name];

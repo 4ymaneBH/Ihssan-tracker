@@ -27,6 +27,7 @@ interface DhikrCardProps {
     dhikr: Dhikr;
     index: number;
     total: number;
+    category: AdhkarCategory;
     onComplete: () => void;
 }
 
@@ -34,6 +35,7 @@ const DhikrCard: React.FC<DhikrCardProps> = ({
     dhikr,
     index,
     total,
+    category,
     onComplete,
 }) => {
     const { theme, isDark } = useTheme();
@@ -105,7 +107,11 @@ const DhikrCard: React.FC<DhikrCardProps> = ({
                         <Text
                             style={[
                                 styles.arabicText,
-                                { color: theme.colors.text },
+                                {
+                                    color: theme.colors.text,
+                                    fontSize: category === 'general' ? 34 : 20,
+                                    lineHeight: category === 'general' ? 74 : 45,
+                                },
                             ]}
                         >
                             {dhikr.arabic}
@@ -322,6 +328,7 @@ const AdhkarScreen: React.FC<AdhkarScreenProps> = ({ route }) => {
                             dhikr={dhikr}
                             index={index}
                             total={adhkarList.length}
+                            category={activeCategory}
                             onComplete={() => handleComplete(dhikr.id)}
                         />
                     </View>
@@ -339,7 +346,7 @@ const AdhkarScreen: React.FC<AdhkarScreenProps> = ({ route }) => {
                                 backgroundColor: currentPage === index
                                     ? theme.colors.primary
                                     : theme.colors.border,
-                                width: currentPage === index ? 20 : 6,
+                                width: currentPage === index ? 24 : 8,
                             },
                         ]}
                     />
@@ -388,29 +395,29 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingHorizontal: 16,
-        paddingVertical: 12,
+        paddingHorizontal: 20,
+        paddingVertical: 16,
     },
     backButton: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
+        width: 44,
+        height: 44,
+        borderRadius: 22,
         alignItems: 'center',
         justifyContent: 'center',
     },
     headerTitle: {
-        fontSize: 20,
+        fontSize: 22,
         fontWeight: '700',
     },
     progressBadge: {
-        paddingHorizontal: 14,
+        paddingHorizontal: 16,
         paddingVertical: 8,
         borderRadius: 20,
-        minWidth: 60,
+        minWidth: 70,
         alignItems: 'center',
     },
     progressText: {
-        fontSize: 14,
+        fontSize: 15,
         fontWeight: '700',
     },
     // Tabs
@@ -418,21 +425,21 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         paddingHorizontal: 16,
         paddingBottom: 16,
-        gap: 10,
+        gap: 12,
     },
     tab: {
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 6,
-        paddingVertical: 12,
-        borderRadius: 14,
+        gap: 8,
+        paddingVertical: 14,
+        borderRadius: 16,
         borderWidth: 1.5,
         borderColor: 'transparent',
     },
     tabText: {
-        fontSize: 14,
+        fontSize: 15,
         fontWeight: '600',
     },
     // Pager
@@ -442,79 +449,88 @@ const styles = StyleSheet.create({
     pageContainer: {
         flex: 1,
         paddingHorizontal: 20,
-        paddingBottom: 8,
+        paddingBottom: 20,
+        justifyContent: 'center',
     },
     // Card
     cardWrapper: {
         flex: 1,
         justifyContent: 'center',
+        marginVertical: 10,
     },
     dhikrCard: {
-        borderRadius: 24,
-        padding: 20,
-        maxHeight: SCREEN_HEIGHT * 0.65,
-        // Subtle shadow for light mode
+        borderRadius: 32,
+        padding: 24,
+        maxHeight: SCREEN_HEIGHT * 0.70, // Slightly reduced to ensure fits on screen with dots
+        flexGrow: 1,
+        // Premium shadow
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.06,
-        shadowRadius: 8,
-        elevation: 2,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 12,
+        elevation: 4,
     },
     cardHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 20,
+        marginBottom: 24,
     },
     indexBadge: {
-        paddingHorizontal: 14,
-        paddingVertical: 8,
+        paddingHorizontal: 12,
+        paddingVertical: 6,
         borderRadius: 12,
     },
     indexText: {
         fontSize: 14,
         fontWeight: '700',
+        opacity: 0.8,
     },
     repeatInfo: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: 8,
+        backgroundColor: 'rgba(0,0,0,0.05)', // Subtle background
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 12,
     },
     countText: {
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: '700',
     },
     // Scrollable content
     cardScrollContent: {
         flex: 1,
-        minHeight: 200,
     },
     cardScrollInner: {
-        paddingBottom: 16,
+        paddingBottom: 20,
+        flexGrow: 1,
+        justifyContent: 'center', // Center content if short
     },
     // Arabic text - Qur'an-like style with Amiri font
     arabicText: {
-        fontSize: 26,
-        lineHeight: 52,
         textAlign: 'center',
         fontWeight: '400',
-        marginBottom: 24,
+        marginBottom: 32,
         // Amiri font for authentic Qur'an reading experience
         fontFamily: 'Amiri_400Regular',
     },
     // Transliteration
     transliterationText: {
-        fontSize: 15,
+        fontSize: 16,
         fontStyle: 'italic',
-        lineHeight: 24,
-        marginBottom: 16,
+        lineHeight: 26,
+        marginBottom: 20,
         textAlign: 'left',
+        opacity: 0.9,
     },
     // Translation
     translationText: {
-        fontSize: 14,
-        lineHeight: 22,
-        marginBottom: 16,
+        fontSize: 15,
+        lineHeight: 24,
+        marginBottom: 20,
+        opacity: 0.9,
     },
     // Reference
     referenceRow: {
@@ -524,6 +540,7 @@ const styles = StyleSheet.create({
         paddingTop: 16,
         marginTop: 8,
         borderTopWidth: 1,
+        opacity: 0.7,
     },
     referenceText: {
         fontSize: 13,
@@ -531,37 +548,39 @@ const styles = StyleSheet.create({
     },
     // Progress
     progressTrack: {
-        height: 6,
-        borderRadius: 3,
+        height: 8,
+        borderRadius: 4,
         overflow: 'hidden',
-        marginTop: 16,
+        marginTop: 20,
+        marginBottom: 12,
     },
     progressFill: {
         height: '100%',
-        borderRadius: 3,
+        borderRadius: 4,
     },
     tapHint: {
-        fontSize: 13,
+        fontSize: 15,
         textAlign: 'center',
-        marginTop: 14,
-        fontWeight: '500',
+        fontWeight: '600',
+        paddingVertical: 8,
+        opacity: 0.8,
     },
     // Dots indicator
     dotsContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        paddingVertical: 12,
-        gap: 6,
+        paddingVertical: 20,
+        gap: 8,
     },
     dot: {
-        height: 6,
-        borderRadius: 3,
+        height: 8, // Increased from 6
+        borderRadius: 4,
     },
     // Bottom area
     bottomArea: {
         paddingHorizontal: 20,
-        paddingBottom: 8,
+        paddingBottom: 10,
     },
     swipeHint: {
         flexDirection: 'row',
@@ -569,6 +588,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         gap: 8,
         paddingVertical: 12,
+        opacity: 0.7,
     },
     swipeHintText: {
         fontSize: 14,
@@ -579,12 +599,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 8,
-        paddingVertical: 14,
-        borderRadius: 14,
+        paddingVertical: 16,
+        borderRadius: 16,
+        marginTop: 10,
     },
     completionText: {
-        fontSize: 15,
-        fontWeight: '600',
+        fontSize: 16,
+        fontWeight: '700',
     },
 });
 

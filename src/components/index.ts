@@ -10,3 +10,4 @@ export { AppCard } from './AppCard';
 export { PrayerPill } from './PrayerPill';
 export { QuickActionButton } from './QuickActionButton';
 export { GoalsModal } from './GoalsModal';
+export { default as SelectionModal } from './SelectionModal';

@@ -7,7 +7,7 @@ import {
     Modal,
     TouchableOpacity,
     Dimensions,
-    TextInput,
+    ScrollView,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -182,56 +182,62 @@ export const GoalsModal: React.FC<GoalsModalProps> = ({ visible, onClose }) => {
                     </View>
 
                     {/* Goals List */}
-                    <View style={styles.goalsContainer}>
-                        <GoalItem
-                            icon="book-open-page-variant"
-                            iconColor={theme.colors.primary}
-                            title={isArabic ? 'القرآن الكريم' : 'Quran Reading'}
-                            subtitle={isArabic ? 'صفحات يومياً' : 'Pages per day'}
-                            value={goals.quranPagesPerDay}
-                            onValueChange={handleQuranChange}
-                            min={1}
-                            max={30}
-                            step={1}
-                            unit={isArabic ? 'صفحة/يوم' : 'pages/day'}
-                        />
-
-                        <GoalItem
-                            icon="hand-heart"
-                            iconColor={theme.colors.success.main}
-                            title={isArabic ? 'الصدقة' : 'Charity'}
-                            subtitle={isArabic ? 'مرات أسبوعياً' : 'Times per week'}
-                            value={goals.charityPerWeek}
-                            onValueChange={handleCharityChange}
-                            min={1}
-                            max={14}
-                            step={1}
-                            unit={isArabic ? 'مرة/أسبوع' : 'times/week'}
-                        />
-
-                        <GoalItem
-                            icon="moon-waning-crescent"
-                            iconColor={theme.colors.info.main}
-                            title={isArabic ? 'التهجد' : 'Tahajjud'}
-                            subtitle={isArabic ? 'ليالي أسبوعياً' : 'Nights per week'}
-                            value={goals.tahajjudNightsPerWeek}
-                            onValueChange={handleTahajjudChange}
-                            min={1}
-                            max={7}
-                            step={1}
-                            unit={isArabic ? 'ليلة/أسبوع' : 'nights/week'}
-                        />
-                    </View>
-
-                    {/* Done Button */}
-                    <TouchableOpacity
-                        style={[styles.doneButton, { backgroundColor: theme.colors.primary }]}
-                        onPress={onClose}
+                    <ScrollView
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={{ paddingBottom: 20 }}
+                        style={styles.goalsScrollView}
                     >
-                        <Text style={styles.doneButtonText}>
-                            {isArabic ? 'حفظ الأهداف' : 'Save Goals'}
-                        </Text>
-                    </TouchableOpacity>
+                        <View style={styles.goalsContainer}>
+                            <GoalItem
+                                icon="book-open-page-variant"
+                                iconColor={theme.colors.primary}
+                                title={isArabic ? 'القرآن الكريم' : 'Quran Reading'}
+                                subtitle={isArabic ? 'صفحات يومياً' : 'Pages per day'}
+                                value={goals.quranPagesPerDay}
+                                onValueChange={handleQuranChange}
+                                min={1}
+                                max={30}
+                                step={1}
+                                unit={isArabic ? 'صفحة/يوم' : 'pages/day'}
+                            />
+
+                            <GoalItem
+                                icon="hand-heart"
+                                iconColor={theme.colors.success.main}
+                                title={isArabic ? 'الصدقة' : 'Charity'}
+                                subtitle={isArabic ? 'مرات أسبوعياً' : 'Times per week'}
+                                value={goals.charityPerWeek}
+                                onValueChange={handleCharityChange}
+                                min={1}
+                                max={14}
+                                step={1}
+                                unit={isArabic ? 'مرة/أسبوع' : 'times/week'}
+                            />
+
+                            <GoalItem
+                                icon="moon-waning-crescent"
+                                iconColor={theme.colors.info.main}
+                                title={isArabic ? 'التهجد' : 'Tahajjud'}
+                                subtitle={isArabic ? 'ليالي أسبوعياً' : 'Nights per week'}
+                                value={goals.tahajjudNightsPerWeek}
+                                onValueChange={handleTahajjudChange}
+                                min={1}
+                                max={7}
+                                step={1}
+                                unit={isArabic ? 'ليلة/أسبوع' : 'nights/week'}
+                            />
+                        </View>
+
+                        {/* Done Button */}
+                        <TouchableOpacity
+                            style={[styles.doneButton, { backgroundColor: theme.colors.primary }]}
+                            onPress={onClose}
+                        >
+                            <Text style={styles.doneButtonText}>
+                                {isArabic ? 'حفظ الأهداف' : 'Save Goals'}
+                            </Text>
+                        </TouchableOpacity>
+                    </ScrollView>
                 </View>
             </View>
         </Modal>
@@ -283,6 +289,9 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    goalsScrollView: {
+        marginBottom: 10,
     },
     goalsContainer: {
         gap: 16,

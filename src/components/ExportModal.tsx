@@ -1,4 +1,4 @@
-// Export Modal - Month and format selection for analytics export
+// Export Modal - Month/Week selection for analytics export
 import React, { useState, useMemo } from 'react';
 import {
     View,
@@ -15,10 +15,14 @@ import { useTheme } from '../context';
 import { useSalatStore, useHabitsStore } from '../store';
 import {
     gatherMonthlyData,
+    gatherReportData,
+    getWeekDates,
     exportCSV,
     exportPDF,
     getMonthName,
+    ReportData,
 } from '../services/exportService';
+import { getDateString } from '../utils';
 
 interface ExportModalProps {
     visible: boolean;
@@ -26,13 +30,14 @@ interface ExportModalProps {
 }
 
 type ExportFormat = 'csv' | 'pdf';
+type ReportPeriod = 'monthly' | 'weekly';
 
 const ExportModal: React.FC<ExportModalProps> = ({ visible, onClose }) => {
     const { t, i18n } = useTranslation();
     const { theme } = useTheme();
     const isArabic = i18n.language === 'ar';
 
-    // Get store data - use individual selectors to avoid creating new objects
+    // Get store data
     const salatLogs = useSalatStore((state) => state.logs);
     const adhkarLogs = useHabitsStore((state) => state.adhkarLogs);
     const quranLogs = useHabitsStore((state) => state.quranLogs);
@@ -49,8 +54,22 @@ const ExportModal: React.FC<ExportModalProps> = ({ visible, onClose }) => {
 
     // State
     const currentDate = new Date();
+    const [selectedPeriod, setSelectedPeriod] = useState<ReportPeriod>('monthly');
+
+    // Monthly State
     const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
     const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth());
+
+    // Weekly State
+    // Default to start of current week (assuming Sunday start)
+    const getStartOfWeek = (date: Date) => {
+        const d = new Date(date);
+        const day = d.getDay();
+        const diff = d.getDate() - day; // adjust when day is sunday
+        return new Date(d.setDate(diff));
+    };
+    const [selectedWeekStart, setSelectedWeekStart] = useState<string>(getDateString(getStartOfWeek(currentDate)));
+
     const [selectedFormat, setSelectedFormat] = useState<ExportFormat>('csv');
     const [isExporting, setIsExporting] = useState(false);
     const [exportSuccess, setExportSuccess] = useState(false);
@@ -66,18 +85,53 @@ const ExportModal: React.FC<ExportModalProps> = ({ visible, onClose }) => {
         });
     }
 
+    // Generate last 8 weeks options
+    const weekOptions: { startDate: string; label: string }[] = [];
+    for (let i = 0; i < 8; i++) {
+        const d = getStartOfWeek(new Date());
+        d.setDate(d.getDate() - (i * 7));
+        const dateStr = getDateString(d);
+
+        // Format label: "Jan 12 - Jan 18"
+        const endD = new Date(d);
+        endD.setDate(d.getDate() + 6);
+        const label = `${d.getDate()} ${getMonthName(d.getMonth(), i18n.language).slice(0, 3)} - ${endD.getDate()} ${getMonthName(endD.getMonth(), i18n.language).slice(0, 3)}`;
+
+        weekOptions.push({
+            startDate: dateStr,
+            label: label
+        });
+    }
+
     const handleExport = async () => {
         setIsExporting(true);
         setExportSuccess(false);
 
         try {
-            const data = gatherMonthlyData(
-                selectedYear,
-                selectedMonth,
-                salatLogs,
-                habitsState,
-                i18n.language
-            );
+            let data: ReportData;
+
+            if (selectedPeriod === 'monthly') {
+                data = gatherMonthlyData(
+                    selectedYear,
+                    selectedMonth,
+                    salatLogs,
+                    habitsState,
+                    i18n.language
+                );
+            } else {
+                const dates = getWeekDates(selectedWeekStart);
+                const title = isArabic ? 'التقرير الأسبوعي' : 'Weekly Report';
+                // Find label for period
+                const weekLabel = weekOptions.find(w => w.startDate === selectedWeekStart)?.label || selectedWeekStart;
+
+                data = gatherReportData(
+                    dates,
+                    title,
+                    weekLabel,
+                    salatLogs,
+                    habitsState
+                );
+            }
 
             if (selectedFormat === 'csv') {
                 await exportCSV(data);
@@ -119,7 +173,7 @@ const ExportModal: React.FC<ExportModalProps> = ({ visible, onClose }) => {
                     {/* Header */}
                     <View style={styles.header}>
                         <Text style={[styles.title, { color: theme.colors.text }]}>
-                            {isArabic ? 'تصدير التقرير الشهري' : 'Export Monthly Report'}
+                            {isArabic ? 'تصدير التقرير' : 'Export Report'}
                         </Text>
                         <TouchableOpacity onPress={onClose} style={styles.closeButton}>
                             <MaterialCommunityIcons
@@ -130,50 +184,95 @@ const ExportModal: React.FC<ExportModalProps> = ({ visible, onClose }) => {
                         </TouchableOpacity>
                     </View>
 
-                    {/* Month Selection */}
+                    {/* Period Selector Toggle */}
+                    <View style={[styles.toggleContainer, { backgroundColor: theme.colors.background }]}>
+                        <TouchableOpacity
+                            style={[
+                                styles.toggleButton,
+                                selectedPeriod === 'monthly' && { backgroundColor: theme.colors.primary }
+                            ]}
+                            onPress={() => setSelectedPeriod('monthly')}
+                        >
+                            <Text style={[
+                                styles.toggleText,
+                                { color: selectedPeriod === 'monthly' ? theme.colors.onPrimary : theme.colors.textSecondary }
+                            ]}>
+                                {isArabic ? 'شهري' : 'Monthly'}
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={[
+                                styles.toggleButton,
+                                selectedPeriod === 'weekly' && { backgroundColor: theme.colors.primary }
+                            ]}
+                            onPress={() => setSelectedPeriod('weekly')}
+                        >
+                            <Text style={[
+                                styles.toggleText,
+                                { color: selectedPeriod === 'weekly' ? theme.colors.onPrimary : theme.colors.textSecondary }
+                            ]}>
+                                {isArabic ? 'أسبوعي' : 'Weekly'}
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    {/* Date Selection */}
                     <Text style={[styles.sectionLabel, { color: theme.colors.textSecondary }]}>
-                        {isArabic ? 'اختر الشهر' : 'Select Month'}
+                        {selectedPeriod === 'monthly'
+                            ? (isArabic ? 'اختر الشهر' : 'Select Month')
+                            : (isArabic ? 'اختر الأسبوع' : 'Select Week')
+                        }
                     </Text>
+
                     <ScrollView
                         horizontal
                         showsHorizontalScrollIndicator={false}
                         style={styles.monthScroll}
                         contentContainerStyle={styles.monthScrollContent}
                     >
-                        {monthOptions.map((option) => {
-                            const isSelected =
-                                option.year === selectedYear && option.month === selectedMonth;
-                            return (
-                                <TouchableOpacity
-                                    key={`${option.year}-${option.month}`}
-                                    style={[
-                                        styles.monthChip,
-                                        {
-                                            backgroundColor: isSelected
-                                                ? theme.colors.primary
-                                                : theme.colors.background,
-                                            borderColor: isSelected
-                                                ? theme.colors.primary
-                                                : theme.colors.border,
-                                        },
-                                    ]}
-                                    onPress={() => handleSelectMonth(option.year, option.month)}
-                                >
-                                    <Text
+                        {selectedPeriod === 'monthly' ? (
+                            monthOptions.map((option) => {
+                                const isSelected = option.year === selectedYear && option.month === selectedMonth;
+                                return (
+                                    <TouchableOpacity
+                                        key={`${option.year}-${option.month}`}
                                         style={[
-                                            styles.monthChipText,
+                                            styles.chip,
                                             {
-                                                color: isSelected
-                                                    ? theme.colors.onPrimary
-                                                    : theme.colors.text,
+                                                backgroundColor: isSelected ? theme.colors.primary : theme.colors.background,
+                                                borderColor: isSelected ? theme.colors.primary : theme.colors.border,
                                             },
                                         ]}
+                                        onPress={() => handleSelectMonth(option.year, option.month)}
                                     >
-                                        {option.label}
-                                    </Text>
-                                </TouchableOpacity>
-                            );
-                        })}
+                                        <Text style={[styles.chipText, { color: isSelected ? theme.colors.onPrimary : theme.colors.text }]}>
+                                            {option.label}
+                                        </Text>
+                                    </TouchableOpacity>
+                                );
+                            })
+                        ) : (
+                            weekOptions.map((option) => {
+                                const isSelected = option.startDate === selectedWeekStart;
+                                return (
+                                    <TouchableOpacity
+                                        key={option.startDate}
+                                        style={[
+                                            styles.chip,
+                                            {
+                                                backgroundColor: isSelected ? theme.colors.primary : theme.colors.background,
+                                                borderColor: isSelected ? theme.colors.primary : theme.colors.border,
+                                            },
+                                        ]}
+                                        onPress={() => setSelectedWeekStart(option.startDate)}
+                                    >
+                                        <Text style={[styles.chipText, { color: isSelected ? theme.colors.onPrimary : theme.colors.text }]}>
+                                            {option.label}
+                                        </Text>
+                                    </TouchableOpacity>
+                                );
+                            })
+                        )}
                     </ScrollView>
 
                     {/* Format Selection */}
@@ -342,6 +441,22 @@ const styles = StyleSheet.create({
     closeButton: {
         padding: 4,
     },
+    toggleContainer: {
+        flexDirection: 'row',
+        borderRadius: 12,
+        padding: 4,
+        marginBottom: 20,
+    },
+    toggleButton: {
+        flex: 1,
+        paddingVertical: 10,
+        alignItems: 'center',
+        borderRadius: 8,
+    },
+    toggleText: {
+        fontSize: 14,
+        fontWeight: '600',
+    },
     sectionLabel: {
         fontSize: 14,
         fontWeight: '600',
@@ -355,13 +470,13 @@ const styles = StyleSheet.create({
         gap: 8,
         paddingRight: 20,
     },
-    monthChip: {
+    chip: {
         paddingHorizontal: 16,
         paddingVertical: 10,
         borderRadius: 20,
         borderWidth: 1,
     },
-    monthChipText: {
+    chipText: {
         fontSize: 14,
         fontWeight: '500',
     },
