@@ -30,18 +30,18 @@ import {
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 48) / 2;
 
-// Category card colors and icons
+// Category card colors and icons - improved contrast for light mode
 const categoryStyles: Record<DuaCategory, { bgColor: string; accentColor: string; icon: string }> = {
-    daily: { bgColor: '#FEF3E2', accentColor: '#F59E0B', icon: 'calendar-today' },
-    morning_evening: { bgColor: '#E0F2FE', accentColor: '#0EA5E9', icon: 'weather-sunset' },
-    prayer: { bgColor: '#E8F5E9', accentColor: '#10B981', icon: 'mosque' },
-    travel: { bgColor: '#F3E8FF', accentColor: '#8B5CF6', icon: 'airplane' },
-    food: { bgColor: '#FFF7ED', accentColor: '#EA580C', icon: 'food-apple' },
-    protection: { bgColor: '#ECFDF5', accentColor: '#059669', icon: 'shield-check' },
-    forgiveness: { bgColor: '#FDF2F8', accentColor: '#EC4899', icon: 'heart' },
-    gratitude: { bgColor: '#FEF9C3', accentColor: '#CA8A04', icon: 'hand-heart' },
-    anxiety: { bgColor: '#F0F9FF', accentColor: '#0284C7', icon: 'meditation' },
-    sleep: { bgColor: '#EDE9FE', accentColor: '#7C3AED', icon: 'bed' },
+    daily: { bgColor: '#FDE68A', accentColor: '#B45309', icon: 'calendar-today' },
+    morning_evening: { bgColor: '#BAE6FD', accentColor: '#0369A1', icon: 'weather-sunset' },
+    prayer: { bgColor: '#A7F3D0', accentColor: '#047857', icon: 'mosque' },
+    travel: { bgColor: '#DDD6FE', accentColor: '#6D28D9', icon: 'airplane' },
+    food: { bgColor: '#FED7AA', accentColor: '#C2410C', icon: 'food-apple' },
+    protection: { bgColor: '#A7F3D0', accentColor: '#047857', icon: 'shield-check' },
+    forgiveness: { bgColor: '#FBCFE8', accentColor: '#BE185D', icon: 'heart' },
+    gratitude: { bgColor: '#FDE047', accentColor: '#A16207', icon: 'hand-heart' },
+    anxiety: { bgColor: '#BAE6FD', accentColor: '#0369A1', icon: 'meditation' },
+    sleep: { bgColor: '#C4B5FD', accentColor: '#5B21B6', icon: 'bed' },
 };
 
 const DuaScreen: React.FC = () => {
