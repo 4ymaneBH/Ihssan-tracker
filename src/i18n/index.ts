@@ -21,11 +21,10 @@ export const isRTL = (lang: string): boolean => {
     return RTL_LANGUAGES.includes(lang);
 };
 
-// Get device language or default to English
+// Get device language or default to Arabic (Arabic-first app)
 const getDeviceLanguage = (): string => {
-    const locales = Localization.getLocales();
-    const deviceLang = locales[0]?.languageCode || 'en';
-    return resources.hasOwnProperty(deviceLang) ? deviceLang : 'en';
+    // Default to Arabic for this app
+    return 'ar';
 };
 
 // Initialize i18n
@@ -34,7 +33,7 @@ i18n
     .init({
         resources,
         lng: getDeviceLanguage(),
-        fallbackLng: 'en',
+        fallbackLng: 'ar', // Fallback to Arabic
         interpolation: {
             escapeValue: false,
         },

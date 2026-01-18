@@ -23,7 +23,7 @@ const OnboardingScreen: React.FC = () => {
     const { t, i18n } = useTranslation();
     const { theme } = useTheme();
     const [step, setStep] = useState<OnboardingStep>('language');
-    const [selectedLanguage, setSelectedLanguage] = useState<'en' | 'ar'>('en');
+    const [selectedLanguage, setSelectedLanguage] = useState<'en' | 'ar'>('ar');
     const [selectedTheme, setSelectedTheme] = useState<'light' | 'dark'>('light');
 
     const {
@@ -74,7 +74,9 @@ const OnboardingScreen: React.FC = () => {
                     ]}
                     onPress={() => handleLanguageSelect('en')}
                 >
-                    <Text style={[styles.optionEmoji]}>🇬🇧</Text>
+                    <View style={[styles.langIconContainer, { backgroundColor: '#3B82F6' + '20' }]}>
+                        <MaterialCommunityIcons name="alpha-a-box" size={36} color="#3B82F6" />
+                    </View>
                     <Text style={[styles.optionLabel, { color: theme.colors.text }]}>
                         English
                     </Text>
@@ -94,7 +96,9 @@ const OnboardingScreen: React.FC = () => {
                     ]}
                     onPress={() => handleLanguageSelect('ar')}
                 >
-                    <Text style={[styles.optionEmoji]}>🇸🇦</Text>
+                    <View style={[styles.langIconContainer, { backgroundColor: theme.colors.primary + '20' }]}>
+                        <MaterialCommunityIcons name="abjad-arabic" size={36} color={theme.colors.primary} />
+                    </View>
                     <Text style={[styles.optionLabel, { color: theme.colors.text }]}>
                         العربية
                     </Text>
@@ -320,6 +324,14 @@ const styles = StyleSheet.create({
     },
     optionEmoji: {
         fontSize: 48,
+        marginBottom: 12,
+    },
+    langIconContainer: {
+        width: 64,
+        height: 64,
+        borderRadius: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
         marginBottom: 12,
     },
     optionLabel: {

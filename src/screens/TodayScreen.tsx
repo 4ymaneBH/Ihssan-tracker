@@ -802,6 +802,7 @@ const styles = StyleSheet.create({
     // Adhkar
     adhkarButtons: {
         gap: 12,
+        width: '100%',
     },
     // Qur'an
     quranProgress: {
