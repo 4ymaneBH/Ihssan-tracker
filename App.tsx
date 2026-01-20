@@ -5,6 +5,12 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
 import { Amiri_400Regular, Amiri_700Bold } from '@expo-google-fonts/amiri';
+import {
+  Cairo_400Regular,
+  Cairo_500Medium,
+  Cairo_600SemiBold,
+  Cairo_700Bold
+} from '@expo-google-fonts/cairo';
 
 import { ThemeProvider, useTheme } from './src/context';
 import { RootNavigator } from './src/navigation';
@@ -25,11 +31,23 @@ const AppContent: React.FC = () => {
 };
 
 export default function App() {
-  // Load Amiri font for Arabic Qur'an/Adhkar text
+  // Load fonts: Amiri for Qur'an/Du'a, Cairo for modern Arabic UI
   const [fontsLoaded] = useFonts({
     Amiri_400Regular,
     Amiri_700Bold,
+    Cairo_400Regular,
+    Cairo_500Medium,
+    Cairo_600SemiBold,
+    Cairo_700Bold,
+    // Create aliases for easier use
+    'Amiri': Amiri_400Regular,
+    'Amiri-Bold': Amiri_700Bold,
+    'Cairo': Cairo_400Regular,
+    'Cairo-Medium': Cairo_500Medium,
+    'Cairo-SemiBold': Cairo_600SemiBold,
+    'Cairo-Bold': Cairo_700Bold,
   });
+
 
   // Show loading indicator while fonts load
   if (!fontsLoaded) {

@@ -35,9 +35,6 @@ export interface UserPreferences {
         charityPerWeek: number;
         tahajjudNightsPerWeek: number;
     };
-
-    // Ramadan Mode
-    ramadanModeEnabled: boolean;
 }
 
 // Salat log for a single day
@@ -72,19 +69,6 @@ export interface AdhkarLog {
     itemsCompleted: number;
     totalItems: number;
     createdAt: number;
-}
-
-// Ramadan daily log
-export interface RamadanLog {
-    id: string;
-    date: string;
-    day: number; // Day of Ramadan (1-30)
-    suhoorCompleted: boolean;
-    iftarOnTime: boolean;
-    taraweehPrayed: boolean;
-    quranJuz: number; // Which juz was read (1-30)
-    createdAt: number;
-    updatedAt: number;
 }
 
 // Qur'an reading log
@@ -159,7 +143,6 @@ export type RootStackParamList = {
     Main: undefined;
     Adhkar: { category?: 'morning' | 'evening' | 'general' | 'sleep' };
     Dua: undefined;
-    Ramadan: undefined;
     Tahajjud: undefined;
     Quran: undefined;
     Profile: undefined;

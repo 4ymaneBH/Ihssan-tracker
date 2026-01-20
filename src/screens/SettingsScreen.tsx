@@ -14,6 +14,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context';
 import { useUserPreferencesStore } from '../store';
 import { GoalsModal, SelectionModal } from '../components';
+import { getFontFamily } from '../utils';
+
 
 interface SettingRowProps {
     iconName: string;
@@ -33,6 +35,8 @@ const SettingRow: React.FC<SettingRowProps> = ({
     rightElement,
 }) => {
     const { theme } = useTheme();
+    const { i18n } = useTranslation();
+    const isArabic = i18n.language === 'ar';
 
     const content = (
         <View style={styles.settingRow}>
@@ -44,14 +48,20 @@ const SettingRow: React.FC<SettingRowProps> = ({
                         color={iconColor || theme.colors.primary}
                     />
                 </View>
-                <Text style={[styles.settingLabel, { color: theme.colors.text }]}>
+                <Text style={[
+                    styles.settingLabel,
+                    { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'medium') }
+                ]}>
                     {label}
                 </Text>
             </View>
             {rightElement || (
                 <View style={styles.settingRight}>
                     {value && (
-                        <Text style={[styles.settingValue, { color: theme.colors.textSecondary }]}>
+                        <Text style={[
+                            styles.settingValue,
+                            { color: theme.colors.textSecondary, fontFamily: getFontFamily(isArabic, 'regular') }
+                        ]}>
                             {value}
                         </Text>
                     )}
@@ -76,6 +86,7 @@ const SettingRow: React.FC<SettingRowProps> = ({
     return content;
 };
 
+
 const SettingsScreen: React.FC = () => {
     const { t, i18n } = useTranslation();
     const { theme } = useTheme();
@@ -86,13 +97,11 @@ const SettingsScreen: React.FC = () => {
         language,
         notificationsEnabled,
         hideCharityAmounts,
-        ramadanModeEnabled,
         goals,
         setLanguage,
         setTheme,
         setNotificationsEnabled,
         setHideCharityAmounts,
-        setRamadanMode,
     } = useUserPreferencesStore();
 
     const userTheme = useUserPreferencesStore((state) => state.theme);
@@ -171,27 +180,6 @@ const SettingsScreen: React.FC = () => {
                         />
                     </View>
                 </TouchableOpacity>
-
-                {/* Ramadan Mode Section */}
-                <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
-                    <Text style={[styles.sectionTitle, { color: theme.colors.textSecondary }]}>
-                        {isArabic ? 'رمضان' : 'Ramadan'}
-                    </Text>
-
-                    <SettingRow
-                        iconName="moon-waning-crescent"
-                        iconColor={theme.colors.info.main}
-                        label={isArabic ? 'وضع رمضان' : 'Ramadan Mode'}
-                        rightElement={
-                            <Switch
-                                value={ramadanModeEnabled}
-                                onValueChange={setRamadanMode}
-                                trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
-                                thumbColor="#FFFFFF"
-                            />
-                        }
-                    />
-                </View>
 
                 <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
                     <Text style={[styles.sectionTitle, { color: theme.colors.textSecondary }]}>

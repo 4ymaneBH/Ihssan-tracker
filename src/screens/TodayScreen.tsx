@@ -15,9 +15,10 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../context';
 import { useSalatStore, useHabitsStore, useUserPreferencesStore } from '../store';
-import { getDateString, formatNumber } from '../utils';
+import { getDateString, formatNumber, getFontFamily } from '../utils';
 import { SalatName, SalatStatus, RootStackParamList } from '../types';
 import { ResetModal, AppCard, PrayerPill, QuickActionButton } from '../components';
+
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -42,6 +43,8 @@ const CardHeader: React.FC<CardHeaderProps> = ({
     subtitle,
 }) => {
     const { theme } = useTheme();
+    const { i18n } = useTranslation();
+    const isArabic = i18n.language === 'ar';
 
     return (
         <View style={styles.cardHeader}>
@@ -50,11 +53,17 @@ const CardHeader: React.FC<CardHeaderProps> = ({
                     <MaterialCommunityIcons name={icon as any} size={22} color={iconColor} />
                 </View>
                 <View>
-                    <Text style={[styles.cardTitle, { color: theme.colors.text }]}>
+                    <Text style={[
+                        styles.cardTitle,
+                        { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }
+                    ]}>
                         {title}
                     </Text>
                     {subtitle && (
-                        <Text style={[styles.cardSubtitle, { color: theme.colors.textSecondary }]}>
+                        <Text style={[
+                            styles.cardSubtitle,
+                            { color: theme.colors.textSecondary, fontFamily: getFontFamily(isArabic, 'regular') }
+                        ]}>
                             {subtitle}
                         </Text>
                     )}
@@ -75,6 +84,7 @@ const CardHeader: React.FC<CardHeaderProps> = ({
         </View>
     );
 };
+
 
 // ========================================
 // Progress Bar Component
@@ -287,47 +297,6 @@ const DuaCard: React.FC = () => {
                     </Text>
                     <Text style={[styles.duaCardSubtitle, { color: theme.colors.textSecondary }]}>
                         {isArabic ? 'أدعية لكل مناسبة' : 'Supplications for all occasions'}
-                    </Text>
-                </View>
-                <MaterialCommunityIcons
-                    name="chevron-right"
-                    size={24}
-                    color={theme.colors.textTertiary}
-                />
-            </View>
-        </AppCard>
-    );
-};
-
-// ========================================
-// Ramadan Card Component - Quick Access
-// ========================================
-const RamadanCard: React.FC = () => {
-    const { i18n } = useTranslation();
-    const { theme } = useTheme();
-    const navigation = useNavigation<NavigationProp>();
-    const isArabic = i18n.language === 'ar';
-
-    const handleOpenRamadan = () => {
-        navigation.navigate('Ramadan');
-    };
-
-    return (
-        <AppCard backgroundColor={theme.colors.info.main + '10'} onPress={handleOpenRamadan}>
-            <View style={styles.duaCardContent}>
-                <View style={[styles.iconContainer, { backgroundColor: theme.colors.info.main + '20' }]}>
-                    <MaterialCommunityIcons
-                        name="moon-waning-crescent"
-                        size={24}
-                        color={theme.colors.info.main}
-                    />
-                </View>
-                <View style={styles.duaCardText}>
-                    <Text style={[styles.cardTitle, { color: theme.colors.text }]}>
-                        {isArabic ? 'رمضان' : 'Ramadan'}
-                    </Text>
-                    <Text style={[styles.duaCardSubtitle, { color: theme.colors.textSecondary }]}>
-                        {isArabic ? 'تتبع السحور والإفطار والتراويح' : 'Track Suhoor, Iftar & Taraweeh'}
                     </Text>
                 </View>
                 <MaterialCommunityIcons
@@ -720,11 +689,11 @@ const TodayScreen: React.FC = () => {
     const { t, i18n } = useTranslation();
     const { theme, isDark } = useTheme();
     const navigation = useNavigation<NavigationProp>();
-    const { ramadanModeEnabled } = useUserPreferencesStore();
+    const isArabic = i18n.language === 'ar';
 
     const today = new Date();
     const formattedDate = today.toLocaleDateString(
-        i18n.language === 'ar' ? 'ar-SA' : 'en-US',
+        isArabic ? 'ar-SA' : 'en-US',
         { weekday: 'long', month: 'long', day: 'numeric' }
     );
 
@@ -739,13 +708,20 @@ const TodayScreen: React.FC = () => {
             {/* Header */}
             <View style={styles.header}>
                 <View>
-                    <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
+                    <Text style={[
+                        styles.headerTitle,
+                        { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }
+                    ]}>
                         {t('common.today')}
                     </Text>
-                    <Text style={[styles.headerDate, { color: theme.colors.textSecondary }]}>
+                    <Text style={[
+                        styles.headerDate,
+                        { color: theme.colors.textSecondary, fontFamily: getFontFamily(isArabic, 'regular') }
+                    ]}>
                         {formattedDate}
                     </Text>
                 </View>
+
                 <TouchableOpacity
                     style={[styles.profileButton, {
                         backgroundColor: theme.colors.surface,
@@ -764,7 +740,6 @@ const TodayScreen: React.FC = () => {
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
             >
-                {ramadanModeEnabled && <RamadanCard />}
                 <SalatCard />
                 <AdhkarCard />
                 <DuaCard />
