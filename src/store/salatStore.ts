@@ -71,10 +71,15 @@ export const useSalatStore = create<SalatState>()(
 
                 for (const date of dates) {
                     const log = logs[date];
-                    const allCompleted =
-                        log.fajr && log.dhuhr && log.asr && log.maghrib && log.isha;
+                    // Only count days where ALL 5 prayers are on time (green)
+                    const allOnTime =
+                        log.fajr === 'onTime' &&
+                        log.dhuhr === 'onTime' &&
+                        log.asr === 'onTime' &&
+                        log.maghrib === 'onTime' &&
+                        log.isha === 'onTime';
 
-                    if (allCompleted) {
+                    if (allOnTime) {
                         streak++;
                     } else {
                         break;

@@ -13,10 +13,11 @@ import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Svg, { Rect, Circle, Path, G, Text as SvgText } from 'react-native-svg';
 import { useTheme } from '../context';
-import { useSalatStore, useHabitsStore } from '../store';
-import { formatNumber, formatPercentage, getFontFamily } from '../utils';
+import { useSalatStore, useHabitsStore, useUserPreferencesStore } from '../store';
+import { formatNumber, formatPercentage, getFontFamily, getWeekDates } from '../utils';
 import { ExportModal } from '../components';
 import { getCategoryBreakdown, getStreakTrend, calculateMonthlyStats, getDailyCompletionData, CategoryBreakdown, StreakData } from '../services';
+
 
 
 interface ProgressBarProps {
@@ -63,6 +64,7 @@ const InsightsScreen: React.FC = () => {
         customHabits,
         customHabitLogs,
     } = useHabitsStore();
+    const { goals } = useUserPreferencesStore();
 
     const [showExportModal, setShowExportModal] = useState(false);
     const isArabic = i18n.language === 'ar';
@@ -89,12 +91,39 @@ const InsightsScreen: React.FC = () => {
     const charityCount = getWeeklyCharityCount();
     const tahajjudNights = getWeeklyTahajjudNights();
 
+    // Calculate weekly adhkar completion percentage
+    const getWeeklyAdhkarCompletion = () => {
+        const weekDates = getWeekDates();
+        let completed = 0;
+        let total = 0;
+
+        weekDates.forEach(date => {
+            ['morning', 'evening', 'general', 'sleep'].forEach(category => {
+                const log = adhkarLogs[`adhkar-${date}-${category}`];
+                if (log) {
+                    completed += log.itemsCompleted;
+                    total += log.totalItems;
+                }
+            });
+        });
+
+        return total > 0 ? Math.round((completed / total) * 100) : 0;
+    };
+
+    const weeklyAdhkarPercent = getWeeklyAdhkarCompletion();
+
+    // Get user's weekly goals from settings
+    const weeklyQuranGoal = (goals?.quranPagesPerDay || 2) * 7;
+    const weeklyCharityGoal = goals?.charityPerWeek || 3;
+    const weeklyTahajjudGoal = goals?.tahajjudNightsPerWeek || 2;
+
     // Calculate overall score (simple average)
     const overallScore = Math.round(
         (salatOnTimePercent +
-            (quranPages / 14) * 100 + // Assuming 2 pages/day goal
-            (charityCount / 3) * 100 + // Assuming 3/week goal
-            (tahajjudNights / 2) * 100) / 4 // Assuming 2/week goal
+            (quranPages / weeklyQuranGoal) * 100 +
+            (charityCount / weeklyCharityGoal) * 100 +
+            (tahajjudNights / weeklyTahajjudGoal) * 100 +
+            weeklyAdhkarPercent) / 5 // Include adhkar in score
     );
 
     const getMotivationalMessage = () => {
@@ -116,13 +145,24 @@ const InsightsScreen: React.FC = () => {
             progressBg: theme.colors.primaryLight,
         },
         {
+            icon: 'hands-pray',
+            iconColor: theme.colors.success.dark,
+            title: t('insights.adhkarCompletion'),
+            subtitle: `${formatPercentage(weeklyAdhkarPercent, i18n.language)} ${t('charity.thisWeek')}`,
+            value: formatPercentage(weeklyAdhkarPercent, i18n.language),
+            progressValue: weeklyAdhkarPercent,
+            progressMax: 100,
+            progressColor: theme.colors.success.dark,
+            progressBg: theme.colors.success.light,
+        },
+        {
             icon: 'book-open-page-variant',
             iconColor: theme.colors.success.main,
             title: t('insights.quranPages'),
-            subtitle: `${formatNumber(quranPages, i18n.language)}/14 ${t('quran.pages')}`,
+            subtitle: `${formatNumber(quranPages, i18n.language)}/${formatNumber(weeklyQuranGoal, i18n.language)} ${t('quran.pages')}`,
             value: formatNumber(quranPages, i18n.language),
             progressValue: quranPages,
-            progressMax: 14,
+            progressMax: weeklyQuranGoal,
             progressColor: theme.colors.success.main,
             progressBg: theme.colors.success.light,
         },
@@ -130,10 +170,10 @@ const InsightsScreen: React.FC = () => {
             icon: 'heart',
             iconColor: theme.colors.error.main,
             title: t('insights.charityCount'),
-            subtitle: `${formatNumber(charityCount, i18n.language)}/3 ${t('charity.thisWeek')}`,
+            subtitle: `${formatNumber(charityCount, i18n.language)}/${formatNumber(weeklyCharityGoal, i18n.language)} ${t('charity.thisWeek')}`,
             value: formatNumber(charityCount, i18n.language),
             progressValue: charityCount,
-            progressMax: 3,
+            progressMax: weeklyCharityGoal,
             progressColor: theme.colors.warning.main,
             progressBg: theme.colors.warning.light,
         },
@@ -141,10 +181,10 @@ const InsightsScreen: React.FC = () => {
             icon: 'moon-waning-crescent',
             iconColor: theme.colors.info.main,
             title: t('insights.tahajjudNights'),
-            subtitle: `${formatNumber(tahajjudNights, i18n.language)}/2 ${t('tahajjud.nights')}`,
+            subtitle: `${formatNumber(tahajjudNights, i18n.language)}/${formatNumber(weeklyTahajjudGoal, i18n.language)} ${t('tahajjud.nights')}`,
             value: formatNumber(tahajjudNights, i18n.language),
             progressValue: tahajjudNights,
-            progressMax: 2,
+            progressMax: weeklyTahajjudGoal,
             progressColor: theme.colors.info.main,
             progressBg: theme.colors.info.light,
         },
