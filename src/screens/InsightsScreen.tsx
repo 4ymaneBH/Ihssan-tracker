@@ -14,9 +14,10 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Svg, { Rect, Circle, Path, G, Text as SvgText } from 'react-native-svg';
 import { useTheme } from '../context';
 import { useSalatStore, useHabitsStore } from '../store';
-import { formatNumber, formatPercentage } from '../utils';
+import { formatNumber, formatPercentage, getFontFamily } from '../utils';
 import { ExportModal } from '../components';
 import { getCategoryBreakdown, getStreakTrend, calculateMonthlyStats, getDailyCompletionData, CategoryBreakdown, StreakData } from '../services';
+
 
 interface ProgressBarProps {
     value: number;
@@ -154,10 +155,14 @@ const InsightsScreen: React.FC = () => {
             style={[styles.container, { backgroundColor: theme.colors.background }]}
         >
             <View style={styles.header}>
-                <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
+                <Text style={[
+                    styles.headerTitle,
+                    { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }
+                ]}>
                     {t('insights.title')}
                 </Text>
             </View>
+
 
             <ScrollView
                 style={styles.scrollView}

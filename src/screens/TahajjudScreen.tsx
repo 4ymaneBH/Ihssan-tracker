@@ -13,7 +13,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../context';
 import { useHabitsStore, useUserPreferencesStore } from '../store';
-import { getWeekDates, getDayAbbr, parseDate, formatNumber, isToday, getDateString } from '../utils';
+import { getWeekDates, getDayAbbr, parseDate, formatNumber, isToday, getDateString, getFontFamily } from '../utils';
+
 
 const TahajjudScreen: React.FC = () => {
     const { t, i18n } = useTranslation();
@@ -62,7 +63,10 @@ const TahajjudScreen: React.FC = () => {
                         color={theme.colors.text}
                     />
                 </TouchableOpacity>
-                <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
+                <Text style={[
+                    styles.headerTitle,
+                    { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }
+                ]}>
                     {t('tahajjud.title')}
                 </Text>
                 <View style={styles.placeholder} />

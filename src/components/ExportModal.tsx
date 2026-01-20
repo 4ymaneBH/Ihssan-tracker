@@ -22,7 +22,8 @@ import {
     getMonthName,
     ReportData,
 } from '../services/exportService';
-import { getDateString } from '../utils';
+import { getDateString, getFontFamily } from '../utils';
+
 
 interface ExportModalProps {
     visible: boolean;
@@ -172,7 +173,10 @@ const ExportModal: React.FC<ExportModalProps> = ({ visible, onClose }) => {
                 >
                     {/* Header */}
                     <View style={styles.header}>
-                        <Text style={[styles.title, { color: theme.colors.text }]}>
+                        <Text style={[
+                            styles.title,
+                            { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }
+                        ]}>
                             {isArabic ? 'تصدير التقرير' : 'Export Report'}
                         </Text>
                         <TouchableOpacity onPress={onClose} style={styles.closeButton}>

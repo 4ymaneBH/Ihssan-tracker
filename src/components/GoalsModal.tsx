@@ -15,6 +15,8 @@ import Slider from '@react-native-community/slider';
 import { useTheme } from '../context';
 import { useUserPreferencesStore } from '../store';
 import { useTranslation } from 'react-i18next';
+import { getFontFamily } from '../utils';
+
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -168,10 +170,16 @@ export const GoalsModal: React.FC<GoalsModalProps> = ({ visible, onClose }) => {
                                 <MaterialCommunityIcons name="target" size={24} color={theme.colors.primary} />
                             </View>
                             <View>
-                                <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
+                                <Text style={[
+                                    styles.headerTitle,
+                                    { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }
+                                ]}>
                                     {isArabic ? 'أهدافك الأسبوعية' : 'Your Weekly Goals'}
                                 </Text>
-                                <Text style={[styles.headerSubtitle, { color: theme.colors.textSecondary }]}>
+                                <Text style={[
+                                    styles.headerSubtitle,
+                                    { color: theme.colors.textSecondary, fontFamily: getFontFamily(isArabic, 'regular') }
+                                ]}>
                                     {isArabic ? 'خصص أهدافك حسب قدرتك' : 'Customize based on your capacity'}
                                 </Text>
                             </View>

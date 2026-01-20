@@ -12,6 +12,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../context';
 import { useSalatStore, useHabitsStore } from '../store';
+import { getFontFamily } from '../utils';
+
 
 export type HabitType = 'salat' | 'adhkar-morning' | 'adhkar-evening' | 'quran' | 'charity' | 'tahajjud' | 'custom';
 
@@ -146,7 +148,10 @@ const ResetModal: React.FC<ResetModalProps> = ({
                 >
                     {/* Header */}
                     <View style={styles.header}>
-                        <Text style={[styles.title, { color: theme.colors.text }]}>
+                        <Text style={[
+                            styles.title,
+                            { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }
+                        ]}>
                             {isArabic ? `إعادة تعيين ${habitName}` : `Reset ${habitName}`}
                         </Text>
                     </View>
@@ -164,10 +169,16 @@ const ResetModal: React.FC<ResetModalProps> = ({
                             <MaterialCommunityIcons name="refresh" size={24} color={theme.colors.primary} />
                         </View>
                         <View style={styles.optionContent}>
-                            <Text style={[styles.optionTitle, { color: theme.colors.text }]}>
+                            <Text style={[
+                                styles.optionTitle,
+                                { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'semiBold') }
+                            ]}>
                                 {isArabic ? 'إعادة تعيين اليوم' : 'Reset Today'}
                             </Text>
-                            <Text style={[styles.optionDesc, { color: theme.colors.textSecondary }]}>
+                            <Text style={[
+                                styles.optionDesc,
+                                { color: theme.colors.textSecondary, fontFamily: getFontFamily(isArabic, 'regular') }
+                            ]}>
                                 {isArabic
                                     ? 'مسح سجل اليوم فقط، التاريخ السابق سيبقى'
                                     : "Clear today's log only, history stays intact"}
@@ -189,10 +200,16 @@ const ResetModal: React.FC<ResetModalProps> = ({
                             <MaterialCommunityIcons name="delete-forever" size={24} color={theme.colors.error.main} />
                         </View>
                         <View style={styles.optionContent}>
-                            <Text style={[styles.optionTitle, { color: theme.colors.error.main }]}>
+                            <Text style={[
+                                styles.optionTitle,
+                                { color: theme.colors.error.main, fontFamily: getFontFamily(isArabic, 'semiBold') }
+                            ]}>
                                 {isArabic ? 'حذف كل السجلات' : 'Reset History'}
                             </Text>
-                            <Text style={[styles.optionDesc, { color: theme.colors.error.main }]}>
+                            <Text style={[
+                                styles.optionDesc,
+                                { color: theme.colors.error.main, fontFamily: getFontFamily(isArabic, 'regular') }
+                            ]}>
                                 {isArabic
                                     ? 'حذف جميع السجلات والإحصائيات'
                                     : 'Delete all records and reset streaks'}
@@ -205,7 +222,10 @@ const ResetModal: React.FC<ResetModalProps> = ({
                         style={[styles.cancelButton, { borderColor: theme.colors.border }]}
                         onPress={onClose}
                     >
-                        <Text style={[styles.cancelText, { color: theme.colors.textSecondary }]}>
+                        <Text style={[
+                            styles.cancelText,
+                            { color: theme.colors.textSecondary, fontFamily: getFontFamily(isArabic, 'medium') }
+                        ]}>
                             {isArabic ? 'إلغاء' : 'Cancel'}
                         </Text>
                     </TouchableOpacity>

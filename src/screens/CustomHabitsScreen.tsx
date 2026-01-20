@@ -16,8 +16,9 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context';
 import { useHabitsStore } from '../store';
 import { Card, Chip, IconButton } from '../components';
-import { getDateString, formatNumber } from '../utils';
+import { getDateString, formatNumber, getFontFamily } from '../utils';
 import { CustomHabit } from '../types';
+
 
 // Available icons for custom habits (MaterialCommunityIcons names)
 const HABIT_ICONS = [
@@ -434,7 +435,10 @@ const CustomHabitsScreen: React.FC = () => {
             style={[styles.container, { backgroundColor: theme.colors.background }]}
         >
             <View style={styles.header}>
-                <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
+                <Text style={[
+                    styles.headerTitle,
+                    { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }
+                ]}>
                     {t('habits.customHabits')}
                 </Text>
                 <IconButton

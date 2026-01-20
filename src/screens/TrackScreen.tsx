@@ -13,15 +13,18 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../context';
 import { useSalatStore, useHabitsStore } from '../store';
-import { getWeekDates, getDayAbbr, parseDate, formatNumber, isToday } from '../utils';
+import { getWeekDates, getDayAbbr, parseDate, formatNumber, isToday, getFontFamily } from '../utils';
 import { SalatName, SalatStatus } from '../types';
 import CustomHabitsScreen from './CustomHabitsScreen';
+
 
 const TrackScreen: React.FC = () => {
     const { t, i18n } = useTranslation();
     const { theme } = useTheme();
     const { logs: salatLogs, getOnTimePercentage } = useSalatStore();
     const { getWeeklyQuranPages, getWeeklyCharityCount, getWeeklyTahajjudNights } = useHabitsStore();
+    const isArabic = i18n.language === 'ar';
+
 
     const weekDates = getWeekDates();
     const prayers: { key: SalatName; label: string }[] = [
@@ -71,10 +74,14 @@ const TrackScreen: React.FC = () => {
             style={[styles.container, { backgroundColor: theme.colors.background }]}
         >
             <View style={styles.header}>
-                <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
+                <Text style={[
+                    styles.headerTitle,
+                    { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }
+                ]}>
                     {t('common.track')}
                 </Text>
             </View>
+
 
             <ScrollView
                 style={styles.scrollView}

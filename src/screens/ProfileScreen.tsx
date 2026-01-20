@@ -14,6 +14,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../context';
 import { useUserPreferencesStore } from '../store';
+import { getFontFamily } from '../utils';
+
 
 // Preset avatars using MaterialCommunityIcons
 const AVATAR_OPTIONS = [
@@ -81,7 +83,10 @@ const ProfileScreen: React.FC = () => {
                         color={theme.colors.text}
                     />
                 </TouchableOpacity>
-                <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
+                <Text style={[
+                    styles.headerTitle,
+                    { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }
+                ]}>
                     {isArabic ? 'الملف الشخصي' : 'Profile'}
                 </Text>
                 <View style={{ width: 32 }} />

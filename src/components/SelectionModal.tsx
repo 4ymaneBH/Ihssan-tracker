@@ -12,6 +12,8 @@ import { BlurView } from 'expo-blur';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context';
 import { useTranslation } from 'react-i18next';
+import { getFontFamily } from '../utils';
+
 
 export interface SelectionOption {
     label: string;
@@ -64,11 +66,17 @@ const SelectionModal: React.FC<SelectionModalProps> = ({
                     {/* Header */}
                     <View style={styles.header}>
                         <View>
-                            <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
+                            <Text style={[
+                                styles.headerTitle,
+                                { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }
+                            ]}>
                                 {title}
                             </Text>
                             {subtitle && (
-                                <Text style={[styles.headerSubtitle, { color: theme.colors.textSecondary }]}>
+                                <Text style={[
+                                    styles.headerSubtitle,
+                                    { color: theme.colors.textSecondary, fontFamily: getFontFamily(isArabic, 'regular') }
+                                ]}>
                                     {subtitle}
                                 </Text>
                             )}

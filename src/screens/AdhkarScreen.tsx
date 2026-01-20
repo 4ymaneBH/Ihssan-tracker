@@ -16,7 +16,8 @@ import PagerView from 'react-native-pager-view';
 import { useTheme } from '../context';
 import { useHabitsStore } from '../store';
 import { getAdhkarByCategory, Dhikr, AdhkarCategory, adhkarCategories } from '../data/adhkarContent';
-import { getDateString } from '../utils';
+import { getDateString, getFontFamily } from '../utils';
+
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -264,7 +265,10 @@ const AdhkarScreen: React.FC<AdhkarScreenProps> = ({ route }) => {
                         color={theme.colors.text}
                     />
                 </TouchableOpacity>
-                <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
+                <Text style={[
+                    styles.headerTitle,
+                    { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }
+                ]}>
                     {t('adhkar.title')}
                 </Text>
                 <View

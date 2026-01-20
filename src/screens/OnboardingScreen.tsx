@@ -14,6 +14,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context';
 import { useUserPreferencesStore } from '../store';
 import { changeLanguage } from '../i18n';
+import { getFontFamily } from '../utils';
+
 
 const { width } = Dimensions.get('window');
 
@@ -22,9 +24,11 @@ type OnboardingStep = 'language' | 'theme' | 'goals' | 'complete';
 const OnboardingScreen: React.FC = () => {
     const { t, i18n } = useTranslation();
     const { theme } = useTheme();
+    const isArabic = i18n.language === 'ar';
     const [step, setStep] = useState<OnboardingStep>('language');
     const [selectedLanguage, setSelectedLanguage] = useState<'en' | 'ar'>('ar');
     const [selectedTheme, setSelectedTheme] = useState<'light' | 'dark'>('light');
+
 
     const {
         setLanguage,
@@ -236,13 +240,20 @@ const OnboardingScreen: React.FC = () => {
             style={[styles.container, { backgroundColor: theme.colors.background }]}
         >
             <View style={styles.header}>
-                <Text style={[styles.appName, { color: theme.colors.primary }]}>
+                <Text style={[
+                    styles.appName,
+                    { color: theme.colors.primary, fontFamily: getFontFamily(isArabic, 'bold') }
+                ]}>
                     {t('common.appName')}
                 </Text>
-                <Text style={[styles.tagline, { color: theme.colors.textSecondary }]}>
+                <Text style={[
+                    styles.tagline,
+                    { color: theme.colors.textSecondary, fontFamily: getFontFamily(isArabic, 'regular') }
+                ]}>
                     {t('onboarding.tagline')}
                 </Text>
             </View>
+
 
             <View style={styles.content}>{renderCurrentStep()}</View>
 
