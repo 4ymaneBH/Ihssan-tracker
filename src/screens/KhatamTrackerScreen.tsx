@@ -72,7 +72,7 @@ const KhatamTrackerScreen: React.FC = ({ navigation }: any) => {
     // Render Setup Mode
     if (!currentSession || currentSession.status !== 'active') {
         return (
-            <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+            <SafeAreaView style={[styles.container, { backgroundColor: 'transparent' }]}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                         <MaterialCommunityIcons name={isArabic ? "arrow-right" : "arrow-left"} size={24} color={theme.colors.text} />
@@ -142,7 +142,7 @@ const KhatamTrackerScreen: React.FC = ({ navigation }: any) => {
     const progress = currentSession.currentPage / 604;
 
     return (
-        <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <SafeAreaView style={[styles.container, { backgroundColor: 'transparent' }]}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                     <MaterialCommunityIcons name={isArabic ? "arrow-right" : "arrow-left"} size={24} color={theme.colors.text} />

@@ -49,7 +49,7 @@ const TahajjudScreen: React.FC = () => {
 
     return (
         <SafeAreaView
-            style={[styles.container, { backgroundColor: theme.colors.background }]}
+            style={[styles.container, { backgroundColor: 'transparent' }]}
         >
             {/* Header */}
             <View style={styles.header}>

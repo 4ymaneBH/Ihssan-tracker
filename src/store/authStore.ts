@@ -15,6 +15,7 @@ interface AuthState {
     signIn: (user: User) => Promise<void>;
     signUp: (user: User) => Promise<void>;
     signOut: () => Promise<void>;
+    updateProfile: (name: string) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -40,6 +41,11 @@ export const useAuthStore = create<AuthState>()(
                 // Simulate API call
                 await new Promise((resolve) => setTimeout(resolve, 500));
                 set({ user: null, isAuthenticated: false, isLoading: false });
+            },
+            updateProfile: async (name) => {
+                set((state) => ({
+                    user: state.user ? { ...state.user, name } : null,
+                }));
             },
         }),
         {

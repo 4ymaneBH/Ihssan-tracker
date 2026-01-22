@@ -432,7 +432,7 @@ const CustomHabitsScreen: React.FC = () => {
 
     return (
         <SafeAreaView
-            style={[styles.container, { backgroundColor: theme.colors.background }]}
+            style={[styles.container, { backgroundColor: 'transparent' }]}
         >
             <View style={styles.header}>
                 <Text style={[

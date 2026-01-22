@@ -349,7 +349,7 @@ const DuaScreen: React.FC = () => {
     );
 
     return (
-        <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <SafeAreaView style={[styles.container, { backgroundColor: 'transparent' }]}>
             {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity

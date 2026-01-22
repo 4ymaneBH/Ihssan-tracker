@@ -74,7 +74,7 @@ const ProfileScreen: React.FC = () => {
 
     return (
         <SafeAreaView
-            style={[styles.container, { backgroundColor: theme.colors.background }]}
+            style={[styles.container, { backgroundColor: 'transparent' }]}
         >
             {/* Header */}
             <View style={styles.header}>
@@ -221,6 +221,28 @@ const ProfileScreen: React.FC = () => {
                     <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
                         {isArabic ? 'الإعدادات السريعة' : 'Quick Settings'}
                     </Text>
+
+                    {/* Social Groups */}
+                    <TouchableOpacity
+                        style={[styles.settingRow, { borderBottomColor: theme.colors.divider }]}
+                        onPress={() => navigation.navigate('Social' as never)}
+                    >
+                        <View style={styles.settingInfo}>
+                            <MaterialCommunityIcons
+                                name="account-group"
+                                size={22}
+                                color={theme.colors.primary}
+                            />
+                            <Text style={[styles.settingLabel, { color: theme.colors.text }]}>
+                                {t('social.title', 'Social Groups')}
+                            </Text>
+                        </View>
+                        <MaterialCommunityIcons
+                            name={isArabic ? "chevron-left" : "chevron-right"}
+                            size={24}
+                            color={theme.colors.textTertiary}
+                        />
+                    </TouchableOpacity>
 
                     {/* Language Toggle */}
                     <TouchableOpacity

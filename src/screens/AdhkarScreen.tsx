@@ -233,7 +233,7 @@ const AdhkarScreen: React.FC<AdhkarScreenProps> = ({ route }) => {
 
     return (
         <SafeAreaView
-            style={[styles.container, { backgroundColor: theme.colors.background }]}
+            style={[styles.container, { backgroundColor: 'transparent' }]}
             edges={['top', 'left', 'right']}
         >
             {/* Header */}

@@ -169,7 +169,39 @@ export type RootStackParamList = {
     Profile: undefined;
     Qibla: undefined;
     Khatam: undefined;
+    Social: undefined;
+    CreateGroup: undefined;
+    GroupDetails: { groupId: string };
+    JoinGroup: undefined;
 };
+
+// ==========================================
+// Social Groups Types
+// ==========================================
+export type GoalType = 'quran_pages' | 'adhkar_count' | 'custom_habit';
+
+export interface GroupMember {
+    id: string; // userId
+    nickname: string;
+    avatarId?: string;
+    progress: number; // e.g., pages read, loops count
+    lastUpdated: number;
+    joinedAt: number;
+    isAdmin?: boolean;
+}
+
+export interface SocialGroup {
+    id: string;
+    name: string;
+    description?: string;
+    code: string; // 6-char unique invite code
+    goalType: GoalType;
+    goalTarget: number; // e.g., 20 pages/day
+    frequency: 'daily' | 'weekly';
+    members: GroupMember[];
+    createdAt: number;
+    leaderboard: GroupMember[]; // Sorted by progress
+}
 
 export type MainTabParamList = {
     Today: undefined;

@@ -131,7 +131,7 @@ const QiblaScreen = () => {
 
     if (loading) {
         return (
-            <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+            <View style={[styles.container, { backgroundColor: 'transparent' }]}>
                 <ActivityIndicator size="large" color={theme.colors.primary} />
             </View>
         );
@@ -139,7 +139,7 @@ const QiblaScreen = () => {
 
     if (error) {
         return (
-            <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+            <View style={[styles.container, { backgroundColor: 'transparent' }]}>
                 <Text style={[styles.errorText, { color: theme.colors.text }]}>{t(error)}</Text>
                 <TouchableOpacity style={styles.button} onPress={checkPermissions}>
                     <Text style={styles.buttonText}>{t('retry')}</Text>
@@ -149,7 +149,7 @@ const QiblaScreen = () => {
     }
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <View style={[styles.container, { backgroundColor: 'transparent' }]}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                     <Ionicons name={isArabic ? "arrow-forward" : "arrow-back"} size={24} color={theme.colors.text} />

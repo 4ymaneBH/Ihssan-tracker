@@ -185,5 +185,28 @@
         "cancel": "Cancel Khatam",
         "cancelConfirmation": "Are you sure you want to cancel this Khatam?",
         "pagesReadToday": "Pages read today"
+    },
+    "social": {
+        "title": "Social Groups",
+        "noGroups": "No Groups Yet",
+        "joinOrCreate": "Create a group to track goals with friends or join an existing one.",
+        "joinGroup": "Join Group",
+        "createGroup": "Create Group",
+        "groupName": "Group Name",
+        "groupNamePlaceholder": "e.g. Ramadan Readers",
+        "nickname": "Your Nickname",
+        "nicknamePlaceholder": "How others will see you",
+        "target": "Daily Goal",
+        "createDesc": "You will get an invite code to share with friends after creating the group.",
+        "create": "Create",
+        "members": "members",
+        "inviteCode": "Invite Code",
+        "shareCodeDesc": "Share this code with friends to let them join",
+        "dailyGoal": "Daily Goal",
+        "leaderboard": "Leaderboard",
+        "you": "(You)",
+        "enterCode": "Enter Invite Code",
+        "join": "Join",
+        "invalidCode": "Invalid invite code or group not found"
     }
 }

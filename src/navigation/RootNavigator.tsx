@@ -1,10 +1,12 @@
 // Root Navigator - handles onboarding vs main app flow with detail screens
 import React from 'react';
+import { View } from 'react-native';
 import { NavigationContainer, DefaultTheme, DarkTheme, Theme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
 import { useUserPreferencesStore, useAuthStore } from '../store';
 import { useTheme } from '../context';
+import { AppBackground } from '../components';
 
 // Screens
 import OnboardingScreen from '../screens/OnboardingScreen';
@@ -17,6 +19,10 @@ import SignUpScreen from '../screens/auth/SignUpScreen';
 import LoginScreen from '../screens/auth/LoginScreen';
 import QiblaScreen from '../screens/QiblaScreen';
 import KhatamTrackerScreen from '../screens/KhatamTrackerScreen';
+import SocialScreen from '../screens/social/SocialScreen';
+import CreateGroupScreen from '../screens/social/CreateGroupScreen';
+import GroupDetailsScreen from '../screens/social/GroupDetailsScreen';
+import JoinGroupScreen from '../screens/social/JoinGroupScreen';
 import MainTabs from './MainTabs';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -37,7 +43,7 @@ const RootNavigator: React.FC = () => {
         colors: {
             ...baseTheme.colors,
             primary: appTheme.colors.primary,
-            background: appTheme.colors.background,
+            background: 'transparent', // Make navigation background transparent
             card: appTheme.colors.surface,
             text: appTheme.colors.text,
             border: appTheme.colors.border,
@@ -46,57 +52,80 @@ const RootNavigator: React.FC = () => {
     };
 
     return (
-        <NavigationContainer theme={navigationTheme}>
-            <Stack.Navigator screenOptions={{ headerShown: false }}>
-                {!onboardingComplete ? (
-                    <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-                ) : !isAuthenticated ? (
-                    <>
-                        <Stack.Screen name="Login" component={LoginScreen} />
-                        <Stack.Screen name="SignUp" component={SignUpScreen} />
-                    </>
-                ) : (
-                    <>
-                        <Stack.Screen name="Main" component={MainTabs} />
-                        <Stack.Screen
-                            name="Adhkar"
-                            component={AdhkarScreen}
-                            options={{ presentation: 'card' }}
-                        />
-                        <Stack.Screen
-                            name="Dua"
-                            component={DuaScreen}
-                            options={{ presentation: 'card' }}
-                        />
-                        <Stack.Screen
-                            name="Tahajjud"
-                            component={TahajjudScreen}
-                            options={{ presentation: 'card' }}
-                        />
-                        <Stack.Screen
-                            name="Quran"
-                            component={QuranScreen}
-                            options={{ presentation: 'card' }}
-                        />
-                        <Stack.Screen
-                            name="Profile"
-                            component={ProfileScreen}
-                            options={{ presentation: 'card' }}
-                        />
-                        <Stack.Screen
-                            name="Qibla"
-                            component={QiblaScreen}
-                            options={{ presentation: 'card' }}
-                        />
-                        <Stack.Screen
-                            name="Khatam"
-                            component={KhatamTrackerScreen}
-                            options={{ presentation: 'card' }}
-                        />
-                    </>
-                )}
-            </Stack.Navigator>
-        </NavigationContainer>
+        <View style={{ flex: 1 }}>
+            <AppBackground />
+            <NavigationContainer theme={navigationTheme}>
+                <Stack.Navigator screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }}>
+                    {!onboardingComplete ? (
+                        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+                    ) : !isAuthenticated ? (
+                        <>
+                            <Stack.Screen name="Login" component={LoginScreen} />
+                            <Stack.Screen name="SignUp" component={SignUpScreen} />
+                        </>
+                    ) : (
+                        <>
+                            <Stack.Screen name="Main" component={MainTabs} />
+                            <Stack.Screen
+                                name="Adhkar"
+                                component={AdhkarScreen}
+                                options={{ presentation: 'card' }}
+                            />
+                            <Stack.Screen
+                                name="Dua"
+                                component={DuaScreen}
+                                options={{ presentation: 'card' }}
+                            />
+                            <Stack.Screen
+                                name="Tahajjud"
+                                component={TahajjudScreen}
+                                options={{ presentation: 'card' }}
+                            />
+                            <Stack.Screen
+                                name="Quran"
+                                component={QuranScreen}
+                                options={{ presentation: 'card' }}
+                            />
+                            <Stack.Screen
+                                name="Profile"
+                                component={ProfileScreen}
+                                options={{ presentation: 'card' }}
+                            />
+                            <Stack.Screen
+                                name="Qibla"
+                                component={QiblaScreen}
+                                options={{ presentation: 'card' }}
+                            />
+                            <Stack.Screen
+                                name="Khatam"
+                                component={KhatamTrackerScreen}
+                                options={{ presentation: 'card' }}
+                            />
+                            <Stack.Screen
+                                name="Social"
+                                component={SocialScreen}
+                                options={{ presentation: 'card' }}
+                            />
+                            <Stack.Screen
+                                name="CreateGroup"
+                                component={CreateGroupScreen}
+                                options={{ presentation: 'modal' }}
+                            />
+                            <Stack.Screen
+                                name="GroupDetails"
+                                component={GroupDetailsScreen}
+                                options={{ presentation: 'card' }}
+                            />
+                            <Stack.Screen
+                                name="JoinGroup"
+                                component={JoinGroupScreen}
+                                options={{ presentation: 'modal' }}
+                            />
+                        </>
+                    )}
+                </Stack.Navigator>
+            </NavigationContainer>
+        </View>
     );
 };
 

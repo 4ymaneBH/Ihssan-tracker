@@ -12,4 +12,5 @@ export { QuickActionButton } from './QuickActionButton';
 export { GoalsModal } from './GoalsModal';
 export { default as SelectionModal } from './SelectionModal';
 export { PrayerNotificationsModal } from './PrayerNotificationsModal';
+export { AppBackground } from './AppBackground';
 export { Skeleton, CardSkeleton, PrayerPillSkeleton, ChartSkeleton } from './Skeleton';
