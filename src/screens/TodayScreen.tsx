@@ -16,6 +16,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../context';
 import { useSalatStore, useHabitsStore, useUserPreferencesStore } from '../store';
 import { getDateString, formatNumber, getFontFamily } from '../utils';
+import { getHijriDate } from '../utils/dateUtils';
 import { SalatName, SalatStatus, RootStackParamList } from '../types';
 import { ResetModal, AppCard, PrayerPill, QuickActionButton } from '../components';
 
@@ -389,17 +390,29 @@ const QuranCard: React.FC = () => {
                 </View>
             </View>
 
-            {/* View Details Link */}
-            <TouchableOpacity style={styles.viewDetailsLink} onPress={handleOpenQuranScreen}>
-                <Text style={[styles.viewDetailsLinkText, { color: theme.colors.primary }]}>
-                    {isArabic ? 'عرض التفاصيل' : 'View Details'}
-                </Text>
-                <MaterialCommunityIcons
-                    name={I18nManager.isRTL ? 'chevron-left' : 'chevron-right'}
-                    size={18}
-                    color={theme.colors.primary}
-                />
-            </TouchableOpacity>
+            {/* Footer Links */}
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 16, paddingBottom: 16 }}>
+                <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} onPress={handleOpenQuranScreen}>
+                    <Text style={[styles.viewDetailsLinkText, { color: theme.colors.primary }]}>
+                        {isArabic ? 'عرض التفاصيل' : 'View Details'}
+                    </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
+                    onPress={() => navigation.navigate('Khatam')}
+                >
+                    <MaterialCommunityIcons name="book-check-outline" size={16} color={theme.colors.primary} />
+                    <Text style={[styles.viewDetailsLinkText, { color: theme.colors.primary }]}>
+                        {isArabic ? 'متابعة الختمة' : 'Track Khatam'}
+                    </Text>
+                    <MaterialCommunityIcons
+                        name={I18nManager.isRTL ? 'chevron-left' : 'chevron-right'}
+                        size={18}
+                        color={theme.colors.primary}
+                    />
+                </TouchableOpacity>
+            </View>
 
             <ResetModal
                 visible={showReset}
@@ -683,6 +696,48 @@ const CustomHabitsCard: React.FC = () => {
 };
 
 // ========================================
+// ========================================
+// Qibla Card Component
+// ========================================
+const QiblaCard: React.FC = () => {
+    const { t, i18n } = useTranslation();
+    const { theme } = useTheme();
+    const navigation = useNavigation<NavigationProp>();
+    const isArabic = i18n.language === 'ar';
+
+    const handleOpenQibla = () => {
+        navigation.navigate('Qibla');
+    };
+
+    return (
+        <AppCard backgroundColor={theme.colors.cards.salat} onPress={handleOpenQibla}>
+            <View style={styles.duaCardContent}>
+                <View style={[styles.iconContainer, { backgroundColor: theme.colors.primary + '20' }]}>
+                    <MaterialCommunityIcons
+                        name="compass"
+                        size={24}
+                        color={theme.colors.primary}
+                    />
+                </View>
+                <View style={styles.duaCardText}>
+                    <Text style={[styles.cardTitle, { color: theme.colors.text }]}>
+                        {t('qiblaCompass')}
+                    </Text>
+                    <Text style={[styles.duaCardSubtitle, { color: theme.colors.textSecondary }]}>
+                        {t('qiblaDirection')}
+                    </Text>
+                </View>
+                <MaterialCommunityIcons
+                    name={isArabic ? 'chevron-left' : 'chevron-right'}
+                    size={24}
+                    color={theme.colors.textTertiary}
+                />
+            </View>
+        </AppCard>
+    );
+};
+
+// ========================================
 // Main Today Screen
 // ========================================
 const TodayScreen: React.FC = () => {
@@ -696,6 +751,8 @@ const TodayScreen: React.FC = () => {
         isArabic ? 'ar-SA' : 'en-US',
         { weekday: 'long', month: 'long', day: 'numeric' }
     );
+    const hijriDate = getHijriDate(today, isArabic ? 'ar' : 'en');
+
 
     const handleOpenProfile = () => {
         navigation.navigate('Profile');
@@ -718,7 +775,7 @@ const TodayScreen: React.FC = () => {
                         styles.headerDate,
                         { color: theme.colors.textSecondary, fontFamily: getFontFamily(isArabic, 'regular') }
                     ]}>
-                        {formattedDate}
+                        {formattedDate} • {hijriDate}
                     </Text>
                 </View>
 
@@ -741,6 +798,7 @@ const TodayScreen: React.FC = () => {
                 showsVerticalScrollIndicator={false}
             >
                 <SalatCard />
+                <QiblaCard />
                 <AdhkarCard />
                 <DuaCard />
                 <QuranCard />

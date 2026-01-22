@@ -11,4 +11,5 @@ export { PrayerPill } from './PrayerPill';
 export { QuickActionButton } from './QuickActionButton';
 export { GoalsModal } from './GoalsModal';
 export { default as SelectionModal } from './SelectionModal';
+export { PrayerNotificationsModal } from './PrayerNotificationsModal';
 export { Skeleton, CardSkeleton, PrayerPillSkeleton, ChartSkeleton } from './Skeleton';

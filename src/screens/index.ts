@@ -11,4 +11,6 @@ export { default as QuranScreen } from './QuranScreen';
 export { default as ProfileScreen } from './ProfileScreen';
 export { default as SignUpScreen } from './auth/SignUpScreen';
 export { default as LoginScreen } from './auth/LoginScreen';
+export { default as QiblaScreen } from './QiblaScreen';
+export { default as KhatamTrackerScreen } from './KhatamTrackerScreen';
 

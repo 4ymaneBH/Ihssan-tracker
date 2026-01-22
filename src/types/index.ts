@@ -35,6 +35,12 @@ export interface UserPreferences {
         charityPerWeek: number;
         tahajjudNightsPerWeek: number;
     };
+    prayerNotifications: Record<SalatName, PrayerNotificationSettings>;
+}
+
+export interface PrayerNotificationSettings {
+    sound: 'azan' | 'beep' | 'off';
+    preNotification?: number; // minutes
 }
 
 // Salat log for a single day
@@ -137,6 +143,19 @@ export interface WeeklyInsights {
     streakDays: number;
 }
 
+// Khatam Tracking
+export interface KhatamSession {
+    id: string;
+    startDate: string;
+    targetDate: string;
+    startPage: number;
+    endPage: number; // Usually 604
+    currentPage: number;
+    dailyLogs: Record<string, number>; // date -> pages read count
+    status: 'active' | 'completed' | 'abandoned';
+    createdAt: number;
+}
+
 // Navigation types
 export type RootStackParamList = {
     Onboarding: undefined;
@@ -148,6 +167,8 @@ export type RootStackParamList = {
     Tahajjud: undefined;
     Quran: undefined;
     Profile: undefined;
+    Qibla: undefined;
+    Khatam: undefined;
 };
 
 export type MainTabParamList = {
@@ -155,4 +176,9 @@ export type MainTabParamList = {
     Track: undefined;
     Insights: undefined;
     Settings: undefined;
+};
+
+export type AuthStackParamList = {
+    Login: undefined;
+    SignUp: undefined;
 };

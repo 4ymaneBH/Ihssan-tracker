@@ -1,113 +1,50 @@
-// Date utility functions
-
 /**
- * Get date string in YYYY-MM-DD format
+ * Get YYYY-MM-DD string from date
  */
 export const getDateString = (date: Date): string => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+    return date.toISOString().split('T')[0];
 };
 
 /**
- * Get array of date strings for the current week (Sunday to Saturday)
+ * Format a date into Hijri calendar string
+ * @param date Date object
+ * @param locale 'en' or 'ar'
+ * @returns Formatted Hijri date string
  */
-export const getWeekDates = (referenceDate: Date = new Date()): string[] => {
+export const getHijriDate = (date: Date, locale: 'en' | 'ar' = 'en'): string => {
+    try {
+        return new Intl.DateTimeFormat(locale + '-u-ca-islamic-umalqura', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+        }).format(date);
+    } catch (e) {
+        // Fallback if islamic-umalqura is not supported
+        return new Intl.DateTimeFormat(locale + '-u-ca-islamic', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+        }).format(date);
+    }
+};
+
+/**
+ * Get array of dates for the current week (Sunday to Saturday)
+ */
+export const getWeekDates = (): string[] => {
     const dates: string[] = [];
-    const current = new Date(referenceDate);
+    const today = new Date();
+    const day = today.getDay(); // 0 (Sun) to 6 (Sat)
 
-    // Get to the start of the week (Sunday)
-    const dayOfWeek = current.getDay();
-    current.setDate(current.getDate() - dayOfWeek);
+    // Start from Sunday
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - day);
 
-    // Generate 7 dates
     for (let i = 0; i < 7; i++) {
-        dates.push(getDateString(current));
-        current.setDate(current.getDate() + 1);
+        const date = new Date(startOfWeek);
+        date.setDate(startOfWeek.getDate() + i);
+        dates.push(getDateString(date));
     }
 
     return dates;
-};
-
-/**
- * Get day name abbreviation
- */
-export const getDayAbbr = (date: Date, locale: string = 'en'): string => {
-    const days = {
-        en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-        ar: ['أحد', 'إثن', 'ثلا', 'أرب', 'خمي', 'جمع', 'سبت'],
-    };
-    return days[locale as 'en' | 'ar']?.[date.getDay()] || days.en[date.getDay()];
-};
-
-/**
- * Check if date is today
- */
-export const isToday = (dateString: string): boolean => {
-    return dateString === getDateString(new Date());
-};
-
-/**
- * Parse date string to Date object
- */
-export const parseDate = (dateString: string): Date => {
-    const [year, month, day] = dateString.split('-').map(Number);
-    return new Date(year, month - 1, day);
-};
-
-/**
- * Format date for display
- */
-export const formatDate = (dateString: string, locale: string = 'en'): string => {
-    const date = parseDate(dateString);
-    return date.toLocaleDateString(locale === 'ar' ? 'ar-SA' : 'en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-    });
-};
-
-/**
- * Get relative day label (Today, Yesterday, or date)
- */
-export const getRelativeDay = (dateString: string, locale: string = 'en'): string => {
-    const today = getDateString(new Date());
-    const yesterday = getDateString(new Date(Date.now() - 86400000));
-
-    if (dateString === today) {
-        return locale === 'ar' ? 'اليوم' : 'Today';
-    }
-    if (dateString === yesterday) {
-        return locale === 'ar' ? 'أمس' : 'Yesterday';
-    }
-    return formatDate(dateString, locale);
-};
-
-/**
- * Convert Western numerals to Arabic numerals (kept for backward compatibility)
- */
-export const toArabicNumerals = (num: number | string): string => {
-    const arabicNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-    return String(num).replace(/[0-9]/g, (d) => arabicNumerals[parseInt(d)]);
-};
-
-/**
- * Format number based on locale - always uses Western digits (0-9) for consistency
- */
-export const formatNumber = (num: number, _locale: string = 'en'): string => {
-    // Always use Western digits (0-9) even in Arabic mode for better readability
-    return String(num);
-};
-
-/**
- * Format percentage - always uses Western digits
- */
-export const formatPercentage = (value: number, locale: string = 'en'): string => {
-    const rounded = Math.round(value);
-    if (locale === 'ar') {
-        // In Arabic, percentage sign comes before the number
-        return `%${rounded}`;
-    }
-    return `${rounded}%`;
 };

@@ -2,6 +2,7 @@
 import { useState, useEffect useCallback } from 'react';
 import * as Location from 'expo-location';
 import { calculatePrayerTimes, PrayerTimesResult, formatPrayerTime, getTimeRemaining } from '../services/prayerTimes';
+import { schedulePrayerNotifications } from '../services/notifications';
 import { useUserPreferencesStore } from '../store';
 
 interface UsePrayerTimesResult {
@@ -21,7 +22,7 @@ export const usePrayerTimes = (): UsePrayerTimesResult => {
     const [error, setError] = useState<string | null>(null);
     const [hasLocationPermission, setHasLocationPermission] = useState(false);
 
-    const { language } = useUserPreferencesStore();
+    const { language, prayerNotifications } = useUserPreferencesStore();
     const isArabic = language === 'ar';
 
     // Check location permission on mount
@@ -64,7 +65,7 @@ export const usePrayerTimes = (): UsePrayerTimesResult => {
             setError(null);
 
             // Get current location
-            const location await Location.getCurrentPositionAsync({
+            const location = await Location.getCurrentPositionAsync({
                 accuracy: Location.Accuracy.Balanced,
             });
 
@@ -86,6 +87,12 @@ export const usePrayerTimes = (): UsePrayerTimesResult => {
             await loadPrayerTimes();
         }
     }, [hasLocationPermission]);
+
+    useEffect(() => {
+        if (prayerTimes && prayerNotifications) {
+            schedulePrayerNotifications(prayerTimes, prayerNotifications, language).catch(console.error);
+        }
+    }, [prayerTimes, prayerNotifications, language]);
 
     // Auto-refresh prayer times at midnight
     useEffect(() => {

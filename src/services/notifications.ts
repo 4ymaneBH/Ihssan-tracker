@@ -3,6 +3,8 @@ import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
+import { SalatName, PrayerNotificationSettings } from '../types';
+
 // Configure notification behavior
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -17,6 +19,7 @@ Notifications.setNotificationHandler({
 // Notification types
 export type NotificationType =
     | 'salat_reminder'
+    | 'salat_pre_reminder'
     | 'adhkar_morning'
     | 'adhkar_evening'
     | 'quran_reminder'
@@ -262,3 +265,72 @@ export const setupDefaultNotifications = async (language: 'en' | 'ar'): Promise<
         minute: 0,
     });
 };
+
+// Schedule notifications for prayer times
+export const schedulePrayerNotifications = async (
+    prayerTimes: Record<SalatName, Date>,
+    settings: Record<SalatName, PrayerNotificationSettings>,
+    language: 'en' | 'ar'
+): Promise<void> => {
+    // 1. Cancel existing prayer notifications
+    const scheduled = await getScheduledNotifications();
+    const prayerNotifications = scheduled.filter(n =>
+        n.type === 'salat_reminder' || n.type === 'salat_pre_reminder'
+    );
+
+    for (const notification of prayerNotifications) {
+        await cancelNotification(notification.id);
+    }
+
+    // 2. Schedule new ones based on settings
+    const prayers: SalatName[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+    const now = new Date();
+
+    for (const prayer of prayers) {
+        const time = prayerTimes[prayer];
+        const config = settings[prayer];
+
+        // Skip if time is past or sound is off
+        if (!time || config.sound === 'off') continue;
+
+        // Skip if time is in the past (allow for small margin?)
+        if (time.getTime() <= now.getTime()) continue;
+
+        // Schedule Main Notification (Adhan/Beep)
+        const messages = reminderMessages.salat[language];
+        await Notifications.scheduleNotificationAsync({
+            content: {
+                title: messages.title,
+                body: `${messages.body} (${prayer})`, // Improve this translation later
+                data: { type: 'salat_reminder', prayer },
+                sound: config.sound === 'azan' ? 'azan.mp3' : true, // Assuming azan.mp3 exists or handle custom sound
+            },
+            trigger: {
+                type: Notifications.SchedulableTriggerInputTypes.DATE,
+                date: time,
+            },
+        });
+
+        // Pre-Notification
+        if (config.preNotification && config.preNotification > 0) {
+            const preTime = new Date(time.getTime() - config.preNotification * 60000);
+            if (preTime.getTime() > now.getTime()) {
+                await Notifications.scheduleNotificationAsync({
+                    content: {
+                        title: language === 'ar' ? 'اقتربت الصلاة' : 'Prayer Approaching',
+                        body: language === 'ar'
+                            ? `باقي ${config.preNotification} دقيقة على صلاة ${prayer}`
+                            : `${config.preNotification} minutes until ${prayer}`,
+                        data: { type: 'salat_pre_reminder', prayer },
+                        sound: true,
+                    },
+                    trigger: {
+                        type: Notifications.SchedulableTriggerInputTypes.DATE,
+                        date: preTime,
+                    },
+                });
+            }
+        }
+    }
+};
+

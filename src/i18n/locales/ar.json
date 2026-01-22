@@ -164,5 +164,26 @@
         "logout": "تسجيل الخروج",
         "profile": "الملف الشخصي",
         "updateProfile": "تحديث الملف الشخصي"
+    },
+    "qiblaCompass": "بوصلة القبلة",
+    "qiblaDirection": "اتجاه القبلة",
+    "rotatePhone": "قم بتدوير هاتفك للمعايرة",
+    "locationPermissionDenied": "مطلوب إذن الموقع لبوصلة القبلة",
+    "errorFetchingLocation": "تعذر جلب الموقع",
+    "retry": "أعد المحاولة",
+    "khatam": {
+        "title": "الختمة",
+        "startNew": "ابدأ ختمة جديدة",
+        "startNewDesc": "حدد موعداً لختم القرآن وسنقوم بمتابعة وردك اليومي",
+        "targetDate": "تاريخ الختم",
+        "dailyPageGoal": "الورد اليومي",
+        "pagesLeft": "صفحات متبقية",
+        "completed": "مكتمل",
+        "logReading": "سجل القراءة",
+        "updateProgress": "تحديث التقدم",
+        "currentPage": "الصفحة الحالية",
+        "cancel": "إلغاء الختمة",
+        "cancelConfirmation": "هل أنت متأكد من رغبتك في إلغاء هذه الختمة؟",
+        "pagesReadToday": "صفحات قرأت اليوم"
     }
 }

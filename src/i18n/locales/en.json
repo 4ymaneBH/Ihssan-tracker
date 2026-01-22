@@ -164,5 +164,26 @@
         "logout": "Log Out",
         "profile": "Profile",
         "updateProfile": "Update Profile"
+    },
+    "qiblaCompass": "Qibla Compass",
+    "qiblaDirection": "Qibla Direction",
+    "rotatePhone": "Rotate your phone to calibrate",
+    "locationPermissionDenied": "Location permission is required for Qibla Compass",
+    "errorFetchingLocation": "Could not fetch location",
+    "retry": "Retry",
+    "khatam": {
+        "title": "Khatam",
+        "startNew": "Start New Khatam",
+        "startNewDesc": "Set a goal to complete the Quran and we'll track your daily progress",
+        "targetDate": "Target Date",
+        "dailyPageGoal": "Daily Page Goal",
+        "pagesLeft": "Pages Left",
+        "completed": "Completed",
+        "logReading": "Log Reading",
+        "updateProgress": "Update Progress",
+        "currentPage": "Current Page",
+        "cancel": "Cancel Khatam",
+        "cancelConfirmation": "Are you sure you want to cancel this Khatam?",
+        "pagesReadToday": "Pages read today"
     }
 }

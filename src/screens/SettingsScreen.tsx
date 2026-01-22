@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context';
 import { useUserPreferencesStore, useAuthStore } from '../store';
-import { GoalsModal, SelectionModal } from '../components';
+import { GoalsModal, SelectionModal, PrayerNotificationsModal } from '../components';
 import { getFontFamily } from '../utils';
 
 
@@ -91,6 +91,7 @@ const SettingsScreen: React.FC = () => {
     const { t, i18n } = useTranslation();
     const { theme } = useTheme();
     const [showGoalsModal, setShowGoalsModal] = useState(false);
+    const [showNotificationsModal, setShowNotificationsModal] = useState(false);
     const [activeModal, setActiveModal] = useState<'language' | 'theme' | null>(null);
 
     const {
@@ -200,6 +201,13 @@ const SettingsScreen: React.FC = () => {
                             />
                         }
                     />
+
+                    <SettingRow
+                        iconName="tune-vertical"
+                        iconColor={theme.colors.primary}
+                        label={isArabic ? 'تخصيص التنبيهات' : 'Customize Prayers'}
+                        onPress={() => setShowNotificationsModal(true)}
+                    />
                 </View>
 
                 {/* Privacy Section */}
@@ -264,6 +272,13 @@ const SettingsScreen: React.FC = () => {
                 visible={showGoalsModal}
                 onClose={() => setShowGoalsModal(false)}
             />
+
+            {/* Notifications Modal */}
+            <PrayerNotificationsModal
+                visible={showNotificationsModal}
+                onClose={() => setShowNotificationsModal(false)}
+            />
+
 
             {/* Language Modal */}
             <SelectionModal

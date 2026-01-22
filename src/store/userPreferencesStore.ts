@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { UserPreferences } from '../types';
+import { UserPreferences, SalatName, PrayerNotificationSettings } from '../types';
 import { changeLanguage } from '../i18n';
 
 interface UserPreferencesState extends UserPreferences {
@@ -18,6 +18,11 @@ interface UserPreferencesState extends UserPreferences {
     setQuietHours: (start: string, end: string) => void;
     setHideCharityAmounts: (hide: boolean) => void;
     setGoals: (goals: Partial<UserPreferences['goals']>) => void;
+
+    // Prayer Notifications
+    prayerNotifications: Record<SalatName, PrayerNotificationSettings>;
+    setPrayerNotificationSettings: (prayer: SalatName, settings: PrayerNotificationSettings) => void;
+
     reset: () => void;
 }
 
@@ -33,6 +38,13 @@ const defaultPreferences: UserPreferences = {
         quranPagesPerDay: 2,
         charityPerWeek: 3,
         tahajjudNightsPerWeek: 2,
+    },
+    prayerNotifications: {
+        fajr: { sound: 'azan', preNotification: 20 },
+        dhuhr: { sound: 'azan' },
+        asr: { sound: 'azan' },
+        maghrib: { sound: 'azan', preNotification: 10 },
+        isha: { sound: 'azan' },
     },
 };
 
@@ -73,6 +85,15 @@ export const useUserPreferencesStore = create<UserPreferencesState>()(
             setGoals: (goals) => {
                 set((state) => ({
                     goals: { ...state.goals, ...goals },
+                }));
+            },
+
+            setPrayerNotificationSettings: (prayer, settings) => {
+                set((state) => ({
+                    prayerNotifications: {
+                        ...state.prayerNotifications,
+                        [prayer]: settings,
+                    },
                 }));
             },
 
