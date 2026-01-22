@@ -138,5 +138,31 @@
         "logged": "تم التسجيل بنجاح",
         "streakMaintained": "السلسلة مستمرة!",
         "newRecord": "رقم قياسي جديد!"
+    },
+    "auth": {
+        "welcomeBack": "مرحباً بعودتك",
+        "createAccount": "إنشاء حساب",
+        "signInSubtitle": "سجل الدخول للمتابعة",
+        "signUpSubtitle": "أنشئ حساباً لمزامنة تقدمك",
+        "name": "الاسم",
+        "namePlaceholder": "أدخل اسمك",
+        "email": "البريد الإلكتروني",
+        "emailPlaceholder": "أدخل بريدك الإلكتروني",
+        "password": "كلمة المرور",
+        "passwordPlaceholder": "أدخل كلمة المرور",
+        "confirmPassword": "تأكيد كلمة المرور",
+        "confirmPasswordPlaceholder": "أعد إدخال كلمة المرور",
+        "signIn": "تسجيل الدخول",
+        "signUp": "إنشاء حساب",
+        "dontHaveAccount": "ليس لديك حساب؟",
+        "alreadyHaveAccount": "لديك حساب بالفعل؟",
+        "fillAllFields": "يرجى ملء جميع الحقول",
+        "passwordsDoNotMatch": "كلمات المرور غير متطابقة",
+        "signUpFailed": "فشل إنشاء الحساب",
+        "signInFailed": "فشل تسجيل الدخول",
+        "demoCredentials": "وضع تجريبي: استخدم أي بريد وكلمة مرور",
+        "logout": "تسجيل الخروج",
+        "profile": "الملف الشخصي",
+        "updateProfile": "تحديث الملف الشخصي"
     }
 }

@@ -138,5 +138,31 @@
         "logged": "Logged successfully",
         "streakMaintained": "Streak maintained!",
         "newRecord": "New record!"
+    },
+    "auth": {
+        "welcomeBack": "Welcome Back",
+        "createAccount": "Create Account",
+        "signInSubtitle": "Sign in to continue",
+        "signUpSubtitle": "Sign up to sync your progress",
+        "name": "Name",
+        "namePlaceholder": "Enter your name",
+        "email": "Email",
+        "emailPlaceholder": "Enter your email",
+        "password": "Password",
+        "passwordPlaceholder": "Enter your password",
+        "confirmPassword": "Confirm Password",
+        "confirmPasswordPlaceholder": "Confirm your password",
+        "signIn": "Sign In",
+        "signUp": "Sign Up",
+        "dontHaveAccount": "Don't have an account?",
+        "alreadyHaveAccount": "Already have an account?",
+        "fillAllFields": "Please fill in all fields",
+        "passwordsDoNotMatch": "Passwords do not match",
+        "signUpFailed": "Sign up failed",
+        "signInFailed": "Sign in failed",
+        "demoCredentials": "Demo Mode: Use any email and password",
+        "logout": "Log Out",
+        "profile": "Profile",
+        "updateProfile": "Update Profile"
     }
 }

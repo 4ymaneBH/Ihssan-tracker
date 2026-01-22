@@ -12,7 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context';
-import { useUserPreferencesStore } from '../store';
+import { useUserPreferencesStore, useAuthStore } from '../store';
 import { GoalsModal, SelectionModal } from '../components';
 import { getFontFamily } from '../utils';
 
@@ -105,6 +105,7 @@ const SettingsScreen: React.FC = () => {
     } = useUserPreferencesStore();
 
     const userTheme = useUserPreferencesStore((state) => state.theme);
+    const { signOut } = useAuthStore();
     const isArabic = i18n.language === 'ar';
 
     const getThemeLabel = () => {
@@ -232,6 +233,16 @@ const SettingsScreen: React.FC = () => {
                         iconName="cellphone"
                         label={t('settings.version')}
                         value="1.0.0"
+                    />
+                </View>
+
+                {/* Account Section */}
+                <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
+                    <SettingRow
+                        iconName="logout"
+                        iconColor={theme.colors.error.main}
+                        label={t('auth.logout')}
+                        onPress={signOut}
                     />
                 </View>
 

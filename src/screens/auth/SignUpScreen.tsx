@@ -97,7 +97,12 @@ const SignUpScreen: React.FC = () => {
                             <View style={[styles.inputWrapper, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
                                 <MaterialCommunityIcons name="account-outline" size={20} color={theme.colors.textSecondary} style={styles.inputIcon} />
                                 <TextInput
-                                    style={[styles.input, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'regular'), textAlign: isArabic ? 'right' : 'left' }]}
+                                    style={[styles.input, {
+                                        color: theme.colors.text,
+                                        fontFamily: getFontFamily(isArabic, 'regular'),
+                                        textAlign: isArabic ? 'right' : 'left',
+                                        writingDirection: isArabic ? 'rtl' : 'ltr'
+                                    }]}
                                     placeholder={t('auth.namePlaceholder') || 'Enter your name'}
                                     placeholderTextColor={theme.colors.textSecondary}
                                     value={name}
@@ -114,7 +119,12 @@ const SignUpScreen: React.FC = () => {
                             <View style={[styles.inputWrapper, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
                                 <MaterialCommunityIcons name="email-outline" size={20} color={theme.colors.textSecondary} style={styles.inputIcon} />
                                 <TextInput
-                                    style={[styles.input, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'regular'), textAlign: isArabic ? 'right' : 'left' }]}
+                                    style={[styles.input, {
+                                        color: theme.colors.text,
+                                        fontFamily: getFontFamily(isArabic, 'regular'),
+                                        textAlign: isArabic ? 'right' : 'left',
+                                        writingDirection: isArabic ? 'rtl' : 'ltr'
+                                    }]}
                                     placeholder={t('auth.emailPlaceholder') || 'Enter your email'}
                                     placeholderTextColor={theme.colors.textSecondary}
                                     value={email}
@@ -133,7 +143,12 @@ const SignUpScreen: React.FC = () => {
                             <View style={[styles.inputWrapper, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
                                 <MaterialCommunityIcons name="lock-outline" size={20} color={theme.colors.textSecondary} style={styles.inputIcon} />
                                 <TextInput
-                                    style={[styles.input, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'regular'), textAlign: isArabic ? 'right' : 'left' }]}
+                                    style={[styles.input, {
+                                        color: theme.colors.text,
+                                        fontFamily: getFontFamily(isArabic, 'regular'),
+                                        textAlign: isArabic ? 'right' : 'left',
+                                        writingDirection: isArabic ? 'rtl' : 'ltr'
+                                    }]}
                                     placeholder={t('auth.passwordPlaceholder') || 'Enter your password'}
                                     placeholderTextColor={theme.colors.textSecondary}
                                     value={password}
@@ -158,7 +173,12 @@ const SignUpScreen: React.FC = () => {
                             <View style={[styles.inputWrapper, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
                                 <MaterialCommunityIcons name="lock-check-outline" size={20} color={theme.colors.textSecondary} style={styles.inputIcon} />
                                 <TextInput
-                                    style={[styles.input, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'regular'), textAlign: isArabic ? 'right' : 'left' }]}
+                                    style={[styles.input, {
+                                        color: theme.colors.text,
+                                        fontFamily: getFontFamily(isArabic, 'regular'),
+                                        textAlign: isArabic ? 'right' : 'left',
+                                        writingDirection: isArabic ? 'rtl' : 'ltr'
+                                    }]}
                                     placeholder={t('auth.confirmPasswordPlaceholder') || 'Confirm your password'}
                                     placeholderTextColor={theme.colors.textSecondary}
                                     value={confirmPassword}
@@ -242,7 +262,7 @@ const styles = StyleSheet.create({
         height: 56,
     },
     inputIcon: {
-        marginRight: 12,
+        marginHorizontal: 12,
     },
     input: {
         flex: 1,

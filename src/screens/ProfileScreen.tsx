@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../context';
-import { useUserPreferencesStore } from '../store';
+import { useUserPreferencesStore, useAuthStore } from '../store';
 import { getFontFamily } from '../utils';
 
 
@@ -50,12 +50,17 @@ const ProfileScreen: React.FC = () => {
     const setLanguage = useUserPreferencesStore((state) => state.setLanguage);
     const setThemePreference = useUserPreferencesStore((state) => state.setTheme);
 
-    const [name, setName] = useState(displayName);
+    const { user, updateProfile } = useAuthStore();
+    // Default to auth user name if available, otherwise prefs name
+    const [name, setName] = useState(user?.name || displayName);
     const [selectedAvatar, setSelectedAvatar] = useState<IconName>(avatarId as IconName);
     const [isEditing, setIsEditing] = useState(false);
 
-    const handleSave = () => {
-        setProfile(name, selectedAvatar);
+    const handleSave = async () => {
+        setProfile(name, selectedAvatar); // Keep legacy updated just in case
+        if (user) {
+            await updateProfile(name);
+        }
         setIsEditing(false);
     };
 
@@ -126,9 +131,16 @@ const ProfileScreen: React.FC = () => {
                             textAlign={isArabic ? 'right' : 'left'}
                         />
                     ) : (
-                        <Text style={[styles.displayName, { color: theme.colors.text }]}>
-                            {displayName || (isArabic ? 'اضغط للتعديل' : 'Tap to edit')}
-                        </Text>
+                        <View style={{ alignItems: 'center' }}>
+                            <Text style={[styles.displayName, { color: theme.colors.text }]}>
+                                {user?.name || displayName || (isArabic ? 'صديق إحسان' : 'Ihssan Friend')}
+                            </Text>
+                            {user?.email && (
+                                <Text style={[styles.email, { color: theme.colors.textSecondary, fontFamily: getFontFamily(isArabic, 'regular') }]}>
+                                    {user.email}
+                                </Text>
+                            )}
+                        </View>
                     )}
 
                     {/* Edit/Save Button */}
@@ -256,7 +268,7 @@ const ProfileScreen: React.FC = () => {
 
                 <View style={styles.bottomSpacer} />
             </ScrollView>
-        </SafeAreaView>
+        </SafeAreaView >
     );
 };
 
@@ -302,6 +314,11 @@ const styles = StyleSheet.create({
     displayName: {
         fontSize: 22,
         fontWeight: '600',
+        textAlign: 'center',
+    },
+    email: {
+        fontSize: 14,
+        marginTop: 4,
     },
     nameInput: {
         fontSize: 18,

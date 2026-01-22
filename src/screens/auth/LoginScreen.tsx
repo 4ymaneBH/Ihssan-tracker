@@ -87,11 +87,17 @@ const LoginScreen: React.FC = () => {
                             <View style={[styles.inputWrapper, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
                                 <MaterialCommunityIcons name="email-outline" size={20} color={theme.colors.textSecondary} style={styles.inputIcon} />
                                 <TextInput
-                                    style={[styles.input, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'regular'), textAlign: isArabic ? 'right' : 'left' }]}
+                                    style={[styles.input, {
+                                        color: theme.colors.text,
+                                        fontFamily: getFontFamily(isArabic, 'regular'),
+                                        textAlign: isArabic ? 'right' : 'left',
+                                        writingDirection: isArabic ? 'rtl' : 'ltr'
+                                    }]}
                                     placeholder={t('auth.emailPlaceholder') || 'Enter your email'}
                                     placeholderTextColor={theme.colors.textSecondary}
                                     value={email}
                                     onChangeText={setEmail}
+                                    keyboardType="email-address"
                                     keyboardType="email-address"
                                     autoCapitalize="none"
                                 />
@@ -106,7 +112,12 @@ const LoginScreen: React.FC = () => {
                             <View style={[styles.inputWrapper, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
                                 <MaterialCommunityIcons name="lock-outline" size={20} color={theme.colors.textSecondary} style={styles.inputIcon} />
                                 <TextInput
-                                    style={[styles.input, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'regular'), textAlign: isArabic ? 'right' : 'left' }]}
+                                    style={[styles.input, {
+                                        color: theme.colors.text,
+                                        fontFamily: getFontFamily(isArabic, 'regular'),
+                                        textAlign: isArabic ? 'right' : 'left',
+                                        writingDirection: isArabic ? 'rtl' : 'ltr'
+                                    }]}
                                     placeholder={t('auth.passwordPlaceholder') || 'Enter your password'}
                                     placeholderTextColor={theme.colors.textSecondary}
                                     value={password}
@@ -190,7 +201,7 @@ const styles = StyleSheet.create({
         height: 56,
     },
     inputIcon: {
-        marginRight: 12,
+        marginHorizontal: 12, // Replaces marginRight to be direction-agnostic
     },
     input: {
         flex: 1,
@@ -218,6 +229,11 @@ const styles = StyleSheet.create({
     },
     link: {
         fontSize: 14,
+    },
+    hint: {
+        fontSize: 12,
+        marginTop: 4,
+        opacity: 0.7,
     },
 });
 
