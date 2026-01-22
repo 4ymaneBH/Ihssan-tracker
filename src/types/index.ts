@@ -140,6 +140,8 @@ export interface WeeklyInsights {
 // Navigation types
 export type RootStackParamList = {
     Onboarding: undefined;
+    SignUp: undefined;
+    Login: undefined;
     Main: undefined;
     Adhkar: { category?: 'morning' | 'evening' | 'general' | 'sleep' };
     Dua: undefined;

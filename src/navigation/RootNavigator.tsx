@@ -3,7 +3,7 @@ import React from 'react';
 import { NavigationContainer, DefaultTheme, DarkTheme, Theme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
-import { useUserPreferencesStore } from '../store';
+import { useUserPreferencesStore, useAuthStore } from '../store';
 import { useTheme } from '../context';
 
 // Screens
@@ -13,6 +13,8 @@ import DuaScreen from '../screens/DuaScreen';
 import TahajjudScreen from '../screens/TahajjudScreen';
 import QuranScreen from '../screens/QuranScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import SignUpScreen from '../screens/auth/SignUpScreen';
+import LoginScreen from '../screens/auth/LoginScreen';
 import MainTabs from './MainTabs';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -21,6 +23,8 @@ const RootNavigator: React.FC = () => {
     const onboardingComplete = useUserPreferencesStore(
         (state) => state.onboardingComplete
     );
+    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
     const { theme: appTheme, isDark } = useTheme();
 
     // Use the base theme and override only colors
@@ -44,6 +48,11 @@ const RootNavigator: React.FC = () => {
             <Stack.Navigator screenOptions={{ headerShown: false }}>
                 {!onboardingComplete ? (
                     <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+                ) : !isAuthenticated ? (
+                    <>
+                        <Stack.Screen name="Login" component={LoginScreen} />
+                        <Stack.Screen name="SignUp" component={SignUpScreen} />
+                    </>
                 ) : (
                     <>
                         <Stack.Screen name="Main" component={MainTabs} />

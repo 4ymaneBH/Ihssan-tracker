@@ -2,3 +2,5 @@
 export { useUserPreferencesStore } from './userPreferencesStore';
 export { useSalatStore } from './salatStore';
 export { useHabitsStore } from './habitsStore';
+export { useAuthStore } from './authStore';
+
