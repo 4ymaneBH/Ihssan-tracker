@@ -48,3 +48,26 @@ export const getWeekDates = (): string[] => {
 
     return dates;
 };
+
+/**
+ * Parse YYYY-MM-DD string to Date object
+ */
+export const parseDate = (dateString: string): Date => {
+    const [year, month, day] = dateString.split('-').map(Number);
+    return new Date(year, month - 1, day);
+};
+
+/**
+ * Check if a date string is today
+ */
+export const isToday = (dateString: string): boolean => {
+    const today = getDateString(new Date());
+    return dateString === today;
+};
+
+/**
+ * Get day abbreviation (e.g., "Mon", "Tue")
+ */
+export const getDayAbbr = (date: Date, locale: 'en' | 'ar' = 'en'): string => {
+    return new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(date);
+};

@@ -4,9 +4,14 @@
  */
 export const formatNumber = (num: number, locale: string = 'en'): string => {
     if (num === undefined || num === null) return '0';
-
-    if (locale === 'ar') {
-        return num.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[parseInt(d)]);
-    }
+    // Always return Western Arabic numerals (0-9) as requested
     return num.toString();
+};
+
+/**
+ * Format percentage with % symbol
+ */
+export const formatPercentage = (percent: number, locale: string = 'en'): string => {
+    const formattedNum = formatNumber(Math.round(percent), locale);
+    return locale === 'ar' ? `%${formattedNum}` : `${formattedNum}%`;
 };
