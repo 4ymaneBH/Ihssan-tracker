@@ -37,23 +37,22 @@ const MainTabs: React.FC = () => {
             screenOptions={({ route }) => ({
                 headerShown: false,
                 tabBarStyle: {
-                    backgroundColor: theme.colors.tabBarBackground,
-                    borderTopColor: theme.colors.tabBarBorder, // Ensure this color is subtle in theme
-                    borderTopWidth: 0.5, // Thinner border for elegance
-                    height: 85, // Taller for more breathing room
-                    paddingBottom: 24, // Optimized for iPhone home indicator
-                    paddingTop: 12,
-                    elevation: 8, // Subtle elevation
+                    backgroundColor: '#212529',  // Dark background from reference
+                    borderTopWidth: 0,           // No border
+                    height: 70,                  // Compact height
+                    paddingBottom: 16,           // Space for labels
+                    paddingTop: 8,
+                    elevation: 8,
                     shadowColor: '#000',
                     shadowOffset: { width: 0, height: -4 },
-                    shadowOpacity: 0.04, // Very subtle shadow
-                    shadowRadius: 16, // Soft diffusion
+                    shadowOpacity: 0.15,
+                    shadowRadius: 12,
                 },
-                tabBarActiveTintColor: theme.colors.primary,
-                tabBarInactiveTintColor: theme.colors.tabBarInactive,
+                tabBarActiveTintColor: '#A4D96C',     // Neon green
+                tabBarInactiveTintColor: '#6C757D',   // Gray
                 tabBarLabelStyle: {
-                    fontSize: 12,
-                    fontWeight: '600', // Medium-Bold for readability
+                    fontSize: 11,
+                    fontWeight: '600',
                     marginTop: 4,
                 },
                 tabBarIcon: ({ focused, color, size }) => {
@@ -62,7 +61,7 @@ const MainTabs: React.FC = () => {
                     return (
                         <MaterialCommunityIcons
                             name={iconName}
-                            size={focused ? 26 : 24}
+                            size={focused ? 24 : 22}
                             color={color}
                         />
                     );
