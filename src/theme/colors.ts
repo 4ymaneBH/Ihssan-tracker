@@ -1,42 +1,42 @@
 // Color palette for Ihssan Tracker
-// Premium, calm Islamic aesthetic with enhanced light-mode contrast
+// Modern, clean aesthetic with neon green accent (based on reference image)
 
 export const colors = {
-    // Primary - Teal (spiritual, calming)
+    // Primary - Bright Lime/Neon Green (from reference)
     primary: {
-        50: '#F0FDFA',
-        100: '#CCFBF1',
-        200: '#99F6E4',
-        300: '#5EEAD4',
-        400: '#2DD4BF',
-        500: '#14B8A6',
-        600: '#0D9488',  // Main primary
-        700: '#0F766E',
-        800: '#115E59',
-        900: '#134E4A',
+        50: '#F7FEF0',
+        100: '#ECFCD5',
+        200: '#D9F9AE',
+        300: '#BFF37C',
+        400: '#A4D96C',  // Main primary (neon green from reference)
+        500: '#8BC34A',
+        600: '#7CB342',
+        700: '#689F38',
+        800: '#558B2F',
+        900: '#33691E',
     },
 
-    // Neutral grays
+    // Neutral - Clean grays (from reference)
     neutral: {
         0: '#FFFFFF',
-        50: '#F9FAFB',
-        100: '#F3F4F6',
-        200: '#E5E7EB',
-        300: '#D1D5DB',
-        400: '#9CA3AF',
-        500: '#6B7280',
-        600: '#4B5563',
-        700: '#374151',
-        800: '#1F2937',
-        900: '#111827',
-        950: '#030712',
+        50: '#F8F9FA',   // Very light gray background
+        100: '#F1F3F5',
+        200: '#E9ECEF',
+        300: '#DEE2E6',
+        400: '#CED4DA',
+        500: '#ADB5BD',
+        600: '#6C757D',
+        700: '#495057',
+        800: '#343A40',
+        900: '#212529',
+        950: '#0D0F12',
     },
 
     // Semantic colors
     success: {
-        light: '#D1FAE5',
-        main: '#10B981',
-        dark: '#059669',
+        light: '#D9F9AE',
+        main: '#A4D96C',  // Same as primary
+        dark: '#7CB342',
     },
     warning: {
         light: '#FEF3C7',
@@ -54,37 +54,37 @@ export const colors = {
         dark: '#2563EB',
     },
 
-    // Card accent colors (for icon backgrounds only)
+    // Card accent colors (for icon backgrounds)
     accents: {
-        salat: '#0D9488',      // Teal
-        adhkar: '#F59E0B',     // Orange
-        quran: '#EAB308',      // Yellow
-        charity: '#EC4899',    // Pink
-        tahajjud: '#8B5CF6',   // Purple
-        custom: '#3B82F6',     // Blue
+        salat: '#A4D96C',      // Green
+        adhkar: '#A4D96C',     // Green
+        quran: '#A4D96C',      // Green
+        charity: '#A4D96C',    // Green
+        tahajjud: '#A4D96C',   // Green
+        custom: '#A4D96C',     // Green
     },
 };
 
-// Light theme - enhanced contrast with card borders
+// Light theme - clean modern aesthetic (from reference)
 export const lightTheme = {
-    background: colors.neutral[100],          // Slightly gray background for contrast
-    backgroundSecondary: colors.neutral[200],
+    background: colors.neutral[50],           // Very light gray (#F8F9FA)
+    backgroundSecondary: colors.neutral[100],
     surface: colors.neutral[0],               // Pure white cards
     surfaceElevated: colors.neutral[0],
-    text: colors.neutral[900],
-    textSecondary: colors.neutral[500],
-    textTertiary: colors.neutral[400],
-    border: colors.neutral[200],
+    text: colors.neutral[900],                // Dark gray text (#212529)
+    textSecondary: colors.neutral[600],       // Medium gray (#6C757D)
+    textTertiary: colors.neutral[500],        // Light gray (#ADB5BD)
+    border: colors.neutral[200],              // Subtle borders (#E9ECEF)
     borderLight: colors.neutral[200],
     divider: colors.neutral[200],
-    cardBorder: colors.neutral[200],          // Visible card outlines
-    primary: colors.primary[600],
+    cardBorder: colors.neutral[200],
+    primary: colors.primary[400],             // Neon green (#A4D96C)
     primaryLight: colors.primary[100],
-    onPrimary: colors.neutral[0],
-    tabBarBackground: colors.neutral[0],
-    tabBarBorder: colors.neutral[200],
-    tabBarActive: colors.primary[600],
-    tabBarInactive: colors.neutral[400],
+    onPrimary: colors.neutral[0],             // White text on green
+    tabBarBackground: colors.neutral[900],    // Dark tab bar (#212529)
+    tabBarBorder: colors.neutral[800],
+    tabBarActive: colors.primary[400],        // Green active state
+    tabBarInactive: colors.neutral[600],      // Gray inactive
     // Palettes for advanced usage
     palette: colors,
     // Semantic colors
@@ -94,7 +94,7 @@ export const lightTheme = {
     info: colors.info,
     // Accent colors for icons
     accents: colors.accents,
-    // Card backgrounds - all white in light mode for clean look
+    // Card backgrounds - all white in light mode
     cards: {
         salat: colors.neutral[0],
         adhkar: colors.neutral[0],
@@ -105,7 +105,7 @@ export const lightTheme = {
     },
     // Progress bar colors
     progressBarBackground: colors.neutral[200],
-    progressBarFill: colors.primary[500],
+    progressBarFill: colors.primary[400],
 };
 
 // Dark theme
@@ -121,7 +121,7 @@ export const darkTheme = {
     borderLight: colors.neutral[700],
     divider: colors.neutral[800],
     cardBorder: colors.neutral[700],
-    primary: colors.primary[400],
+    primary: colors.primary[400],             // Neon green
     primaryLight: colors.primary[900],
     onPrimary: colors.neutral[900],
     tabBarBackground: colors.neutral[900],
