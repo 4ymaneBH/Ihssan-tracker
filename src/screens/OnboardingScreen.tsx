@@ -395,7 +395,7 @@ const styles = StyleSheet.create({
     },
     nextButton: {
         height: 56,
-        borderRadius: 28,
+        borderRadius: 12,  // 12px radius from reference (not pill-shaped)
         alignItems: 'center',
         justifyContent: 'center',
     },
