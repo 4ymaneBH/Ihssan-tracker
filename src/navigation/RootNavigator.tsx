@@ -55,7 +55,13 @@ const RootNavigator: React.FC = () => {
         <View style={{ flex: 1 }}>
             <AppBackground />
             <NavigationContainer theme={navigationTheme}>
-                <Stack.Navigator screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }}>
+                <Stack.Navigator
+                    screenOptions={{
+                        headerShown: false,
+                        contentStyle: { backgroundColor: 'transparent' },
+                        animation: 'slide_from_right', // Consistent animation
+                    }}
+                >
                     {!onboardingComplete ? (
                         <Stack.Screen name="Onboarding" component={OnboardingScreen} />
                     ) : !isAuthenticated ? (
@@ -66,56 +72,20 @@ const RootNavigator: React.FC = () => {
                     ) : (
                         <>
                             <Stack.Screen name="Main" component={MainTabs} />
-                            <Stack.Screen
-                                name="Adhkar"
-                                component={AdhkarScreen}
-                                options={{ presentation: 'card' }}
-                            />
-                            <Stack.Screen
-                                name="Dua"
-                                component={DuaScreen}
-                                options={{ presentation: 'card' }}
-                            />
-                            <Stack.Screen
-                                name="Tahajjud"
-                                component={TahajjudScreen}
-                                options={{ presentation: 'card' }}
-                            />
-                            <Stack.Screen
-                                name="Quran"
-                                component={QuranScreen}
-                                options={{ presentation: 'card' }}
-                            />
-                            <Stack.Screen
-                                name="Profile"
-                                component={ProfileScreen}
-                                options={{ presentation: 'card' }}
-                            />
-                            <Stack.Screen
-                                name="Qibla"
-                                component={QiblaScreen}
-                                options={{ presentation: 'card' }}
-                            />
-                            <Stack.Screen
-                                name="Khatam"
-                                component={KhatamTrackerScreen}
-                                options={{ presentation: 'card' }}
-                            />
-                            <Stack.Screen
-                                name="Social"
-                                component={SocialScreen}
-                                options={{ presentation: 'card' }}
-                            />
+                            <Stack.Screen name="Adhkar" component={AdhkarScreen} />
+                            <Stack.Screen name="Dua" component={DuaScreen} />
+                            <Stack.Screen name="Tahajjud" component={TahajjudScreen} />
+                            <Stack.Screen name="Quran" component={QuranScreen} />
+                            <Stack.Screen name="Profile" component={ProfileScreen} />
+                            <Stack.Screen name="Qibla" component={QiblaScreen} />
+                            <Stack.Screen name="Khatam" component={KhatamTrackerScreen} />
+                            <Stack.Screen name="Social" component={SocialScreen} />
                             <Stack.Screen
                                 name="CreateGroup"
                                 component={CreateGroupScreen}
                                 options={{ presentation: 'modal' }}
                             />
-                            <Stack.Screen
-                                name="GroupDetails"
-                                component={GroupDetailsScreen}
-                                options={{ presentation: 'card' }}
-                            />
+                            <Stack.Screen name="GroupDetails" component={GroupDetailsScreen} />
                             <Stack.Screen
                                 name="JoinGroup"
                                 component={JoinGroupScreen}

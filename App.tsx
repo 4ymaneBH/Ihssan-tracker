@@ -52,8 +52,8 @@ export default function App() {
   // Show loading indicator while fonts load
   if (!fontsLoaded) {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#030712' }}>
-        <ActivityIndicator size="large" color="#14B8A6" />
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#0D0F12' }}>
+        <ActivityIndicator size="large" color="#A4D96C" />
       </View>
     );
   }

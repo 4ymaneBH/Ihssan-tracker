@@ -56,7 +56,7 @@ export const colors = {
 
     // Card accent colors (for icon backgrounds)
     accents: {
-        salat: '#A4D96C',      // Green
+        salat: '#A4D96C',      // Green - consistent with reference
         adhkar: '#A4D96C',     // Green
         quran: '#A4D96C',      // Green
         charity: '#A4D96C',    // Green
@@ -81,8 +81,8 @@ export const lightTheme = {
     primary: colors.primary[400],             // Neon green (#A4D96C)
     primaryLight: colors.primary[100],
     onPrimary: colors.neutral[0],             // White text on green
-    tabBarBackground: colors.neutral[900],    // Dark tab bar (#212529)
-    tabBarBorder: colors.neutral[800],
+    tabBarBackground: colors.neutral[0],      // White tab bar in light mode
+    tabBarBorder: colors.neutral[200],
     tabBarActive: colors.primary[400],        // Green active state
     tabBarInactive: colors.neutral[600],      // Gray inactive
     // Palettes for advanced usage
@@ -124,8 +124,8 @@ export const darkTheme = {
     primary: colors.primary[400],             // Neon green
     primaryLight: colors.primary[900],
     onPrimary: colors.neutral[900],
-    tabBarBackground: colors.neutral[900],
-    tabBarBorder: colors.neutral[800],
+    tabBarBackground: colors.neutral[950],    // Even darker in dark mode (#0D0F12)
+    tabBarBorder: colors.neutral[900],
     tabBarActive: colors.primary[400],
     tabBarInactive: colors.neutral[500],
     // Palettes for advanced usage

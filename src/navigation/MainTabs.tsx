@@ -30,42 +30,51 @@ const tabIcons: Record<string, { active: IconName; inactive: IconName }> = {
 
 const MainTabs: React.FC = () => {
     const { t } = useTranslation();
-    const { theme } = useTheme();
+    const { theme, isDark } = useTheme();
+
+    // Memoize screen options to ensure they update when theme changes
+    const screenOptions = React.useMemo(() => ({
+        headerShown: false,
+        tabBarStyle: {
+            backgroundColor: theme.colors.tabBarBackground,
+            borderTopWidth: isDark ? 0 : 1,  // Border in light mode
+            borderTopColor: theme.colors.tabBarBorder,
+            height: 70,
+            paddingBottom: 16,
+            paddingTop: 8,
+            elevation: 8,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: -4 },
+            shadowOpacity: isDark ? 0.15 : 0.08,  // Lighter shadow in light mode
+            shadowRadius: 12,
+        },
+        tabBarActiveTintColor: theme.colors.tabBarActive,
+        tabBarInactiveTintColor: theme.colors.tabBarInactive,
+        tabBarLabelStyle: {
+            fontSize: 11,
+            fontWeight: '600' as const,
+            marginTop: 4,
+        },
+    }), [theme.colors.tabBarBackground, theme.colors.tabBarActive, theme.colors.tabBarInactive, theme.colors.tabBarBorder, isDark]);
+
+    const getTabBarIcon = React.useCallback(({ route, focused, color }: any) => {
+        const icons = tabIcons[route.name];
+        const iconName = focused ? icons.active : icons.inactive;
+        return (
+            <MaterialCommunityIcons
+                name={iconName}
+                size={focused ? 24 : 22}
+                color={color}
+            />
+        );
+    }, []);
 
     return (
         <Tab.Navigator
+            key={isDark ? 'dark' : 'light'}
             screenOptions={({ route }) => ({
-                headerShown: false,
-                tabBarStyle: {
-                    backgroundColor: '#212529',  // Dark background from reference
-                    borderTopWidth: 0,           // No border
-                    height: 70,                  // Compact height
-                    paddingBottom: 16,           // Space for labels
-                    paddingTop: 8,
-                    elevation: 8,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: -4 },
-                    shadowOpacity: 0.15,
-                    shadowRadius: 12,
-                },
-                tabBarActiveTintColor: '#A4D96C',     // Neon green
-                tabBarInactiveTintColor: '#6C757D',   // Gray
-                tabBarLabelStyle: {
-                    fontSize: 11,
-                    fontWeight: '600',
-                    marginTop: 4,
-                },
-                tabBarIcon: ({ focused, color, size }) => {
-                    const icons = tabIcons[route.name];
-                    const iconName = focused ? icons.active : icons.inactive;
-                    return (
-                        <MaterialCommunityIcons
-                            name={iconName}
-                            size={focused ? 24 : 22}
-                            color={color}
-                        />
-                    );
-                },
+                ...screenOptions,
+                tabBarIcon: (props) => getTabBarIcon({ route, ...props }),
             })}
         >
             <Tab.Screen
