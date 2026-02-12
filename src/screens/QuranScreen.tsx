@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
     progressCard: {
         borderRadius: 20,
         padding: 20,
-    },,
+    },
     progressHeader: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -432,7 +432,7 @@ const styles = StyleSheet.create({
     todayCard: {
         borderRadius: 20,
         padding: 20,
-    },,
+    },
     sectionTitle: {
         fontSize: 18,
         fontWeight: '600',
@@ -457,7 +457,7 @@ const styles = StyleSheet.create({
     logCard: {
         borderRadius: 20,
         padding: 20,
-    },,
+    },
     modeToggle: {
         flexDirection: 'row',
         gap: 8,
