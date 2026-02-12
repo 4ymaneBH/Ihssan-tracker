@@ -18,6 +18,7 @@ export default function TrackScreen() {
     const { t, i18n } = useTranslation();
     const { theme } = useTheme();
     const { logPrayer, getTodayLog } = useSalatStore();
+    const isArabic = i18n.language === 'ar';
 
     const today = getDateString(new Date());
     const todayLog = getTodayLog();
@@ -69,7 +70,7 @@ export default function TrackScreen() {
                                 styles.cardTitle,
                                 {
                                     color: theme.colors.text,
-                                    fontFamily: theme.fontFamilies.inter.semiBold,
+                                    fontFamily: isArabic ? theme.fontFamilies.arabic.semiBold : theme.fontFamilies.inter.semiBold,
                                 },
                             ]}
                         >

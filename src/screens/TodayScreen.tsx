@@ -41,7 +41,7 @@ export default function TodayScreen() {
     const today = getDateString(new Date());
     const todayLog = getTodayLog();
     const streak = getPrayerStreak();
-    const hijriDate = getHijriDate(new Date());
+    const hijriDate = getHijriDate(new Date(), isArabic ? 'ar' : 'en');
 
     // Calculate Salat progress
     const prayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
@@ -73,7 +73,8 @@ export default function TodayScreen() {
                                 styles.greeting,
                                 {
                                     color: theme.colors.text,
-                                    fontFamily: theme.fontFamilies.inter.semiBold,
+                                    fontFamily: isArabic ? theme.fontFamilies.arabic.bold : theme.fontFamilies.inter.semiBold,
+                                    textAlign: isArabic ? 'right' : 'left',
                                 },
                             ]}
                         >
@@ -84,7 +85,8 @@ export default function TodayScreen() {
                                 styles.date,
                                 {
                                     color: theme.colors.textSecondary,
-                                    fontFamily: theme.fontFamilies.inter.regular,
+                                    fontFamily: isArabic ? theme.fontFamilies.arabic.regular : theme.fontFamilies.inter.regular,
+                                    textAlign: isArabic ? 'right' : 'left',
                                 },
                             ]}
                         >
@@ -117,7 +119,8 @@ export default function TodayScreen() {
                                     styles.heroTitle,
                                     {
                                         color: theme.colors.text,
-                                        fontFamily: theme.fontFamilies.inter.bold,
+                                        fontFamily: isArabic ? theme.fontFamilies.arabic.bold : theme.fontFamilies.inter.bold,
+                                        textAlign: isArabic ? 'right' : 'left',
                                     },
                                 ]}
                             >
@@ -142,7 +145,7 @@ export default function TodayScreen() {
                                             styles.streakText,
                                             {
                                                 color: theme.colors.primary,
-                                                fontFamily: theme.fontFamilies.inter.semiBold,
+                                                fontFamily: isArabic ? theme.fontFamilies.arabic.semiBold : theme.fontFamilies.inter.semiBold,
                                             },
                                         ]}
                                     >
@@ -165,7 +168,7 @@ export default function TodayScreen() {
                                         styles.progressPercentage,
                                         {
                                             color: theme.colors.text,
-                                            fontFamily: theme.fontFamilies.inter.bold,
+                                            fontFamily: isArabic ? theme.fontFamilies.arabic.bold : theme.fontFamilies.inter.bold,
                                         },
                                     ]}
                                 >
@@ -180,7 +183,7 @@ export default function TodayScreen() {
                                             styles.statValue,
                                             {
                                                 color: theme.colors.text,
-                                                fontFamily: theme.fontFamilies.inter.bold,
+                                                fontFamily: isArabic ? theme.fontFamilies.arabic.bold : theme.fontFamilies.inter.bold,
                                             },
                                         ]}
                                     >
@@ -191,7 +194,8 @@ export default function TodayScreen() {
                                             styles.statLabel,
                                             {
                                                 color: theme.colors.textSecondary,
-                                                fontFamily: theme.fontFamilies.inter.regular,
+                                                fontFamily: isArabic ? theme.fontFamilies.arabic.regular : theme.fontFamilies.inter.regular,
+                                                textAlign: 'center',
                                             },
                                         ]}
                                     >
@@ -207,7 +211,7 @@ export default function TodayScreen() {
                                             styles.statValue,
                                             {
                                                 color: theme.colors.text,
-                                                fontFamily: theme.fontFamilies.inter.bold,
+                                                fontFamily: isArabic ? theme.fontFamilies.arabic.bold : theme.fontFamilies.inter.bold,
                                             },
                                         ]}
                                     >
@@ -218,7 +222,8 @@ export default function TodayScreen() {
                                             styles.statLabel,
                                             {
                                                 color: theme.colors.textSecondary,
-                                                fontFamily: theme.fontFamilies.inter.regular,
+                                                fontFamily: isArabic ? theme.fontFamilies.arabic.regular : theme.fontFamilies.inter.regular,
+                                                textAlign: 'center',
                                             },
                                         ]}
                                     >
@@ -234,7 +239,7 @@ export default function TodayScreen() {
                 <View style={styles.moduleGrid}>
                     <TrackerModuleCard
                         title={t('salat.title')}
-                        icon="ios-moon-outline"
+                        icon="moon"
                         progress={completedPrayers}
                         total={5}
                         accentColor={theme.colors.accents.salat}
@@ -297,23 +302,25 @@ const styles = StyleSheet.create({
     },
     scrollContent: {
         padding: 20,
-        gap: 20,
+        gap: 16,
         paddingBottom: 100,
     },
     greeting: {
-        fontSize: 16,
-        fontWeight: '600',
+        fontSize: 20,
+        fontWeight: '700',
+        letterSpacing: 0.2,
     },
     date: {
-        fontSize: 13,
-        marginTop: 2,
+        fontSize: 14,
+        marginTop: 4,
+        opacity: 0.9,
     },
     heroCard: {
-        marginBottom: 8,
+        marginBottom: 4,
     },
     heroContent: {
-        padding: 24,
-        gap: 20,
+        padding: 20,
+        gap: 16,
     },
     heroHeader: {
         flexDirection: 'row',
@@ -321,8 +328,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     heroTitle: {
-        fontSize: 22,
+        fontSize: 18,
         fontWeight: '700',
+        letterSpacing: 0.2,
     },
     streakChip: {
         flexDirection: 'row',
@@ -339,43 +347,50 @@ const styles = StyleSheet.create({
     progressContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 24,
+        gap: 20,
     },
     progressCircle: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        borderWidth: 8,
+        width: 110,
+        height: 110,
+        borderRadius: 55,
+        borderWidth: 10,
         alignItems: 'center',
         justifyContent: 'center',
     },
     progressPercentage: {
-        fontSize: 28,
+        fontSize: 32,
         fontWeight: '700',
+        letterSpacing: -1,
     },
     progressStats: {
         flex: 1,
         flexDirection: 'row',
-        gap: 20,
+        gap: 16,
     },
     statItem: {
         flex: 1,
-        gap: 4,
+        gap: 6,
+        alignItems: 'center',
     },
     statValue: {
-        fontSize: 24,
+        fontSize: 28,
         fontWeight: '700',
+        letterSpacing: -0.5,
+        textAlign: 'center',
     },
     statLabel: {
-        fontSize: 12,
+        fontSize: 13,
+        letterSpacing: 0.2,
     },
     divider: {
         width: 1,
-        height: '100%',
+        height: 50,
+        opacity: 0.3,
     },
     moduleGrid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         gap: 16,
+        justifyContent: 'space-between',
     },
 });
