@@ -5,16 +5,20 @@ import { Platform } from 'react-native';
 
 import { SalatName, PrayerNotificationSettings } from '../types';
 
-// Configure notification behavior
-Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldPlaySound: true,
-        shouldSetBadge: false,
-        shouldShowBanner: true,
-        shouldShowList: true,
-    }),
-});
+// Configure notification behavior (wrapped to handle Expo Go limitations)
+try {
+    Notifications.setNotificationHandler({
+        handleNotification: async () => ({
+            shouldShowAlert: true,
+            shouldPlaySound: true,
+            shouldSetBadge: false,
+            shouldShowBanner: true,
+            shouldShowList: true,
+        }),
+    });
+} catch (error) {
+    console.log('Notifications setup skipped - using Expo Go');
+}
 
 // Notification types
 export type NotificationType =
