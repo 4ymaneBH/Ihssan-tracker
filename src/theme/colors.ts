@@ -54,14 +54,14 @@ export const colors = {
         dark: '#2563EB',
     },
 
-    // Card accent colors (for icon backgrounds)
+    // Card accent colors (for icon backgrounds) — differentiated per module
     accents: {
-        salat: '#A4D96C',      // Green - consistent with reference
-        adhkar: '#A4D96C',     // Green
-        quran: '#A4D96C',      // Green
-        charity: '#A4D96C',    // Green
-        tahajjud: '#A4D96C',   // Green
-        custom: '#A4D96C',     // Green
+        salat: '#34D399',      // Emerald green
+        adhkar: '#FBBF24',     // Warm amber
+        quran: '#2DD4BF',      // Teal
+        charity: '#F472B6',    // Rose pink
+        tahajjud: '#A78BFA',   // Soft purple
+        custom: '#60A5FA',     // Sky blue
     },
 };
 
@@ -81,10 +81,10 @@ export const lightTheme = {
     primary: colors.primary[400],             // Neon green (#A4D96C)
     primaryLight: colors.primary[100],
     onPrimary: colors.neutral[0],             // White text on green
-    tabBarBackground: colors.neutral[0],      // White tab bar in light mode
-    tabBarBorder: colors.neutral[200],
-    tabBarActive: colors.primary[400],        // Green active state
-    tabBarInactive: colors.neutral[600],      // Gray inactive
+    tabBarBackground: 'rgba(255,255,255,0.85)',  // Frosted glass tab bar
+    tabBarBorder: 'rgba(0,0,0,0.06)',
+    tabBarActive: colors.primary[500],           // Vibrant green active
+    tabBarInactive: colors.neutral[400],         // Softer inactive
     // Palettes for advanced usage
     palette: colors,
     // Semantic colors
@@ -94,14 +94,14 @@ export const lightTheme = {
     info: colors.info,
     // Accent colors for icons
     accents: colors.accents,
-    // Card backgrounds - all white in light mode
+    // Card backgrounds - subtle tinted in light mode
     cards: {
-        salat: colors.neutral[0],
-        adhkar: colors.neutral[0],
-        quran: colors.neutral[0],
-        charity: colors.neutral[0],
-        tahajjud: colors.neutral[0],
-        custom: colors.neutral[0],
+        salat: '#F0FDF4',       // Soft mint
+        adhkar: '#FFFBEB',      // Warm cream
+        quran: '#F0FDFA',       // Light teal
+        charity: '#FFF1F2',     // Blush pink
+        tahajjud: '#F5F3FF',    // Pale lavender
+        custom: '#EFF6FF',      // Ice blue
     },
     // Progress bar colors
     progressBarBackground: colors.neutral[200],
@@ -124,8 +124,8 @@ export const darkTheme = {
     primary: colors.primary[400],             // Neon green
     primaryLight: colors.primary[900],
     onPrimary: colors.neutral[900],
-    tabBarBackground: colors.neutral[950],    // Even darker in dark mode (#0D0F12)
-    tabBarBorder: colors.neutral[900],
+    tabBarBackground: 'rgba(13,15,18,0.88)',   // Frosted dark glass tab bar
+    tabBarBorder: 'rgba(255,255,255,0.06)',
     tabBarActive: colors.primary[400],
     tabBarInactive: colors.neutral[500],
     // Palettes for advanced usage
@@ -137,14 +137,14 @@ export const darkTheme = {
     info: colors.info,
     // Accent colors for icons
     accents: colors.accents,
-    // Dark mode card colors - subtle color tints
+    // Dark mode card colors - rich subtle tints
     cards: {
-        salat: '#0F2927',
-        adhkar: '#1C1708',
-        quran: '#1A1606',
-        charity: '#1F0A14',
-        tahajjud: '#1A1033',
-        custom: '#0E1A2E',
+        salat: '#0D2818',       // Deep emerald
+        adhkar: '#1A1608',      // Deep amber
+        quran: '#0D1F1C',       // Deep teal
+        charity: '#1F0D14',     // Deep rose
+        tahajjud: '#16103A',    // Deep purple
+        custom: '#0D1626',      // Deep navy
     },
     // Progress bar colors
     progressBarBackground: colors.neutral[700],
