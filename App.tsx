@@ -39,8 +39,7 @@ export default function App() {
     Cairo_500Medium,
     Cairo_600SemiBold,
     Cairo_700Bold,
-    // Custom premium Arabic font
-    'SFArabic': require('./assets/Fonts/sf-arabic-black.ttf'),
+    // Custom premium Arabic font (Black weight for bold, impactful text)
     'SFArabic-Black': require('./assets/Fonts/sf-arabic-black.ttf'),
     // Create aliases for easier use
     'Amiri': Amiri_400Regular,

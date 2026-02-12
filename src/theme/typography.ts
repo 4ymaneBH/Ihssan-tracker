@@ -9,10 +9,10 @@ export const fontFamilies = {
         semiBold: 'Inter_600SemiBold',
         bold: 'Inter_700Bold',
     },
-    // Arabic fonts - Premium SF Arabic for UI
+    // Arabic fonts - Premium SF Arabic for UI (using Black weight for bold, impactful text)
     arabic: {
-        regular: 'SFArabic',
-        medium: 'SFArabic',
+        regular: 'SFArabic-Black',
+        medium: 'SFArabic-Black',
         semiBold: 'SFArabic-Black',
         bold: 'SFArabic-Black',
     },

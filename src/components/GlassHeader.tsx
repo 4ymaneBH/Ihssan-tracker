@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, Platform, StatusBar } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { GlassView } from './GlassView';
 import { useTheme } from '../context/ThemeContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -19,6 +20,8 @@ interface GlassHeaderProps {
  */
 export function GlassHeader({ left, center, right, title }: GlassHeaderProps) {
     const { theme } = useTheme();
+    const { i18n } = useTranslation();
+    const isArabic = i18n.language === 'ar';
     const insets = useSafeAreaInsets();
 
     return (
@@ -34,9 +37,9 @@ export function GlassHeader({ left, center, right, title }: GlassHeaderProps) {
                 },
             ]}
         >
-            <View style={styles.headerContent}>
-                <View style={styles.headerSection}>
-                    {left}
+            <View style={[styles.headerContent, isArabic && styles.headerContentRTL]}>
+                <View style={[styles.headerSection, isArabic && styles.headerSectionLeft]}>
+                    {isArabic ? right : left}
                 </View>
 
                 <View style={[styles.headerSection, styles.headerCenter]}>
@@ -45,7 +48,7 @@ export function GlassHeader({ left, center, right, title }: GlassHeaderProps) {
                             styles.headerTitle,
                             {
                                 color: theme.colors.text,
-                                fontFamily: theme.fontFamilies.inter.semiBold,
+                                fontFamily: isArabic ? theme.fontFamilies.arabic.semiBold : theme.fontFamilies.inter.semiBold,
                             },
                         ]}>
                             {title}
@@ -53,8 +56,8 @@ export function GlassHeader({ left, center, right, title }: GlassHeaderProps) {
                     ))}
                 </View>
 
-                <View style={styles.headerSection}>
-                    {right}
+                <View style={[styles.headerSection, isArabic && styles.headerSectionRight]}>
+                    {isArabic ? left : right}
                 </View>
             </View>
         </GlassView>
@@ -63,19 +66,28 @@ export function GlassHeader({ left, center, right, title }: GlassHeaderProps) {
 
 const styles = StyleSheet.create({
     header: {
-        paddingBottom: 12,
+        paddingBottom: 16,
     },
     headerContent: {
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         justifyContent: 'space-between',
         paddingHorizontal: 20,
-        minHeight: 44,
+        minHeight: 60,
     },
     headerSection: {
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
+    },
+    headerSectionLeft: {
+        justifyContent: 'flex-end',
+    },
+    headerSectionRight: {
+        justifyContent: 'flex-start',
+    },
+    headerContentRTL: {
+        flexDirection: 'row-reverse',
     },
     headerCenter: {
         flex: 2,

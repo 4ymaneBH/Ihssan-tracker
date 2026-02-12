@@ -3,10 +3,10 @@ import { I18nManager } from 'react-native';
 
 // Font family names
 export const fonts = {
-    // Arabic UI font (premium SF Arabic)
+    // Arabic UI font (premium SF Arabic - using Black weight for all since it's the only available file)
     arabic: {
-        regular: 'SFArabic',
-        medium: 'SFArabic',
+        regular: 'SFArabic-Black',
+        medium: 'SFArabic-Black',
         semiBold: 'SFArabic-Black',
         bold: 'SFArabic-Black',
     },

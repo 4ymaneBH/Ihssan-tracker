@@ -339,8 +339,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     scrollContent: {
-        paddingHorizontal: 16,
-        gap: 16,
+        paddingHorizontal: 16,        paddingBottom: 100,        gap: 16,
     },
     section: {
         borderRadius: 16,

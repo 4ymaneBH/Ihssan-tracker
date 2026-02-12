@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { GlassView } from './GlassView';
 import { useTheme } from '../context/ThemeContext';
@@ -21,6 +22,8 @@ interface SalatChipProps {
  */
 export function SalatChip({ name, status, onPress }: SalatChipProps) {
     const { theme } = useTheme();
+    const { i18n } = useTranslation();
+    const isArabic = i18n.language === 'ar';
     const scale = useSharedValue(1);
 
     const animatedStyle = useAnimatedStyle(() => ({
@@ -68,7 +71,7 @@ export function SalatChip({ name, status, onPress }: SalatChipProps) {
                                 styles.name,
                                 {
                                     color: theme.colors.text,
-                                    fontFamily: theme.fontFamilies.inter.medium,
+                                    fontFamily: isArabic ? theme.fontFamilies.arabic.medium : theme.fontFamilies.inter.medium,
                                 },
                             ]}
                         >

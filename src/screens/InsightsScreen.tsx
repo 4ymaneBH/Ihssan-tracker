@@ -386,6 +386,7 @@ const styles = StyleSheet.create({
     },
     scrollContent: {
         paddingHorizontal: 16,
+        paddingBottom: 100,
         gap: 16,
     },
     // Score card

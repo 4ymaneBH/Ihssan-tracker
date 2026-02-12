@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { GlassCard } from './GlassCard';
 import { ProgressBar } from './ProgressBar';
 import { useTheme } from '../context/ThemeContext';
@@ -30,6 +31,8 @@ export function TrackerModuleCard({
     onPress,
 }: TrackerModuleCardProps) {
     const { theme } = useTheme();
+    const { i18n } = useTranslation();
+    const isArabic = i18n.language === 'ar';
     const defaultAccent = accentColor || theme.colors.primary;
 
     return (
@@ -54,7 +57,8 @@ export function TrackerModuleCard({
                         styles.title,
                         {
                             color: theme.colors.text,
-                            fontFamily: theme.fontFamilies.inter.semiBold,
+                            fontFamily: isArabic ? theme.fontFamilies.arabic.semiBold : theme.fontFamilies.inter.semiBold,
+                            textAlign: isArabic ? 'right' : 'left',
                         },
                     ]}
                     numberOfLines={1}
@@ -69,7 +73,7 @@ export function TrackerModuleCard({
                             styles.progressText,
                             {
                                 color: theme.colors.textSecondary,
-                                fontFamily: theme.fontFamilies.inter.medium,
+                                fontFamily: isArabic ? theme.fontFamilies.arabic.medium : theme.fontFamilies.inter.medium,
                             },
                         ]}
                     >
@@ -88,11 +92,14 @@ export function TrackerModuleCard({
 
 const styles = StyleSheet.create({
     card: {
-        minHeight: 140,
+        minHeight: 160,
+        flex: 1,
+        minWidth: '47%',
+        maxWidth: '48%',
     },
     content: {
         padding: 16,
-        gap: 12,
+        gap: 10,
     },
     iconContainer: {
         width: 48,
@@ -104,12 +111,15 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 16,
         fontWeight: '600',
+        letterSpacing: 0.2,
     },
     progressContainer: {
         gap: 6,
+        marginTop: 'auto',
     },
     progressText: {
         fontSize: 13,
-        fontWeight: '500',
+        fontWeight: '600',
+        letterSpacing: 0.2,
     },
 });
