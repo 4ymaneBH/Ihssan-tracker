@@ -173,6 +173,7 @@ export type RootStackParamList = {
     CreateGroup: undefined;
     GroupDetails: { groupId: string };
     JoinGroup: undefined;
+    CustomHabits: undefined;
 };
 
 // ==========================================

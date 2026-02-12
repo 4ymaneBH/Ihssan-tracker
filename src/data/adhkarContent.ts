@@ -344,3 +344,11 @@ export const getAdhkarCount = (category: 'morning' | 'evening' | 'general' | 'sl
 export const adhkarCategories = ['morning', 'evening', 'sleep', 'general'] as const;
 export type AdhkarCategory = typeof adhkarCategories[number];
 
+// Adhkar content grouped by category for easy access
+export const adhkarContent = {
+    morning: morningAdhkar,
+    evening: eveningAdhkar,
+    general: generalAdhkar,
+    sleep: sleepAdhkar,
+};
+
