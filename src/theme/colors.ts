@@ -1,42 +1,42 @@
 // Color palette for Ihssan Tracker
-// Modern, clean aesthetic with neon green accent (based on reference image)
+// Premium glassmorphism design with spiritual aesthetic
 
 export const colors = {
-    // Primary - Bright Lime/Neon Green (from reference)
+    // Primary - Calm spiritual tones
     primary: {
-        50: '#F7FEF0',
-        100: '#ECFCD5',
-        200: '#D9F9AE',
-        300: '#BFF37C',
-        400: '#A4D96C',  // Main primary (neon green from reference)
-        500: '#8BC34A',
-        600: '#7CB342',
-        700: '#689F38',
-        800: '#558B2F',
-        900: '#33691E',
+        50: '#F5F3FF',
+        100: '#EDE9FE',
+        200: '#DDD6FE',
+        300: '#C4B5FD',
+        400: '#A78BFA',  // Soft purple
+        500: '#8B5CF6',
+        600: '#7C3AED',
+        700: '#6D28D9',
+        800: '#5B21B6',
+        900: '#4C1D95',
     },
 
-    // Neutral - Clean grays (from reference)
+    // Neutral - Refined grays
     neutral: {
         0: '#FFFFFF',
-        50: '#F8F9FA',   // Very light gray background
-        100: '#F1F3F5',
-        200: '#E9ECEF',
-        300: '#DEE2E6',
-        400: '#CED4DA',
-        500: '#ADB5BD',
-        600: '#6C757D',
-        700: '#495057',
-        800: '#343A40',
-        900: '#212529',
-        950: '#0D0F12',
+        50: '#FAFAFA',
+        100: '#F5F5F5',
+        200: '#E5E5E5',
+        300: '#D4D4D4',
+        400: '#A3A3A3',
+        500: '#737373',
+        600: '#525252',
+        700: '#404040',
+        800: '#262626',
+        900: '#171717',
+        950: '#0A0A0A',
     },
 
-    // Semantic colors
+    // Semantic colors - refined
     success: {
-        light: '#D9F9AE',
-        main: '#A4D96C',  // Same as primary
-        dark: '#7CB342',
+        light: '#D1FAE5',
+        main: '#10B981',
+        dark: '#059669',
     },
     warning: {
         light: '#FEF3C7',
@@ -54,100 +54,118 @@ export const colors = {
         dark: '#2563EB',
     },
 
-    // Card accent colors (for icon backgrounds)
+    // Spiritual accent colors (soft, sacred)
     accents: {
-        salat: '#A4D96C',      // Green - consistent with reference
-        adhkar: '#A4D96C',     // Green
-        quran: '#A4D96C',      // Green
-        charity: '#A4D96C',    // Green
-        tahajjud: '#A4D96C',   // Green
-        custom: '#A4D96C',     // Green
+        salat: '#A78BFA',      // Soft purple
+        adhkar: '#818CF8',     // Indigo
+        quran: '#34D399',      // Emerald
+        charity: '#F472B6',    // Pink
+        tahajjud: '#60A5FA',   // Blue
+        custom: '#A78BFA',     // Purple
     },
 };
 
-// Light theme - clean modern aesthetic (from reference)
+// Light theme - Glassmorphism with soft gradients
 export const lightTheme = {
-    background: colors.neutral[50],           // Very light gray (#F8F9FA)
-    backgroundSecondary: colors.neutral[100],
-    surface: colors.neutral[0],               // Pure white cards
-    surfaceElevated: colors.neutral[0],
-    text: colors.neutral[900],                // Dark gray text (#212529)
-    textSecondary: colors.neutral[600],       // Medium gray (#6C757D)
-    textTertiary: colors.neutral[500],        // Light gray (#ADB5BD)
-    border: colors.neutral[200],              // Subtle borders (#E9ECEF)
-    borderLight: colors.neutral[200],
-    divider: colors.neutral[200],
-    cardBorder: colors.neutral[200],
-    primary: colors.primary[400],             // Neon green (#A4D96C)
+    // Gradient backgrounds
+    gradientStart: '#FAF5FF',      // Soft lavender white
+    gradientEnd: '#FDF2F8',        // Warm pearl pink
+    
+    // Glass surface colors
+    glass: {
+        background: 'rgba(255, 255, 255, 0.15)',
+        backgroundHover: 'rgba(255, 255, 255, 0.25)',
+        border: 'rgba(255, 255, 255, 0.18)',
+        shadow: 'rgba(0, 0, 0, 0.08)',
+    },
+    
+    background: '#FAF5FF',
+    backgroundSecondary: '#F5F3FF',
+    surface: 'rgba(255, 255, 255, 0.7)',
+    surfaceElevated: 'rgba(255, 255, 255, 0.85)',
+    text: colors.neutral[900],
+    textSecondary: colors.neutral[600],
+    textTertiary: colors.neutral[500],
+    border: 'rgba(255, 255, 255, 0.18)',
+    borderLight: 'rgba(255, 255, 255, 0.12)',
+    divider: 'rgba(0, 0, 0, 0.06)',
+    cardBorder: 'rgba(255, 255, 255, 0.2)',
+    primary: colors.primary[400],
     primaryLight: colors.primary[100],
-    onPrimary: colors.neutral[0],             // White text on green
-    tabBarBackground: colors.neutral[0],      // White tab bar in light mode
-    tabBarBorder: colors.neutral[200],
-    tabBarActive: colors.primary[400],        // Green active state
-    tabBarInactive: colors.neutral[600],      // Gray inactive
-    // Palettes for advanced usage
+    onPrimary: colors.neutral[0],
+    tabBarBackground: 'rgba(255, 255, 255, 0.7)',
+    tabBarBorder: 'rgba(255, 255, 255, 0.3)',
+    tabBarActive: colors.primary[500],
+    tabBarInactive: colors.neutral[500],
+    // Palettes
     palette: colors,
-    // Semantic colors
     success: colors.success,
     warning: colors.warning,
     error: colors.error,
     info: colors.info,
-    // Accent colors for icons
     accents: colors.accents,
-    // Card backgrounds - all white in light mode
+    // Card backgrounds - glass effect
     cards: {
-        salat: colors.neutral[0],
-        adhkar: colors.neutral[0],
-        quran: colors.neutral[0],
-        charity: colors.neutral[0],
-        tahajjud: colors.neutral[0],
-        custom: colors.neutral[0],
+        salat: 'rgba(255, 255, 255, 0.2)',
+        adhkar: 'rgba(255, 255, 255, 0.2)',
+        quran: 'rgba(255, 255, 255, 0.2)',
+        charity: 'rgba(255, 255, 255, 0.2)',
+        tahajjud: 'rgba(255, 255, 255, 0.2)',
+        custom: 'rgba(255, 255, 255, 0.2)',
     },
-    // Progress bar colors
-    progressBarBackground: colors.neutral[200],
+    progressBarBackground: 'rgba(0, 0, 0, 0.08)',
     progressBarFill: colors.primary[400],
 };
 
-// Dark theme
+// Dark theme - Deep plum to black with glass
 export const darkTheme = {
-    background: colors.neutral[950],
-    backgroundSecondary: colors.neutral[900],
-    surface: colors.neutral[900],
-    surfaceElevated: colors.neutral[800],
+    // Gradient backgrounds
+    gradientStart: '#1E1B4B',      // Deep indigo
+    gradientEnd: '#0A0A0A',        // Near black
+    
+    // Glass surface colors
+    glass: {
+        background: 'rgba(255, 255, 255, 0.08)',
+        backgroundHover: 'rgba(255, 255, 255, 0.12)',
+        border: 'rgba(255, 255, 255, 0.12)',
+        shadow: 'rgba(0, 0, 0, 0.4)',
+    },
+    
+    background: '#0A0A0A',
+    backgroundSecondary: '#171717',
+    surface: 'rgba(255, 255, 255, 0.06)',
+    surfaceElevated: 'rgba(255, 255, 255, 0.1)',
     text: colors.neutral[50],
     textSecondary: colors.neutral[400],
     textTertiary: colors.neutral[500],
-    border: colors.neutral[800],
-    borderLight: colors.neutral[700],
-    divider: colors.neutral[800],
-    cardBorder: colors.neutral[700],
-    primary: colors.primary[400],             // Neon green
+    border: 'rgba(255, 255, 255, 0.1)',
+    borderLight: 'rgba(255, 255, 255, 0.06)',
+    divider: 'rgba(255, 255, 255, 0.08)',
+    cardBorder: 'rgba(255, 255, 255, 0.12)',
+    primary: colors.primary[400],
     primaryLight: colors.primary[900],
-    onPrimary: colors.neutral[900],
-    tabBarBackground: colors.neutral[950],    // Even darker in dark mode (#0D0F12)
-    tabBarBorder: colors.neutral[900],
+    onPrimary: colors.neutral[0],
+    tabBarBackground: 'rgba(0, 0, 0, 0.5)',
+    tabBarBorder: 'rgba(255, 255, 255, 0.1)',
     tabBarActive: colors.primary[400],
     tabBarInactive: colors.neutral[500],
-    // Palettes for advanced usage
+    // Palettes
     palette: colors,
-    // Semantic colors
     success: colors.success,
     warning: colors.warning,
     error: colors.error,
     info: colors.info,
-    // Accent colors for icons
     accents: colors.accents,
-    // Dark mode card colors - subtle color tints
+    // Dark mode glass cards
     cards: {
-        salat: '#0F2927',
-        adhkar: '#1C1708',
-        quran: '#1A1606',
-        charity: '#1F0A14',
-        tahajjud: '#1A1033',
-        custom: '#0E1A2E',
+        salat: 'rgba(255, 255, 255, 0.08)',
+        adhkar: 'rgba(255, 255, 255, 0.08)',
+        quran: 'rgba(255, 255, 255, 0.08)',
+        charity: 'rgba(255, 255, 255, 0.08)',
+        tahajjud: 'rgba(255, 255, 255, 0.08)',
+        custom: 'rgba(255, 255, 255, 0.08)',
     },
-    // Progress bar colors
-    progressBarBackground: colors.neutral[700],
+    progressBarBackground: 'rgba(255, 255, 255, 0.1)',
     progressBarFill: colors.primary[400],
 };
 

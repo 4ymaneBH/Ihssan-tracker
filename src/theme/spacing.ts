@@ -30,16 +30,17 @@ export const componentSizes = {
     profileButton: 44,      // Profile button size
 };
 
-// Border radius - unified system
+// Border radius - glassmorphism system
 export const borderRadius = {
     none: 0,
-    sm: 4,
-    md: 8,
-    lg: 12,
-    xl: 14,           // Buttons, action items
-    '2xl': 16,        // Pills
-    '3xl': 18,        // Cards (standardized)
-    full: 9999,
+    sm: 8,           // Small elements
+    chip: 14,        // Small chips, pills
+    md: 16,          // Medium chips
+    card: 20,        // Standard cards
+    lg: 24,          // Large cards
+    modal: 28,       // Modals, hero containers
+    xl: 32,          // Extra large containers
+    full: 9999,      // Circular
 };
 
 // Border widths

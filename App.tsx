@@ -31,7 +31,7 @@ const AppContent: React.FC = () => {
 };
 
 export default function App() {
-  // Load fonts: Amiri for Qur'an/Du'a, Cairo for modern Arabic UI
+  // Load fonts: Amiri for Qur'an/Du'a, Cairo for modern Arabic UI, SF Arabic for premium Arabic text
   const [fontsLoaded] = useFonts({
     Amiri_400Regular,
     Amiri_700Bold,
@@ -39,6 +39,9 @@ export default function App() {
     Cairo_500Medium,
     Cairo_600SemiBold,
     Cairo_700Bold,
+    // Custom premium Arabic font
+    'SFArabic': require('./assets/Fonts/sf-arabic-black.ttf'),
+    'SFArabic-Black': require('./assets/Fonts/sf-arabic-black.ttf'),
     // Create aliases for easier use
     'Amiri': Amiri_400Regular,
     'Amiri-Bold': Amiri_700Bold,

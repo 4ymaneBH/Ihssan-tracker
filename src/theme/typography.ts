@@ -9,7 +9,14 @@ export const fontFamilies = {
         semiBold: 'Inter_600SemiBold',
         bold: 'Inter_700Bold',
     },
-    // Arabic fonts
+    // Arabic fonts - Premium SF Arabic for UI
+    arabic: {
+        regular: 'SFArabic',
+        medium: 'SFArabic',
+        semiBold: 'SFArabic-Black',
+        bold: 'SFArabic-Black',
+    },
+    // Arabic fonts - Noto Sans fallback
     notoSansArabic: {
         regular: 'NotoSansArabic_400Regular',
         medium: 'NotoSansArabic_500Medium',

@@ -15,3 +15,17 @@ export { default as IslamicPattern } from './IslamicPattern';
 export { PrayerNotificationsModal } from './PrayerNotificationsModal';
 export { AppBackground } from './AppBackground';
 export { Skeleton, CardSkeleton, PrayerPillSkeleton, ChartSkeleton } from './Skeleton';
+
+// Glassmorphism components
+export { GradientBackground } from './GradientBackground';
+export { GlassView } from './GlassView';
+export { GlassCard } from './GlassCard';
+export { GlassHeader } from './GlassHeader';
+export { IconCircleButton } from './IconCircleButton';
+export { TrackerModuleCard } from './TrackerModuleCard';
+export { SalatChip } from './SalatChip';
+export { PrimaryGradientButton } from './PrimaryGradientButton';
+export { ReaderCard } from './ReaderCard';
+export { CounterPill } from './CounterPill';
+export { ProgressBar } from './ProgressBar';
+
