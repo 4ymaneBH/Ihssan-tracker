@@ -9,12 +9,12 @@ export const fontFamilies = {
         semiBold: 'Inter_600SemiBold',
         bold: 'Inter_700Bold',
     },
-    // Arabic fonts - Premium SF Arabic for UI (using Black weight for bold, impactful text)
+    // Arabic fonts - Cairo for UI
     arabic: {
-        regular: 'SFArabic-Black',
-        medium: 'SFArabic-Black',
-        semiBold: 'SFArabic-Black',
-        bold: 'SFArabic-Black',
+        regular: 'Cairo',
+        medium: 'Cairo-Medium',
+        semiBold: 'Cairo-SemiBold',
+        bold: 'Cairo-Bold',
     },
     // Arabic fonts - Noto Sans fallback
     notoSansArabic: {

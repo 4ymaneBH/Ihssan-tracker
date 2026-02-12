@@ -5,9 +5,10 @@ import { useTheme } from '../context/ThemeContext';
 import { glassShadows } from '../theme/glass';
 
 interface PrimaryGradientButtonProps extends TouchableOpacityProps {
-    title: string;
+    title?: string;
     onPress?: () => void;
     loading?: boolean;
+    children?: React.ReactNode;
 }
 
 /**
@@ -20,6 +21,7 @@ export function PrimaryGradientButton({
     title,
     onPress,
     loading,
+    children,
     style,
     ...props
 }: PrimaryGradientButtonProps) {
@@ -43,17 +45,21 @@ export function PrimaryGradientButton({
                 end={{ x: 1, y: 0 }}
                 style={styles.gradient}
             >
-                <Text
-                    style={[
-                        styles.title,
-                        {
-                            fontFamily: theme.fontFamilies.inter.semiBold,
-                            color: '#FFFFFF',
-                        },
-                    ]}
-                >
-                    {loading ? '...' : title}
-                </Text>
+                {children ? (
+                    children
+                ) : (
+                    <Text
+                        style={[
+                            styles.title,
+                            {
+                                fontFamily: theme.fontFamilies.inter.semiBold,
+                                color: '#FFFFFF',
+                            },
+                        ]}
+                    >
+                        {loading ? '...' : title}
+                    </Text>
+                )}
             </LinearGradient>
         </TouchableOpacity>
     );

@@ -8,6 +8,7 @@ import {
     TouchableOpacity,
     TextInput,
     Alert,
+    I18nManager,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -325,10 +326,12 @@ const QuranScreen: React.FC = () => {
                             onPress={handleLogReading}
                             style={styles.logButton}
                         >
-                            <Plus size={20} color="#FFFFFF" />
-                            <Text style={styles.logButtonText}>
-                                {isArabic ? 'تسجيل' : 'Log Reading'}
-                            </Text>
+                            <View style={styles.logButtonContent}>
+                                <Plus size={20} color="#FFFFFF" />
+                                <Text style={styles.logButtonText}>
+                                    {isArabic ? 'تسجيل' : 'Log Reading'}
+                                </Text>
+                            </View>
                         </PrimaryGradientButton>
                     </GlassCard>
 
@@ -360,12 +363,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingHorizontal: 20,
-        paddingVertical: 12,
+        paddingVertical: 16,
     },
     headerTitle: {
-        fontSize: 18,
-        fontWeight: '600',
-        letterSpacing: 0.2,
+        fontSize: 20,
+        fontWeight: '700',
+        letterSpacing: 0.3,
     },
     headerSpacer: {
         width: 40,
@@ -375,22 +378,23 @@ const styles = StyleSheet.create({
     },
     scrollContent: {
         padding: 20,
-        gap: 16,
+        paddingBottom: 100,
     },
     // Hero card
     heroCard: {
-        padding: 20,
-    },
-    heroHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 14,
+        padding: 24,
         marginBottom: 16,
     },
+    heroHeader: {
+        flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
+        alignItems: 'center',
+        gap: 16,
+        marginBottom: 20,
+    },
     heroIcon: {
-        width: 56,
-        height: 56,
-        borderRadius: 16,
+        width: 64,
+        height: 64,
+        borderRadius: 18,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -398,41 +402,43 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     heroLabel: {
-        fontSize: 13,
-        marginBottom: 4,
+        fontSize: 14,
+        fontWeight: '500',
+        marginBottom: 6,
         letterSpacing: 0.2,
     },
     heroValue: {
-        fontSize: 28,
+        fontSize: 36,
         fontWeight: '700',
         letterSpacing: -0.5,
     },
     heroTotal: {
-        fontSize: 18,
-        fontWeight: '400',
-        opacity: 0.5,
+        fontSize: 24,
+        fontWeight: '600',
+        opacity: 0.6,
     },
     progressBar: {
-        marginBottom: 12,
+        marginBottom: 16,
     },
     estimateRow: {
-        flexDirection: 'row',
+        flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
         alignItems: 'center',
         gap: 6,
-        marginTop: 4,
+        marginBottom: 12,
     },
     estimateText: {
-        fontSize: 12,
-        letterSpacing: 0.1,
+        fontSize: 13,
+        fontWeight: '500',
+        letterSpacing: 0.2,
     },
     completedBadge: {
-        flexDirection: 'row',
+        flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
         alignItems: 'center',
-        gap: 6,
-        marginTop: 12,
-        paddingTop: 12,
-        borderTopWidth: 1,
-        borderTopColor: 'rgba(255, 255, 255, 0.1)',
+        gap: 8,
+        paddingVertical: 10,
+        paddingHorizontal: 16,
+        backgroundColor: 'rgba(52, 211, 153, 0.15)',
+        borderRadius: 12,
     },
     completedText: {
         fontSize: 13,
@@ -441,18 +447,20 @@ const styles = StyleSheet.create({
     },
     // Today card
     todayCard: {
-        padding: 16,
+        padding: 20,
+        marginBottom: 16,
     },
     cardTitle: {
-        fontSize: 15,
-        fontWeight: '600',
-        marginBottom: 12,
+        fontSize: 16,
+        fontWeight: '700',
+        marginBottom: 16,
         letterSpacing: 0.2,
     },
     todayStats: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 16,
+        justifyContent: 'space-around',
+        gap: 20,
     },
     todayStat: {
         flex: 1,
@@ -475,87 +483,97 @@ const styles = StyleSheet.create({
     },
     // Log card
     logCard: {
-        padding: 20,
-        gap: 16,
+        padding: 24,
+        marginBottom: 16,
     },
     modeToggle: {
-        flexDirection: 'row',
-        gap: 8,
+        flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
+        gap: 10,
+        marginBottom: 20,
     },
     modeButton: {
         flex: 1,
-        paddingVertical: 10,
-        borderRadius: 12,
+        paddingVertical: 12,
+        borderRadius: 14,
         alignItems: 'center',
-        borderWidth: 1,
+        borderWidth: 2,
     },
     modeButtonActive: {
-        borderWidth: 1,
+        borderWidth: 2,
     },
     modeText: {
-        fontSize: 14,
-        fontWeight: '600',
-        letterSpacing: 0.2,
+        fontSize: 15,
+        fontWeight: '700',
+        letterSpacing: 0.3,
     },
     quickButtons: {
-        flexDirection: 'row',
-        gap: 8,
+        flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
+        gap: 10,
+        marginBottom: 20,
     },
     quickButton: {
         flex: 1,
-        paddingVertical: 12,
-        borderRadius: 12,
+        paddingVertical: 14,
+        borderRadius: 14,
         alignItems: 'center',
     },
     quickButtonText: {
-        fontSize: 16,
-        fontWeight: '600',
+        fontSize: 17,
+        fontWeight: '700',
         letterSpacing: 0.2,
     },
     inputRow: {
-        flexDirection: 'row',
-        gap: 12,
+        flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
+        gap: 14,
+        marginBottom: 20,
     },
     inputGroup: {
         flex: 1,
-        gap: 8,
     },
     inputLabel: {
-        fontSize: 13,
-        fontWeight: '500',
+        fontSize: 14,
+        fontWeight: '600',
         letterSpacing: 0.2,
+        marginBottom: 10,
     },
     textInput: {
-        paddingVertical: 12,
-        paddingHorizontal: 14,
-        borderRadius: 12,
-        fontSize: 16,
-        fontWeight: '600',
+        paddingVertical: 14,
+        paddingHorizontal: 16,
+        borderRadius: 14,
+        fontSize: 18,
+        fontWeight: '700',
         textAlign: 'center',
-        borderWidth: 1,
+        borderWidth: 2,
     },
     logButton: {
-        marginTop: 4,
+        marginTop: 0,
+    },
+    logButtonContent: {
+        flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 8,
     },
     logButtonText: {
-        fontSize: 15,
-        fontWeight: '600',
+        fontSize: 16,
+        fontWeight: '700',
         color: '#FFFFFF',
         letterSpacing: 0.3,
     },
     // Info card
     infoCard: {
-        padding: 14,
-        borderRadius: 12,
+        padding: 16,
+        borderRadius: 14,
         alignItems: 'center',
     },
     infoText: {
-        fontSize: 12,
+        fontSize: 13,
         textAlign: 'center',
         letterSpacing: 0.2,
+        lineHeight: 20,
     },
     bottomSpacer: {
-        height: 20,
+        height: 40,
     },
 });
 
