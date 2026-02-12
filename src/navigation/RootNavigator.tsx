@@ -23,6 +23,7 @@ import SocialScreen from '../screens/social/SocialScreen';
 import CreateGroupScreen from '../screens/social/CreateGroupScreen';
 import GroupDetailsScreen from '../screens/social/GroupDetailsScreen';
 import JoinGroupScreen from '../screens/social/JoinGroupScreen';
+import CustomHabitsScreen from '../screens/CustomHabitsScreen';
 import MainTabs from './MainTabs';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -79,6 +80,7 @@ const RootNavigator: React.FC = () => {
                             <Stack.Screen name="Profile" component={ProfileScreen} />
                             <Stack.Screen name="Qibla" component={QiblaScreen} />
                             <Stack.Screen name="Khatam" component={KhatamTrackerScreen} />
+                            <Stack.Screen name="CustomHabits" component={CustomHabitsScreen} />
                             <Stack.Screen name="Social" component={SocialScreen} />
                             <Stack.Screen
                                 name="CreateGroup"
