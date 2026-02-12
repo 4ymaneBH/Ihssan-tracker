@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
     section: {
         borderRadius: 20,
         padding: 20,
-    },,
+    },
     sectionHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
