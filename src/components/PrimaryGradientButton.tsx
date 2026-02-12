@@ -25,7 +25,7 @@ export function PrimaryGradientButton({
 }: PrimaryGradientButtonProps) {
     const { theme, isDark } = useTheme();
 
-    const gradientColors = isDark
+    const gradientColors: [string, string] = isDark
         ? [theme.colors.primary, '#6D28D9']
         : [theme.colors.primary, '#A78BFA'];
 
