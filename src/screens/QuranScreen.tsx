@@ -501,7 +501,8 @@ const styles = StyleSheet.create({
         borderWidth: 2,
     },
     modeText: {
-        fontSize: 14,\n        fontWeight: '600',
+        fontSize: 14,
+        fontWeight: '600',
         letterSpacing: 0.2,
     },
     quickButtons: {
