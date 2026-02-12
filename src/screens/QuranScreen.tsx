@@ -518,8 +518,8 @@ const styles = StyleSheet.create({
     },
     quickButtonText: {
         fontSize: 17,
-        fontWeight:5,
-        fontWeight: '6 0.2,
+        fontWeight: '600',
+        letterSpacing: 0.2,
     },
     inputRow: {
         flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
