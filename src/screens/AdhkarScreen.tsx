@@ -107,8 +107,8 @@ export default function AdhkarScreen({ route }: AdhkarScreenProps) {
                                     counter={
                                         <CounterPill
                                             count={counts[index] || 0}
-                                            max={adhkar.count}
-                                            onIncrement={() => handleIncrement(index, adhkar.count)}
+                                            max={adhkar.repeatCount}
+                                            onIncrement={() => handleIncrement(index, adhkar.repeatCount)}
                                             onDecrement={() => handleDecrement(index)}
                                         />
                                     }

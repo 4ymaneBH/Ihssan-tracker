@@ -38,26 +38,24 @@ const MainTabs: React.FC = () => {
         headerShown: false,
         tabBarStyle: {
             position: 'absolute' as const,
-            backgroundColor: Platform.OS === 'ios' ? 'transparent' : theme.colors.glassBackground,
-            borderTopWidth: 1,
-            borderTopColor: theme.colors.glassStroke,
+            backgroundColor: 'transparent',
+            borderTopWidth: 0,
             height: 70,
             paddingBottom: 16,
             paddingTop: 8,
             elevation: 0,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: -4 },
-            shadowOpacity: 0.1,
-            shadowRadius: 16,
         },
-        tabBarBackground: () => 
-            Platform.OS === 'ios' ? (
-                <BlurView
-                    intensity={60}
-                    tint={isDark ? 'dark' : 'light'}
-                    style={StyleSheet.absoluteFill}
-                />
-            ) : null,
+        tabBarBackground: () => (
+            <BlurView
+                intensity={isDark ? 90 : 80}
+                tint={isDark ? 'dark' : 'light'}
+                style={[StyleSheet.absoluteFill, {
+                    backgroundColor: isDark ? 'rgba(10, 10, 10, 0.7)' : 'rgba(255, 255, 255, 0.7)',
+                    borderTopWidth: 1,
+                    borderTopColor: theme.colors.glassStroke,
+                }]}
+            />
+        ),
         tabBarActiveTintColor: theme.colors.purple,
         tabBarInactiveTintColor: theme.colors.textTertiary,
         tabBarLabelStyle: {
