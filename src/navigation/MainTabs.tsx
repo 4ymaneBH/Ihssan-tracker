@@ -1,7 +1,8 @@
-// Bottom Tab Navigation with Material Icons
+// Bottom Tab Navigation with Frosted Glass Effect
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
+import { BlurView } from 'expo-blur';
 import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { MainTabParamList } from '../types';
@@ -36,36 +37,58 @@ const MainTabs: React.FC = () => {
     const screenOptions = React.useMemo(() => ({
         headerShown: false,
         tabBarStyle: {
-            backgroundColor: theme.colors.tabBarBackground,
-            borderTopWidth: isDark ? 0 : 1,  // Border in light mode
-            borderTopColor: theme.colors.tabBarBorder,
-            height: 70,
-            paddingBottom: 16,
+            position: 'absolute' as const,
+            backgroundColor: 'transparent',
+            borderTopWidth: 0,
+            height: 72,
+            paddingBottom: 14,
             paddingTop: 8,
-            elevation: 8,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: -4 },
-            shadowOpacity: isDark ? 0.15 : 0.08,  // Lighter shadow in light mode
-            shadowRadius: 12,
+            elevation: 0,
         },
+        tabBarBackground: () => (
+            <View style={StyleSheet.absoluteFill}>
+                {Platform.OS === 'ios' ? (
+                    <BlurView
+                        tint={isDark ? 'dark' : 'light'}
+                        intensity={isDark ? 60 : 80}
+                        style={StyleSheet.absoluteFill}
+                    />
+                ) : null}
+                <View
+                    style={[
+                        StyleSheet.absoluteFill,
+                        {
+                            backgroundColor: theme.colors.tabBarBackground,
+                            borderTopWidth: StyleSheet.hairlineWidth,
+                            borderTopColor: theme.colors.tabBarBorder,
+                        },
+                    ]}
+                />
+            </View>
+        ),
         tabBarActiveTintColor: theme.colors.tabBarActive,
         tabBarInactiveTintColor: theme.colors.tabBarInactive,
         tabBarLabelStyle: {
             fontSize: 11,
             fontWeight: '600' as const,
-            marginTop: 4,
+            marginTop: 2,
         },
-    }), [theme.colors.tabBarBackground, theme.colors.tabBarActive, theme.colors.tabBarInactive, theme.colors.tabBarBorder, isDark]);
+    }), [theme.colors, isDark]);
 
     const getTabBarIcon = React.useCallback(({ route, focused, color }: any) => {
         const icons = tabIcons[route.name];
         const iconName = focused ? icons.active : icons.inactive;
         return (
-            <MaterialCommunityIcons
-                name={iconName}
-                size={focused ? 24 : 22}
-                color={color}
-            />
+            <View style={styles.iconWrapper}>
+                {focused && (
+                    <View style={[styles.activeIndicator, { backgroundColor: color + '20' }]} />
+                )}
+                <MaterialCommunityIcons
+                    name={iconName}
+                    size={focused ? 24 : 22}
+                    color={color}
+                />
+            </View>
         );
     }, []);
 
@@ -110,11 +133,17 @@ const MainTabs: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-    iconContainer: {
+    iconWrapper: {
         alignItems: 'center',
         justifyContent: 'center',
-        width: 40,
-        height: 40,
+        width: 48,
+        height: 32,
+    },
+    activeIndicator: {
+        position: 'absolute',
+        width: 48,
+        height: 32,
+        borderRadius: 16,
     },
 });
 
