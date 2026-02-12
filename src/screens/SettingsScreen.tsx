@@ -402,7 +402,7 @@ const styles = StyleSheet.create({
         marginTop: 4,
     },
     bottomSpacer: {
-        height: 24,
+        height: 90,
     },
     // Goals Card Styles
     goalsCard: {

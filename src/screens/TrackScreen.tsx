@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
     section: {
         borderRadius: 20,
         padding: 20,
-    },
+    },,
     sectionHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -362,7 +362,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     bottomSpacer: {
-        height: 24,
+        height: 90,
     },
     sectionDesc: {
         fontSize: 13,

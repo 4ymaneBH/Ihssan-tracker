@@ -469,7 +469,7 @@ const styles = StyleSheet.create({
         borderRadius: 4,
     },
     bottomSpacer: {
-        height: 24,
+        height: 90,
     },
     // Export button
     exportButton: {

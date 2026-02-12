@@ -1077,7 +1077,7 @@ const styles = StyleSheet.create({
         marginTop: 2,
     },
     bottomSpacer: {
-        height: 24,
+        height: 90,
     },
 });
 
