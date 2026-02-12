@@ -7,10 +7,11 @@ export const AppBackground: React.FC = () => {
     const { isDark } = useTheme();
 
     if (isDark) {
-        // For dark mode, we use a subtle dark gradient
+        // Rich dark mode gradient with subtle blue-green tint
         return (
             <LinearGradient
-                colors={['#0f172a', '#1e293b', '#0f172a']}
+                colors={['#0B0E14', '#101824', '#0D1520', '#0B0E14']}
+                locations={[0, 0.35, 0.7, 1]}
                 style={StyleSheet.absoluteFill}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
@@ -18,14 +19,12 @@ export const AppBackground: React.FC = () => {
         );
     }
 
-    // Light mode: "light green blurred gradient" simulation
-    // We use a multi-stop gradient to create softness
+    // Light mode: soft multi-tone gradient with warmth
     return (
         <View style={StyleSheet.absoluteFill}>
             <LinearGradient
-                // Soft teal/green to white
-                colors={['#effef5', '#dffceb', '#f0fdf4', '#ffffff']}
-                locations={[0, 0.4, 0.7, 1]}
+                colors={['#F0FDF4', '#ECFDF5', '#F5F3FF', '#FFFFFF', '#FFF7ED']}
+                locations={[0, 0.25, 0.5, 0.75, 1]}
                 style={StyleSheet.absoluteFill}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}

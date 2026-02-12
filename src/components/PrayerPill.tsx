@@ -112,11 +112,11 @@ export const PrayerPill: React.FC<PrayerPillProps> = ({
 const styles = StyleSheet.create({
     pill: {
         minWidth: 64,
-        height: prayerTime => (prayerTime ? 56 : 44), // Taller if showing time
+        height: 48,
         borderRadius: 14,
         borderWidth: 1.5,
-        paddingHorizontal: 10,
-        paddingVertical: 6,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
         alignItems: 'center',
         justifyContent: 'center',
     },

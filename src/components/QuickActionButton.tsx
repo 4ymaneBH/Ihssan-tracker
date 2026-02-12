@@ -97,9 +97,9 @@ export const QuickActionButton: React.FC<QuickActionButtonProps> = ({
 const styles = StyleSheet.create({
     button: {
         height: 64,
-        borderRadius: 14,
-        borderWidth: 1.5,
-        paddingHorizontal: 14,
+        borderRadius: 16,
+        borderWidth: 1,
+        paddingHorizontal: 16,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -107,13 +107,13 @@ const styles = StyleSheet.create({
     leftContent: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 12,
+        gap: 14,
         flex: 1,
     },
     iconContainer: {
-        width: 40,
-        height: 40,
-        borderRadius: 10,
+        width: 42,
+        height: 42,
+        borderRadius: 12,
         alignItems: 'center',
         justifyContent: 'center',
     },
