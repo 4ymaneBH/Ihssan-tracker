@@ -4,7 +4,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useTheme } from '../context';
 
 interface ProgressBarProps {
-    progress: number; // 0-100
+    progress: number; // 0-1 or 0-100
     label?: string;
     value?: string;
     height?: number;
@@ -21,7 +21,9 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
     showPercentage = false,
 }) => {
     const { theme } = useTheme();
-    const clampedProgress = Math.min(100, Math.max(0, progress));
+    // Support both 0-1 and 0-100 formats
+    const normalizedProgress = progress > 1 ? progress : progress * 100;
+    const clampedProgress = Math.min(100, Math.max(0, normalizedProgress));
     const progressColor = color || theme.colors.primary;
 
     return (
@@ -41,7 +43,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
                     styles.track,
                     {
                         height,
-                        backgroundColor: theme.colors.border,
+                        backgroundColor: theme.colors.progressBarBackground,
                     },
                 ]}
             >

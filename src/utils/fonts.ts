@@ -3,12 +3,12 @@ import { I18nManager } from 'react-native';
 
 // Font family names
 export const fonts = {
-    // Arabic UI font (modern, clean)
+    // Arabic UI font (premium SF Arabic)
     arabic: {
-        regular: 'Cairo',
-        medium: 'Cairo-Medium',
-        semiBold: 'Cairo-SemiBold',
-        bold: 'Cairo-Bold',
+        regular: 'SFArabic',
+        medium: 'SFArabic',
+        semiBold: 'SFArabic-Black',
+        bold: 'SFArabic-Black',
     },
     // Arabic Quranic/Du'a font (traditional, beautiful)
     arabicQuran: {

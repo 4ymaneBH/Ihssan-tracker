@@ -29,6 +29,12 @@
         "quietHours": "Quiet hours",
         "quietHoursDesc": "No notifications during these hours"
     },
+    "today": {
+        "greeting": "As-salamu alaykum",
+        "todayProgress": "Today's Progress",
+        "completed": "Completed",
+        "remaining": "Remaining"
+    },
     "salat": {
         "title": "Salat",
         "fajr": "Fajr",
@@ -41,7 +47,8 @@
         "missed": "Missed",
         "sunnah": "Sunnah",
         "prayersCompleted": "prayers completed",
-        "weeklyStreak": "Weekly streak"
+        "weeklyStreak": "Weekly streak",
+        "todayPrayers": "Today's Prayers"
     },
     "adhkar": {
         "title": "Adhkar",
@@ -50,7 +57,8 @@
         "custom": "Custom Adhkar",
         "completed": "Completed",
         "remaining": "remaining",
-        "tapToCount": "Tap to count"
+        "tapToCount": "Tap to count",
+        "markComplete": "Mark Complete"
     },
     "quran": {
         "title": "Qur'an",

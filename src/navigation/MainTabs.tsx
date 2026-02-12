@@ -1,9 +1,10 @@
-// Bottom Tab Navigation with Material Icons
+// Bottom Tab Navigation with Glassmorphism
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur';
 import { MainTabParamList } from '../types';
 import { useTheme } from '../context';
 
@@ -36,26 +37,36 @@ const MainTabs: React.FC = () => {
     const screenOptions = React.useMemo(() => ({
         headerShown: false,
         tabBarStyle: {
-            backgroundColor: theme.colors.tabBarBackground,
-            borderTopWidth: isDark ? 0 : 1,  // Border in light mode
-            borderTopColor: theme.colors.tabBarBorder,
+            position: 'absolute' as const,
+            backgroundColor: Platform.OS === 'ios' ? 'transparent' : theme.colors.glassBackground,
+            borderTopWidth: 1,
+            borderTopColor: theme.colors.glassStroke,
             height: 70,
             paddingBottom: 16,
             paddingTop: 8,
-            elevation: 8,
+            elevation: 0,
             shadowColor: '#000',
             shadowOffset: { width: 0, height: -4 },
-            shadowOpacity: isDark ? 0.15 : 0.08,  // Lighter shadow in light mode
-            shadowRadius: 12,
+            shadowOpacity: 0.1,
+            shadowRadius: 16,
         },
-        tabBarActiveTintColor: theme.colors.tabBarActive,
-        tabBarInactiveTintColor: theme.colors.tabBarInactive,
+        tabBarBackground: () => 
+            Platform.OS === 'ios' ? (
+                <BlurView
+                    intensity={60}
+                    tint={isDark ? 'dark' : 'light'}
+                    style={StyleSheet.absoluteFill}
+                />
+            ) : null,
+        tabBarActiveTintColor: theme.colors.purple,
+        tabBarInactiveTintColor: theme.colors.textTertiary,
         tabBarLabelStyle: {
             fontSize: 11,
             fontWeight: '600' as const,
             marginTop: 4,
+            letterSpacing: 0.2,
         },
-    }), [theme.colors.tabBarBackground, theme.colors.tabBarActive, theme.colors.tabBarInactive, theme.colors.tabBarBorder, isDark]);
+    }), [theme, isDark]);
 
     const getTabBarIcon = React.useCallback(({ route, focused, color }: any) => {
         const icons = tabIcons[route.name];

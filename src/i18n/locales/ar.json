@@ -29,6 +29,12 @@
         "quietHours": "ساعات الهدوء",
         "quietHoursDesc": "لا إشعارات خلال هذه الساعات"
     },
+    "today": {
+        "greeting": "السلام عليكم",
+        "todayProgress": "تقدم اليوم",
+        "completed": "مكتمل",
+        "remaining": "متبقي"
+    },
     "salat": {
         "title": "الصلاة",
         "fajr": "الفجر",
@@ -41,7 +47,8 @@
         "missed": "فائتة",
         "sunnah": "السنن",
         "prayersCompleted": "صلوات مكتملة",
-        "weeklyStreak": "سلسلة الأسبوع"
+        "weeklyStreak": "سلسلة الأسبوع",
+        "todayPrayers": "صلوات اليوم"
     },
     "adhkar": {
         "title": "الأذكار",
@@ -50,7 +57,8 @@
         "custom": "أذكار مخصصة",
         "completed": "مكتمل",
         "remaining": "متبقي",
-        "tapToCount": "اضغط للعد"
+        "tapToCount": "اضغط للعد",
+        "markComplete": "تحديد كمكتمل"
     },
     "quran": {
         "title": "القرآن",
