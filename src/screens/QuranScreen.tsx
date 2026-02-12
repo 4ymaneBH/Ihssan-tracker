@@ -531,10 +531,10 @@ const styles = StyleSheet.create({
     },
     inputLabel: {
         fontSize: 14,
-        fontWeight:3,
         fontWeight: '600',
         letterSpacing: 0.2,
-        marginBottom: 8
+        marginBottom: 8,
+    },
     textInput: {
         paddingVertical: 12,
         paddingHorizontal: 16,
