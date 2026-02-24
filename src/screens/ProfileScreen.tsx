@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../context';
 import { useUserPreferencesStore, useAuthStore } from '../store';
 import { getFontFamily } from '../utils';
@@ -73,57 +74,35 @@ const ProfileScreen: React.FC = () => {
     };
 
     return (
-        <SafeAreaView
-            style={[styles.container, { backgroundColor: 'transparent' }]}
-        >
+        <SafeAreaView style={[styles.container, { backgroundColor: 'transparent' }]}>
             {/* Header */}
             <View style={styles.header}>
-                <TouchableOpacity
-                    style={styles.backButton}
-                    onPress={() => navigation.goBack()}
-                >
-                    <MaterialCommunityIcons
-                        name="arrow-left"
-                        size={24}
-                        color={theme.colors.text}
-                    />
+                <TouchableOpacity style={[styles.backButton, { backgroundColor: theme.colors.surface, borderColor: theme.colors.cardBorder, borderWidth: 1 }]} onPress={() => navigation.goBack()}>
+                    <MaterialCommunityIcons name="arrow-left" size={20} color={theme.colors.text} />
                 </TouchableOpacity>
-                <Text style={[
-                    styles.headerTitle,
-                    { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }
-                ]}>
+                <Text style={[styles.headerTitle, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }]}>
                     {isArabic ? 'الملف الشخصي' : 'Profile'}
                 </Text>
-                <View style={{ width: 32 }} />
+                <View style={{ width: 36 }} />
             </View>
 
             <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-                {/* Avatar Section */}
-                <View style={[styles.avatarSection, { backgroundColor: theme.colors.surface }]}>
-                    <View
-                        style={[
-                            styles.currentAvatar,
-                            { backgroundColor: theme.colors.primaryLight },
-                        ]}
-                    >
-                        <MaterialCommunityIcons
-                            name={selectedAvatar}
-                            size={64}
-                            color={theme.colors.primary}
-                        />
+                {/* Hero Avatar Section */}
+                <LinearGradient
+                    colors={[theme.colors.primary + '30', theme.colors.primary + '08']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={[styles.heroCard, { borderColor: theme.colors.primary + '30' }]}
+                >
+                    <View style={[styles.avatarRing, { borderColor: theme.colors.primary }]}>
+                        <View style={[styles.currentAvatar, { backgroundColor: theme.colors.primaryLight }]}>
+                            <MaterialCommunityIcons name={selectedAvatar} size={56} color={theme.colors.primary} />
+                        </View>
                     </View>
 
-                    {/* Name */}
                     {isEditing ? (
                         <TextInput
-                            style={[
-                                styles.nameInput,
-                                {
-                                    color: theme.colors.text,
-                                    borderColor: theme.colors.border,
-                                    backgroundColor: theme.colors.background,
-                                },
-                            ]}
+                            style={[styles.nameInput, { color: theme.colors.text, borderColor: theme.colors.primary + '60', backgroundColor: theme.colors.surface }]}
                             value={name}
                             onChangeText={setName}
                             placeholder={isArabic ? 'اسمك' : 'Your name'}
@@ -131,8 +110,8 @@ const ProfileScreen: React.FC = () => {
                             textAlign={isArabic ? 'right' : 'left'}
                         />
                     ) : (
-                        <View style={{ alignItems: 'center' }}>
-                            <Text style={[styles.displayName, { color: theme.colors.text }]}>
+                        <View style={{ alignItems: 'center', gap: 4 }}>
+                            <Text style={[styles.displayName, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }]}>
                                 {user?.name || displayName || (isArabic ? 'صديق إحسان' : 'Ihssan Friend')}
                             </Text>
                             {user?.email && (
@@ -143,38 +122,16 @@ const ProfileScreen: React.FC = () => {
                         </View>
                     )}
 
-                    {/* Edit/Save Button */}
                     <TouchableOpacity
-                        style={[
-                            styles.editButton,
-                            {
-                                backgroundColor: isEditing
-                                    ? theme.colors.primary
-                                    : theme.colors.background,
-                                borderColor: theme.colors.border,
-                            },
-                        ]}
+                        style={[styles.editButton, { backgroundColor: isEditing ? theme.colors.primary : theme.colors.surface, borderColor: isEditing ? theme.colors.primary : theme.colors.cardBorder, borderWidth: 1 }]}
                         onPress={isEditing ? handleSave : () => setIsEditing(true)}
                     >
-                        <MaterialCommunityIcons
-                            name={isEditing ? 'check' : 'pencil'}
-                            size={18}
-                            color={isEditing ? theme.colors.onPrimary : theme.colors.primary}
-                        />
-                        <Text
-                            style={[
-                                styles.editButtonText,
-                                {
-                                    color: isEditing ? theme.colors.onPrimary : theme.colors.primary,
-                                },
-                            ]}
-                        >
-                            {isEditing
-                                ? isArabic ? 'حفظ' : 'Save'
-                                : isArabic ? 'تعديل' : 'Edit'}
+                        <MaterialCommunityIcons name={isEditing ? 'check' : 'pencil-outline'} size={16} color={isEditing ? theme.colors.onPrimary : theme.colors.primary} />
+                        <Text style={[styles.editButtonText, { color: isEditing ? theme.colors.onPrimary : theme.colors.primary, fontFamily: getFontFamily(isArabic, 'semiBold') }]}>
+                            {isEditing ? (isArabic ? 'حفظ' : 'Save') : (isArabic ? 'تعديل' : 'Edit')}
                         </Text>
                     </TouchableOpacity>
-                </View>
+                </LinearGradient>
 
                 {/* Avatar Picker */}
                 {isEditing && (
@@ -217,72 +174,54 @@ const ProfileScreen: React.FC = () => {
                 )}
 
                 {/* Quick Settings */}
-                <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
-                    <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+                <View style={[styles.section, { backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.cardBorder }]}>
+                    <Text style={[styles.sectionTitle, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'semiBold') }]}>
                         {isArabic ? 'الإعدادات السريعة' : 'Quick Settings'}
                     </Text>
 
                     {/* Social Groups */}
                     <TouchableOpacity
-                        style={[styles.settingRow, { borderBottomColor: theme.colors.divider }]}
+                        style={[styles.settingRow, { borderBottomColor: theme.colors.borderLight }]}
                         onPress={() => navigation.navigate('Social' as never)}
                     >
-                        <View style={styles.settingInfo}>
-                            <MaterialCommunityIcons
-                                name="account-group"
-                                size={22}
-                                color={theme.colors.primary}
-                            />
-                            <Text style={[styles.settingLabel, { color: theme.colors.text }]}>
-                                {t('social.title', 'Social Groups')}
-                            </Text>
+                        <View style={[styles.settingIconBox, { backgroundColor: theme.colors.primary + '18' }]}>
+                            <MaterialCommunityIcons name="account-group" size={20} color={theme.colors.primary} />
                         </View>
-                        <MaterialCommunityIcons
-                            name={isArabic ? "chevron-left" : "chevron-right"}
-                            size={24}
-                            color={theme.colors.textTertiary}
-                        />
+                        <Text style={[styles.settingLabel, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'medium'), flex: 1 }]}>
+                            {t('social.title', 'Social Groups')}
+                        </Text>
+                        <MaterialCommunityIcons name={isArabic ? 'chevron-left' : 'chevron-right'} size={20} color={theme.colors.textTertiary} />
                     </TouchableOpacity>
 
                     {/* Language Toggle */}
                     <TouchableOpacity
-                        style={[styles.settingRow, { borderBottomColor: theme.colors.divider }]}
+                        style={[styles.settingRow, { borderBottomColor: theme.colors.borderLight }]}
                         onPress={handleLanguageToggle}
                     >
-                        <View style={styles.settingInfo}>
-                            <MaterialCommunityIcons
-                                name="translate"
-                                size={22}
-                                color={theme.colors.primary}
-                            />
-                            <Text style={[styles.settingLabel, { color: theme.colors.text }]}>
-                                {isArabic ? 'اللغة' : 'Language'}
-                            </Text>
+                        <View style={[styles.settingIconBox, { backgroundColor: theme.colors.info.main + '18' }]}>
+                            <MaterialCommunityIcons name="translate" size={20} color={theme.colors.info.main} />
                         </View>
-                        <View style={[styles.settingValue, { backgroundColor: theme.colors.background }]}>
-                            <Text style={[styles.settingValueText, { color: theme.colors.primary }]}>
-                                {language === 'en' ? 'English' : 'العربية'}
+                        <Text style={[styles.settingLabel, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'medium'), flex: 1 }]}>
+                            {isArabic ? 'اللغة' : 'Language'}
+                        </Text>
+                        <View style={[styles.settingValuePill, { backgroundColor: theme.colors.info.main + '15' }]}>
+                            <Text style={[styles.settingValueText, { color: theme.colors.info.main, fontFamily: getFontFamily(isArabic, 'semiBold') }]}>
+                                {language === 'en' ? 'EN' : 'عر'}
                             </Text>
                         </View>
                     </TouchableOpacity>
 
                     {/* Theme Toggle */}
-                    <TouchableOpacity style={styles.settingRow} onPress={handleThemeToggle}>
-                        <View style={styles.settingInfo}>
-                            <MaterialCommunityIcons
-                                name={themePreference === 'dark' ? 'weather-night' : 'white-balance-sunny'}
-                                size={22}
-                                color={theme.colors.primary}
-                            />
-                            <Text style={[styles.settingLabel, { color: theme.colors.text }]}>
-                                {isArabic ? 'المظهر' : 'Theme'}
-                            </Text>
+                    <TouchableOpacity style={[styles.settingRow, { borderBottomWidth: 0 }]} onPress={handleThemeToggle}>
+                        <View style={[styles.settingIconBox, { backgroundColor: theme.colors.warning.main + '18' }]}>
+                            <MaterialCommunityIcons name={themePreference === 'dark' ? 'weather-night' : 'white-balance-sunny'} size={20} color={theme.colors.warning.main} />
                         </View>
-                        <View style={[styles.settingValue, { backgroundColor: theme.colors.background }]}>
-                            <Text style={[styles.settingValueText, { color: theme.colors.primary }]}>
-                                {themePreference === 'dark'
-                                    ? isArabic ? 'داكن' : 'Dark'
-                                    : isArabic ? 'فاتح' : 'Light'}
+                        <Text style={[styles.settingLabel, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'medium'), flex: 1 }]}>
+                            {isArabic ? 'المظهر' : 'Appearance'}
+                        </Text>
+                        <View style={[styles.settingValuePill, { backgroundColor: theme.colors.warning.main + '15' }]}>
+                            <Text style={[styles.settingValueText, { color: theme.colors.warning.main, fontFamily: getFontFamily(isArabic, 'semiBold') }]}>
+                                {themePreference === 'dark' ? (isArabic ? 'ليلي' : 'Dark') : (isArabic ? 'نهاري' : 'Light')}
                             </Text>
                         </View>
                     </TouchableOpacity>
@@ -295,9 +234,8 @@ const ProfileScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
+    container: { flex: 1 },
+    // Header
     header: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -306,81 +244,63 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
     },
     backButton: {
-        padding: 8,
-    },
-    headerTitle: {
-        fontSize: 20,
-        fontWeight: '600',
-    },
-    scrollView: {
-        flex: 1,
-    },
-    scrollContent: {
-        paddingHorizontal: 16,
-        gap: 16,
-    },
-    // Avatar section
-    avatarSection: {
-        alignItems: 'center',
-        padding: 24,
-        borderRadius: 20,
-        gap: 16,
-    },
-    currentAvatar: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
+        width: 36,
+        height: 36,
+        borderRadius: 18,
         alignItems: 'center',
         justifyContent: 'center',
     },
-    displayName: {
-        fontSize: 22,
-        fontWeight: '600',
-        textAlign: 'center',
+    headerTitle: { fontSize: 20, fontWeight: '600' },
+    scrollView: { flex: 1 },
+    scrollContent: { paddingHorizontal: 16, gap: 14, paddingBottom: 24 },
+    // Hero card
+    heroCard: {
+        alignItems: 'center',
+        padding: 28,
+        borderRadius: 20,
+        borderWidth: 1,
+        gap: 14,
     },
-    email: {
-        fontSize: 14,
-        marginTop: 4,
+    avatarRing: {
+        width: 96,
+        height: 96,
+        borderRadius: 48,
+        borderWidth: 3,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
+    currentAvatar: {
+        width: 84,
+        height: 84,
+        borderRadius: 42,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    displayName: { fontSize: 20, fontWeight: '700', textAlign: 'center' },
+    email: { fontSize: 13 },
     nameInput: {
-        fontSize: 18,
+        fontSize: 17,
         fontWeight: '500',
         borderWidth: 1,
         borderRadius: 12,
         paddingHorizontal: 16,
-        paddingVertical: 12,
+        paddingVertical: 11,
         width: '100%',
     },
     editButton: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: 6,
-        paddingHorizontal: 20,
-        paddingVertical: 10,
+        paddingHorizontal: 18,
+        paddingVertical: 9,
         borderRadius: 20,
-        borderWidth: 1,
     },
-    editButtonText: {
-        fontSize: 14,
-        fontWeight: '600',
-    },
+    editButtonText: { fontSize: 14 },
     // Section
-    section: {
-        padding: 20,
-        borderRadius: 20,
-    },
-    sectionTitle: {
-        fontSize: 16,
-        fontWeight: '600',
-        marginBottom: 16,
-    },
+    section: { padding: 20, borderRadius: 18 },
+    sectionTitle: { fontSize: 15, fontWeight: '600', marginBottom: 14 },
     // Avatar grid
-    avatarGrid: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 12,
-        justifyContent: 'center',
-    },
+    avatarGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, justifyContent: 'center' },
     avatarOption: {
         width: 56,
         height: 56,
@@ -389,34 +309,29 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderWidth: 2,
     },
-    // Settings
+    // Settings rows
     settingRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingVertical: 14,
-        borderBottomWidth: 1,
-    },
-    settingInfo: {
-        flexDirection: 'row',
-        alignItems: 'center',
+        paddingVertical: 13,
+        borderBottomWidth: StyleSheet.hairlineWidth,
         gap: 12,
     },
-    settingLabel: {
-        fontSize: 16,
+    settingIconBox: {
+        width: 36,
+        height: 36,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
-    settingValue: {
-        paddingHorizontal: 12,
-        paddingVertical: 6,
+    settingLabel: { fontSize: 15 },
+    settingValuePill: {
+        paddingHorizontal: 10,
+        paddingVertical: 5,
         borderRadius: 12,
     },
-    settingValueText: {
-        fontSize: 14,
-        fontWeight: '500',
-    },
-    bottomSpacer: {
-        height: 24,
-    },
+    settingValueText: { fontSize: 13, fontWeight: '500' },
+    bottomSpacer: { height: 24 },
 });
 
 export default ProfileScreen;

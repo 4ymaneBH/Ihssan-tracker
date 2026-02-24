@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../context';
 import { useSalatStore, useHabitsStore } from '../store';
 import { getWeekDates, getDayAbbr, parseDate, formatNumber, isToday, getFontFamily } from '../utils';
@@ -74,12 +75,20 @@ const TrackScreen: React.FC = () => {
             style={[styles.container, { backgroundColor: 'transparent' }]}
         >
             <View style={styles.header}>
-                <Text style={[
-                    styles.headerTitle,
-                    { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }
-                ]}>
-                    {t('common.track')}
-                </Text>
+                <View style={{ flex: 1 }}>
+                    <Text style={[styles.headerTitle, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }]}>
+                        {t('common.track')}
+                    </Text>
+                    <Text style={[styles.headerSubtitle, { color: theme.colors.textSecondary, fontFamily: getFontFamily(isArabic, 'regular') }]}>
+                        {isArabic ? 'سجل هذا الأسبوع' : 'This week\'s record'}
+                    </Text>
+                </View>
+                <View style={[styles.onTimeChip, { backgroundColor: theme.colors.primary + '18' }]}>
+                    <MaterialCommunityIcons name="mosque" size={14} color={theme.colors.primary} />
+                    <Text style={[styles.onTimeChipText, { color: theme.colors.primary, fontFamily: getFontFamily(isArabic, 'semiBold') }]}>
+                        {formatNumber(onTimePercent, i18n.language)}%
+                    </Text>
+                </View>
             </View>
 
 
@@ -89,16 +98,11 @@ const TrackScreen: React.FC = () => {
                 showsVerticalScrollIndicator={false}
             >
                 {/* Salat Week Grid */}
-                <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
+                <View style={[styles.section, { backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.cardBorder }]}>
                     <View style={styles.sectionHeader}>
-                        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-                            {t('salat.title')} - {t('insights.weeklyReport')}
+                        <Text style={[styles.sectionTitle, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'semiBold') }]}>
+                            {t('salat.title')}
                         </Text>
-                        <View style={[styles.percentBadge, { backgroundColor: theme.colors.primaryLight }]}>
-                            <Text style={[styles.percentText, { color: theme.colors.primary }]}>
-                                {formatNumber(onTimePercent, i18n.language)}% {t('salat.onTime')}
-                            </Text>
-                        </View>
                     </View>
 
                     <View style={styles.weekGrid}>
@@ -122,7 +126,7 @@ const TrackScreen: React.FC = () => {
                                                 { color: isTodayDate ? theme.colors.primary : theme.colors.textSecondary },
                                             ]}
                                         >
-                                            {getDayAbbr(date, i18n.language)}
+                                            {getDayAbbr(date, i18n.language as 'ar' | 'en')}
                                         </Text>
                                     </View>
                                 );
@@ -145,15 +149,12 @@ const TrackScreen: React.FC = () => {
                                             key={dateStr}
                                             style={[
                                                 styles.statusCell,
-                                                { backgroundColor: status ? getStatusColor(status) + '30' : 'transparent' },
+                                                { backgroundColor: status ? getStatusColor(status) + '25' : (theme.colors.borderLight + '60') },
                                             ]}
                                         >
-                                            <View
-                                                style={[
-                                                    styles.statusDot,
-                                                    { backgroundColor: getStatusColor(status) },
-                                                ]}
-                                            />
+                                            {status && (
+                                                <View style={[styles.statusSquare, { backgroundColor: getStatusColor(status) }]} />
+                                            )}
                                         </View>
                                     );
                                 })}
@@ -185,40 +186,41 @@ const TrackScreen: React.FC = () => {
                 </View>
 
                 {/* Weekly Summary Stats */}
-                <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
-                    <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+                <View style={[styles.section, { backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.cardBorder }]}>
+                    <Text style={[styles.sectionTitle, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'semiBold') }]}>
                         {t('insights.weeklyReport')}
                     </Text>
 
                     <View style={styles.statsGrid}>
                         {weeklyStats.map((stat) => (
-                            <View key={stat.icon} style={[styles.statCard, { backgroundColor: stat.bgColor }]}>
-                                <View style={[styles.statIconContainer, { backgroundColor: stat.iconColor + '20' }]}>
-                                    <MaterialCommunityIcons name={stat.icon as any} size={22} color={stat.iconColor} />
+                            <LinearGradient
+                                key={stat.icon}
+                                colors={[stat.iconColor + '22', stat.iconColor + '08']}
+                                start={{ x: 0, y: 0 }}
+                                end={{ x: 1, y: 1 }}
+                                style={styles.statCard}
+                            >
+                                <View style={[styles.statIconContainer, { backgroundColor: stat.iconColor + '25' }]}>
+                                    <MaterialCommunityIcons name={stat.icon as any} size={20} color={stat.iconColor} />
                                 </View>
-                                <Text style={[styles.statValue, { color: theme.colors.text }]}>
+                                <Text style={[styles.statValue, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }]}>
                                     {formatNumber(stat.value, i18n.language)}
                                 </Text>
-                                <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
+                                <Text style={[styles.statLabel, { color: theme.colors.textSecondary, fontFamily: getFontFamily(isArabic, 'regular') }]}>
                                     {stat.label}
                                 </Text>
-                            </View>
+                            </LinearGradient>
                         ))}
                     </View>
                 </View>
 
                 {/* Custom Habits Section */}
-                <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
+                <View style={[styles.section, { backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.cardBorder }]}>
                     <View style={styles.sectionHeader}>
-                        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+                        <Text style={[styles.sectionTitle, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'semiBold') }]}>
                             {i18n.language === 'ar' ? 'العادات المخصصة' : 'Custom Habits'}
                         </Text>
                     </View>
-                    <Text style={[styles.sectionDesc, { color: theme.colors.textSecondary }]}>
-                        {i18n.language === 'ar'
-                            ? 'أنشئ عادات مخصصة وتتبعها يومياً'
-                            : 'Create custom habits and track them daily'}
-                    </Text>
                 </View>
 
                 {/* Render CustomHabitsScreen inline */}
@@ -235,14 +237,23 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     header: {
+        flexDirection: 'row',
+        alignItems: 'center',
         paddingHorizontal: 20,
         paddingTop: 16,
         paddingBottom: 12,
     },
-    headerTitle: {
-        fontSize: 28,
-        fontWeight: '700',
+    headerTitle: { fontSize: 26, fontWeight: '700' },
+    headerSubtitle: { fontSize: 13, marginTop: 2 },
+    onTimeChip: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 5,
+        paddingHorizontal: 12,
+        paddingVertical: 7,
+        borderRadius: 20,
     },
+    onTimeChipText: { fontSize: 14 },
     scrollView: {
         flex: 1,
     },
@@ -303,13 +314,15 @@ const styles = StyleSheet.create({
     statusCell: {
         flex: 1,
         alignItems: 'center',
-        paddingVertical: 8,
-        borderRadius: 6,
+        justifyContent: 'center',
+        paddingVertical: 7,
+        borderRadius: 7,
+        marginHorizontal: 1,
     },
-    statusDot: {
-        width: 12,
-        height: 12,
-        borderRadius: 6,
+    statusSquare: {
+        width: 14,
+        height: 14,
+        borderRadius: 4,
     },
     // Legend
     legend: {

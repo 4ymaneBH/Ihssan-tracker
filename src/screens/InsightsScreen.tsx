@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Svg, { Rect, Circle, Path, G, Text as SvgText } from 'react-native-svg';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../context';
 import { useSalatStore, useHabitsStore, useUserPreferencesStore } from '../store';
 import { formatNumber, formatPercentage, getFontFamily, getWeekDates } from '../utils';
@@ -195,12 +196,20 @@ const InsightsScreen: React.FC = () => {
             style={[styles.container, { backgroundColor: 'transparent' }]}
         >
             <View style={styles.header}>
-                <Text style={[
-                    styles.headerTitle,
-                    { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }
-                ]}>
-                    {t('insights.title')}
-                </Text>
+                <View style={{ flex: 1 }}>
+                    <Text style={[styles.headerTitle, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }]}>
+                        {t('insights.title')}
+                    </Text>
+                    <Text style={[styles.headerSubtitle, { color: theme.colors.textSecondary, fontFamily: getFontFamily(isArabic, 'regular') }]}>
+                        {isArabic ? 'ملخص هذا الأسبوع' : 'This week\'s summary'}
+                    </Text>
+                </View>
+                <TouchableOpacity
+                    style={[styles.exportIconBtn, { backgroundColor: theme.colors.surface, borderColor: theme.colors.cardBorder }]}
+                    onPress={() => setShowExportModal(true)}
+                >
+                    <MaterialCommunityIcons name="file-export-outline" size={20} color={theme.colors.primary} />
+                </TouchableOpacity>
             </View>
 
 
@@ -210,52 +219,63 @@ const InsightsScreen: React.FC = () => {
                 showsVerticalScrollIndicator={false}
             >
                 {/* Overall Score Card */}
-                <View
-                    style={[
-                        styles.scoreCard,
-                        { backgroundColor: theme.colors.primary },
-                    ]}
+                <LinearGradient
+                    colors={[theme.colors.primary, theme.colors.primary + 'CC']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.scoreCard}
                 >
-                    <Text style={[styles.scoreLabel, { color: theme.colors.onPrimary }]}>
-                        {t('insights.weeklyReport')}
-                    </Text>
-                    <Text style={[styles.scoreValue, { color: theme.colors.onPrimary }]}>
-                        {formatNumber(Math.min(overallScore, 100), i18n.language)}%
-                    </Text>
-                    <Text style={[styles.scoreMessage, { color: theme.colors.onPrimary }]}>
-                        {getMotivationalMessage()}
-                    </Text>
-                    {streak > 0 && (
-                        <View style={styles.streakRow}>
-                            <MaterialCommunityIcons name="fire" size={18} color={theme.colors.onPrimary} />
-                            <Text style={[styles.streakText, { color: theme.colors.onPrimary }]}>
-                                {formatNumber(streak, i18n.language)} {t('habits.days')} {t('habits.streak')}
-                            </Text>
+                    <View style={styles.scoreLeft}>
+                        <Text style={[styles.scoreLabel, { color: theme.colors.onPrimary, fontFamily: getFontFamily(isArabic, 'semiBold') }]}>
+                            {t('insights.weeklyReport')}
+                        </Text>
+                        <Text style={[styles.scoreValue, { color: theme.colors.onPrimary, fontFamily: getFontFamily(isArabic, 'bold') }]}>
+                            {formatNumber(Math.min(overallScore, 100), i18n.language)}%
+                        </Text>
+                        <Text style={[styles.scoreMessage, { color: 'rgba(255,255,255,0.85)', fontFamily: getFontFamily(isArabic, 'regular') }]}>
+                            {getMotivationalMessage()}
+                        </Text>
+                        {streak > 0 && (
+                            <View style={styles.scoreBadge}>
+                                <MaterialCommunityIcons name="fire" size={15} color={theme.colors.primary} />
+                                <Text style={[styles.scoreBadgeText, { color: theme.colors.primary, fontFamily: getFontFamily(isArabic, 'semiBold') }]}>
+                                    {formatNumber(streak, i18n.language)} {t('habits.days')}
+                                </Text>
+                            </View>
+                        )}
+                    </View>
+                    <View style={styles.scoreRing}>
+                        <View style={[styles.scoreRingInner, { backgroundColor: 'rgba(255,255,255,0.18)' }]}>
+                            <MaterialCommunityIcons name="star-four-points" size={28} color="rgba(255,255,255,0.9)" />
                         </View>
-                    )}
-                </View>
+                    </View>
+                </LinearGradient>
 
                 {/* Detailed Stats */}
-                <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
+                <View style={[styles.section, { backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.cardBorder }]}>
                     {stats.map((stat, index) => (
-                        <View key={stat.icon} style={index > 0 ? { marginTop: 24 } : undefined}>
+                        <View key={stat.icon} style={[
+                            index > 0 && { marginTop: 20, paddingTop: 20, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: theme.colors.borderLight },
+                        ]}>
                             <View style={styles.statRow}>
                                 <View style={styles.statInfo}>
-                                    <View style={[styles.iconContainer, { backgroundColor: stat.iconColor + '20' }]}>
-                                        <MaterialCommunityIcons name={stat.icon as any} size={22} color={stat.iconColor} />
+                                    <View style={[styles.iconContainer, { backgroundColor: stat.iconColor + '18' }]}>
+                                        <MaterialCommunityIcons name={stat.icon as any} size={20} color={stat.iconColor} />
                                     </View>
                                     <View>
-                                        <Text style={[styles.statTitle, { color: theme.colors.text }]}>
+                                        <Text style={[styles.statTitle, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'semiBold') }]}>
                                             {stat.title}
                                         </Text>
-                                        <Text style={[styles.statSubtitle, { color: theme.colors.textSecondary }]}>
+                                        <Text style={[styles.statSubtitle, { color: theme.colors.textSecondary, fontFamily: getFontFamily(isArabic, 'regular') }]}>
                                             {stat.subtitle}
                                         </Text>
                                     </View>
                                 </View>
-                                <Text style={[styles.statValue, { color: theme.colors.primary }]}>
-                                    {stat.value}
-                                </Text>
+                                <View style={[styles.statValuePill, { backgroundColor: stat.progressColor + '15' }]}>
+                                    <Text style={[styles.statValue, { color: stat.progressColor, fontFamily: getFontFamily(isArabic, 'bold') }]}>
+                                        {stat.value}
+                                    </Text>
+                                </View>
                             </View>
                             <ProgressBar
                                 value={stat.progressValue}
@@ -269,7 +289,7 @@ const InsightsScreen: React.FC = () => {
 
                 {/* Category Breakdown - Simple Bars */}
                 {categoryData.length > 0 && (
-                    <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
+                    <View style={[styles.section, { backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.cardBorder }]}>
                         <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
                             {isArabic ? 'توزيع العبادات' : 'Activity Breakdown'}
                         </Text>
@@ -305,34 +325,25 @@ const InsightsScreen: React.FC = () => {
 
                 {/* Streak Summary Card */}
                 {streakData.length > 0 && (
-                    <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
-                        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-                            {isArabic ? 'السلسلة الحالية' : 'Current Streak'}
-                        </Text>
-                        <View style={styles.streakSummary}>
-                            <View style={[styles.streakCircle, { backgroundColor: theme.colors.primary }]}>
-                                <MaterialCommunityIcons name="fire" size={28} color={theme.colors.onPrimary} />
-                            </View>
-                            <View>
-                                <Text style={[styles.streakNumber, { color: theme.colors.text }]}>
-                                    {formatNumber(streakData[streakData.length - 1]?.streak || 0, i18n.language)}
-                                </Text>
-                                <Text style={[styles.streakLabel, { color: theme.colors.textSecondary }]}>
-                                    {isArabic ? 'أيام متتالية' : 'consecutive days'}
-                                </Text>
-                            </View>
+                    <LinearGradient
+                        colors={['#F97316' + '22', '#EF4444' + '10']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                        style={[styles.streakBanner, { borderColor: '#F97316' + '30' }]}
+                    >
+                        <View style={[styles.streakCircle, { backgroundColor: '#F97316' }]}>
+                            <MaterialCommunityIcons name="fire" size={26} color="#FFF" />
                         </View>
-
-                        {/* Max streak this month */}
-                        <View style={[styles.maxStreakRow, { borderTopColor: theme.colors.border }]}>
-                            <Text style={[styles.maxStreakLabel, { color: theme.colors.textSecondary }]}>
-                                {isArabic ? 'أطول سلسلة هذا الشهر' : 'Longest streak this month'}
+                        <View style={{ flex: 1 }}>
+                            <Text style={[styles.streakNumber, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }]}>
+                                {formatNumber(streakData[streakData.length - 1]?.streak || 0, i18n.language)} {isArabic ? 'يوم' : 'days'}
                             </Text>
-                            <Text style={[styles.maxStreakValue, { color: theme.colors.primary }]}>
+                            <Text style={[styles.streakLabel, { color: theme.colors.textSecondary, fontFamily: getFontFamily(isArabic, 'regular') }]}>
+                                {isArabic ? 'أيام متتالية — أطول: ' : 'streak — best: '}
                                 {formatNumber(Math.max(...streakData.map(d => d.streak)), i18n.language)}
                             </Text>
                         </View>
-                    </View>
+                    </LinearGradient>
                 )}
 
                 {/* Empty State for Charts */}
@@ -345,16 +356,7 @@ const InsightsScreen: React.FC = () => {
                     </View>
                 )}
 
-                {/* Export Button */}
-                <TouchableOpacity
-                    style={[styles.exportButton, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
-                    onPress={() => setShowExportModal(true)}
-                >
-                    <MaterialCommunityIcons name="file-export-outline" size={22} color={theme.colors.primary} />
-                    <Text style={[styles.exportButtonText, { color: theme.colors.primary }]}>
-                        {isArabic ? 'تصدير التقرير الشهري' : 'Export Monthly Report'}
-                    </Text>
-                </TouchableOpacity>
+
 
                 <View style={styles.bottomSpacer} />
             </ScrollView>
@@ -388,40 +390,68 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         gap: 16,
     },
+    // Header
+    headerSubtitle: { fontSize: 13, marginTop: 2 },
+    exportIconBtn: {
+        width: 42,
+        height: 42,
+        borderRadius: 21,
+        borderWidth: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     // Score card
     scoreCard: {
         borderRadius: 24,
-        padding: 28,
+        padding: 24,
+        flexDirection: 'row',
         alignItems: 'center',
     },
-    scoreLabel: {
-        fontSize: 14,
-        fontWeight: '500',
-        opacity: 0.9,
+    scoreLeft: { flex: 1, gap: 6 },
+    scoreLabel: { fontSize: 13, opacity: 0.9 },
+    scoreValue: { fontSize: 52, lineHeight: 60 },
+    scoreMessage: { fontSize: 14, lineHeight: 20 },
+    scoreBadge: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 5,
+        backgroundColor: 'rgba(255,255,255,0.92)',
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 20,
+        alignSelf: 'flex-start',
+        marginTop: 4,
     },
-    scoreValue: {
-        fontSize: 64,
-        fontWeight: '700',
-        marginTop: 8,
+    scoreBadgeText: { fontSize: 13 },
+    scoreRing: { width: 80, height: 80, alignItems: 'center', justifyContent: 'center' },
+    scoreRingInner: {
+        width: 68,
+        height: 68,
+        borderRadius: 34,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
-    scoreMessage: {
-        fontSize: 16,
-        marginTop: 8,
-        opacity: 0.9,
+    // Stat value pill
+    statValuePill: {
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 20,
+    },
+    // Streak banner
+    streakBanner: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 14,
+        borderRadius: 18,
+        borderWidth: 1,
+        padding: 16,
     },
     streakRow: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: 6,
-        marginTop: 16,
-        paddingTop: 16,
-        borderTopWidth: 1,
-        borderTopColor: 'rgba(255,255,255,0.2)',
     },
-    streakText: {
-        fontSize: 16,
-        fontWeight: '600',
-    },
+    streakText: { fontSize: 15, fontWeight: '600' },
     // Section
     section: {
         borderRadius: 20,
