@@ -12,10 +12,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import * as Haptics from 'expo-haptics';
 import { useTheme } from '../context';
 import { useHabitsStore } from '../store';
 import { getAdhkarByCategory, Dhikr, AdhkarCategory, adhkarCategories } from '../data/adhkarContent';
 import { getDateString, getFontFamily } from '../utils';
+import { useAdhkarProgress } from '../utils/useAdhkarProgress';
 
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -28,7 +30,9 @@ interface DhikrCardProps {
     index: number;
     total: number;
     category: AdhkarCategory;
+    initialCount?: number;
     onComplete: () => void;
+    onCountChange?: (dhikrId: string, count: number) => void;
 }
 
 const DhikrCard: React.FC<DhikrCardProps> = ({
@@ -36,22 +40,30 @@ const DhikrCard: React.FC<DhikrCardProps> = ({
     index,
     total,
     category,
+    initialCount = 0,
     onComplete,
+    onCountChange,
 }) => {
     const { theme, isDark } = useTheme();
     const { i18n } = useTranslation();
-    const [currentCount, setCurrentCount] = useState(0);
+    const [currentCount, setCurrentCount] = useState(initialCount);
     const isArabic = i18n.language === 'ar';
 
     const handleTap = useCallback(() => {
         if (currentCount < dhikr.repeatCount) {
             const newCount = currentCount + 1;
             setCurrentCount(newCount);
+            onCountChange?.(dhikr.id, newCount);
             if (newCount === dhikr.repeatCount) {
+                // Heavy feedback on completion
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                 onComplete();
+            } else {
+                // Light tap feedback on each count
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             }
         }
-    }, [currentCount, dhikr.repeatCount, onComplete]);
+    }, [currentCount, dhikr.repeatCount, dhikr.id, onComplete, onCountChange]);
 
     const progress = (currentCount / dhikr.repeatCount) * 100;
     const isDone = currentCount >= dhikr.repeatCount;
@@ -188,10 +200,24 @@ const AdhkarScreen: React.FC<AdhkarScreenProps> = ({ route }) => {
     const initialCategory = route?.params?.category || 'morning';
     const [activeCategory, setActiveCategory] = useState<AdhkarCategory>(initialCategory);
     const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
+    const { counts, setCount, clearProgress, isLoaded } = useAdhkarProgress(activeCategory);
 
     const adhkarList = getAdhkarByCategory(activeCategory);
     const today = getDateString(new Date());
     const isArabic = i18n.language === 'ar';
+
+    // Re-derive completedIds from persisted counts after loading
+    React.useEffect(() => {
+        if (!isLoaded) return;
+        const completed = new Set<string>();
+        for (const dhikr of adhkarList) {
+            if ((counts[dhikr.id] ?? 0) >= dhikr.repeatCount) {
+                completed.add(dhikr.id);
+            }
+        }
+        setCompletedIds(completed);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isLoaded, activeCategory]);
 
     const handleComplete = useCallback((dhikrId: string) => {
         setCompletedIds((prev) => new Set([...prev, dhikrId]));
@@ -200,6 +226,7 @@ const AdhkarScreen: React.FC<AdhkarScreenProps> = ({ route }) => {
     const handleCategoryChange = (category: AdhkarCategory) => {
         setActiveCategory(category);
         setCompletedIds(new Set());
+        // Note: clearProgress is NOT called here — we preserve progress per-category
     };
 
     const completedCount = completedIds.size;
@@ -320,7 +347,9 @@ const AdhkarScreen: React.FC<AdhkarScreenProps> = ({ route }) => {
                         index={index}
                         total={adhkarList.length}
                         category={activeCategory}
+                        initialCount={counts[dhikr.id] ?? 0}
                         onComplete={() => handleComplete(dhikr.id)}
+                        onCountChange={setCount}
                     />
                 ))}
 
