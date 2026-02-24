@@ -358,6 +358,24 @@ const InsightsScreen: React.FC = () => {
 
 
 
+                {/* Export Weekly Report Button - prominent CTA */}
+                <TouchableOpacity
+                    onPress={() => setShowExportModal(true)}
+                    activeOpacity={0.85}
+                >
+                    <LinearGradient
+                        colors={[theme.colors.primary, theme.colors.primary + 'BB']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={styles.exportButton}
+                    >
+                        <MaterialCommunityIcons name="file-export-outline" size={22} color="#FFF" />
+                        <Text style={[styles.exportButtonText, { fontFamily: getFontFamily(isArabic, 'semiBold') }]}>
+                            {isArabic ? 'تصدير التقرير الأسبوعي' : 'Export Weekly Report'}
+                        </Text>
+                    </LinearGradient>
+                </TouchableOpacity>
+
                 <View style={styles.bottomSpacer} />
             </ScrollView>
 
@@ -375,6 +393,8 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     header: {
+        flexDirection: 'row',
+        alignItems: 'center',
         paddingHorizontal: 20,
         paddingTop: 16,
         paddingBottom: 12,
@@ -399,6 +419,19 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    exportButton: {
+        borderRadius: 16,
+        padding: 18,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 10,
+    },
+    exportButtonText: {
+        color: '#FFF',
+        fontSize: 16,
+        fontWeight: '600',
     },
     // Score card
     scoreCard: {
