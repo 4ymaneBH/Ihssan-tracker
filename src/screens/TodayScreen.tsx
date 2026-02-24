@@ -1,5 +1,5 @@
 // Today Screen - Main Dashboard - Premium Redesign
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     View,
     Text,
@@ -7,21 +7,184 @@ import {
     ScrollView,
     TouchableOpacity,
     I18nManager,
+    Animated,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import * as Haptics from 'expo-haptics';
 import { useTheme } from '../context';
 import { useSalatStore, useHabitsStore, useUserPreferencesStore } from '../store';
 import { getDateString, formatNumber, getFontFamily } from '../utils';
 import { getHijriDate } from '../utils/dateUtils';
 import { SalatName, SalatStatus, RootStackParamList } from '../types';
 import { ResetModal, AppCard, PrayerPill, QuickActionButton } from '../components';
+import { usePrayerTimes } from '../hooks';
+import { formatPrayerTime, getTimeRemaining } from '../services/prayerTimes';
 
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
+// Prayer name → icon mapping
+const PRAYER_ICONS: Record<string, string> = {
+    fajr: 'weather-sunset-up',
+    sunrise: 'white-balance-sunny',
+    dhuhr: 'weather-sunny',
+    asr: 'weather-sunny-alert',
+    maghrib: 'weather-sunset-down',
+    isha: 'weather-night',
+};
+
+// ========================================
+// Next Prayer Banner Component
+// ========================================
+const NextPrayerBanner: React.FC = () => {
+    const { t, i18n } = useTranslation();
+    const { theme, isDark } = useTheme();
+    const isArabic = i18n.language === 'ar';
+
+    const { prayerTimes, loading } = usePrayerTimes();
+    const [countdown, setCountdown] = useState('');
+    const pulseAnim = useRef(new Animated.Value(1)).current;
+
+    // Update countdown every minute
+    useEffect(() => {
+        const update = () => {
+            if (prayerTimes?.nextPrayer) {
+                setCountdown(getTimeRemaining(prayerTimes.nextPrayer.time));
+            }
+        };
+        update();
+        const timer = setInterval(update, 60_000);
+        return () => clearInterval(timer);
+    }, [prayerTimes]);
+
+    // Pulse animation on the dot
+    useEffect(() => {
+        const pulse = Animated.loop(
+            Animated.sequence([
+                Animated.timing(pulseAnim, { toValue: 0.4, duration: 900, useNativeDriver: true }),
+                Animated.timing(pulseAnim, { toValue: 1, duration: 900, useNativeDriver: true }),
+            ])
+        );
+        pulse.start();
+        return () => pulse.stop();
+    }, [pulseAnim]);
+
+    if (loading || !prayerTimes?.nextPrayer) {
+        return (
+            <View style={[bannerStyles.skeleton, { backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }]} />
+        );
+    }
+
+    const { name, time } = prayerTimes.nextPrayer;
+    const prayerLabel = t(`salat.${name}`, { defaultValue: name.charAt(0).toUpperCase() + name.slice(1) });
+    const formattedTime = formatPrayerTime(time, false, i18n.language);
+    const icon = PRAYER_ICONS[name] ?? 'mosque';
+
+    const gradientColors: [string, string] = isDark
+        ? ['rgba(164,217,108,0.18)', 'rgba(164,217,108,0.04)']
+        : ['rgba(164,217,108,0.35)', 'rgba(164,217,108,0.08)'];
+
+    return (
+        <LinearGradient
+            colors={gradientColors}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={[bannerStyles.container, { borderColor: isDark ? 'rgba(164,217,108,0.2)' : 'rgba(164,217,108,0.4)' }]}
+        >
+            {/* Icon */}
+            <View style={[bannerStyles.iconWrap, { backgroundColor: theme.colors.primary + '25' }]}>
+                <MaterialCommunityIcons name={icon as any} size={24} color={theme.colors.primary} />
+            </View>
+
+            {/* Labels */}
+            <View style={bannerStyles.textGroup}>
+                <Text style={[bannerStyles.label, { color: theme.colors.textSecondary, fontFamily: getFontFamily(isArabic, 'regular') }]}>
+                    {isArabic ? 'الصلاة القادمة' : 'Next prayer'}
+                </Text>
+                <Text style={[bannerStyles.prayerName, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }]}>
+                    {prayerLabel}
+                </Text>
+            </View>
+
+            {/* Time + Countdown */}
+            <View style={bannerStyles.rightGroup}>
+                <Text style={[bannerStyles.time, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }]}>
+                    {formattedTime}
+                </Text>
+                <View style={bannerStyles.countdownRow}>
+                    <Animated.View style={[bannerStyles.dot, { backgroundColor: theme.colors.primary, opacity: pulseAnim }]} />
+                    <Text style={[bannerStyles.countdown, { color: theme.colors.primary, fontFamily: getFontFamily(isArabic, 'regular') }]}>
+                        {countdown}
+                    </Text>
+                </View>
+            </View>
+        </LinearGradient>
+    );
+};
+
+const bannerStyles = StyleSheet.create({
+    skeleton: {
+        height: 72,
+        borderRadius: 16,
+        marginHorizontal: 16,
+        marginBottom: 12,
+    },
+    container: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginHorizontal: 16,
+        marginBottom: 12,
+        borderRadius: 16,
+        paddingHorizontal: 16,
+        paddingVertical: 14,
+        borderWidth: 1,
+        gap: 12,
+    },
+    iconWrap: {
+        width: 44,
+        height: 44,
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    textGroup: {
+        flex: 1,
+        gap: 2,
+    },
+    label: {
+        fontSize: 11,
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+    },
+    prayerName: {
+        fontSize: 17,
+    },
+    rightGroup: {
+        alignItems: 'flex-end',
+        gap: 4,
+    },
+    time: {
+        fontSize: 17,
+    },
+    countdownRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 5,
+    },
+    dot: {
+        width: 6,
+        height: 6,
+        borderRadius: 3,
+    },
+    countdown: {
+        fontSize: 12,
+    },
+});
 
 // ========================================
 // Card Header Component - Reusable
@@ -120,7 +283,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ progress, height = 6 }) => {
 const SalatCard: React.FC = () => {
     const { t, i18n } = useTranslation();
     const { theme } = useTheme();
-    const { logPrayer, getTodayLog, getPrayerStreak } = useSalatStore();
+    const { logPrayer, getTodayLog, getPrayerStreak, undoPrayer, canUndo } = useSalatStore();
     const [showReset, setShowReset] = useState(false);
 
     const todayLog = getTodayLog();
@@ -144,7 +307,13 @@ const SalatCard: React.FC = () => {
         else if (currentStatus === 'late') newStatus = 'missed';
         else newStatus = null;
 
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         logPrayer(today, prayer, newStatus);
+    };
+
+    const handleUndo = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        undoPrayer();
     };
 
     const completedCount = prayers.filter(
@@ -201,6 +370,20 @@ const SalatCard: React.FC = () => {
                     ))}
                 </View>
             </View>
+
+            {/* Undo last prayer log */}
+            {canUndo() && (
+                <TouchableOpacity
+                    style={[styles.undoButton, { borderColor: theme.colors.border }]}
+                    onPress={handleUndo}
+                    activeOpacity={0.75}
+                >
+                    <MaterialCommunityIcons name="undo" size={16} color={theme.colors.textSecondary} />
+                    <Text style={[styles.undoText, { color: theme.colors.textSecondary, fontFamily: getFontFamily(i18n.language === 'ar', 'regular') }]}>
+                        {i18n.language === 'ar' ? 'تراجع' : 'Undo'}
+                    </Text>
+                </TouchableOpacity>
+            )}
 
             <ResetModal
                 visible={showReset}
@@ -391,15 +574,15 @@ const QuranCard: React.FC = () => {
             </View>
 
             {/* Footer Links */}
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 16, paddingBottom: 16 }}>
-                <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} onPress={handleOpenQuranScreen}>
+            <View style={styles.quranFooterRow}>
+                <TouchableOpacity style={styles.quranFooterLink} onPress={handleOpenQuranScreen}>
                     <Text style={[styles.viewDetailsLinkText, { color: theme.colors.primary }]}>
                         {isArabic ? 'عرض التفاصيل' : 'View Details'}
                     </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
+                    style={styles.quranFooterKhatam}
                     onPress={() => navigation.navigate('Khatam')}
                 >
                     <MaterialCommunityIcons name="book-check-outline" size={16} color={theme.colors.primary} />
@@ -797,6 +980,7 @@ const TodayScreen: React.FC = () => {
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
             >
+                <NextPrayerBanner />
                 <SalatCard />
                 <QiblaCard />
                 <AdhkarCard />
@@ -923,6 +1107,20 @@ const styles = StyleSheet.create({
         gap: 10,
         flexWrap: 'wrap',
     },
+    undoButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        alignSelf: 'flex-end',
+        gap: 4,
+        marginTop: 8,
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 8,
+        borderWidth: 1,
+    },
+    undoText: {
+        fontSize: 13,
+    },
     // Adhkar
     adhkarButtons: {
         gap: 12,
@@ -1016,6 +1214,21 @@ const styles = StyleSheet.create({
     viewDetailsLinkText: {
         fontSize: 14,
         fontWeight: '500',
+    },
+    quranFooterRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+        paddingBottom: 16,
+    },
+    quranFooterLink: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    quranFooterKhatam: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
     },
     // Profile Button
     profileButton: {

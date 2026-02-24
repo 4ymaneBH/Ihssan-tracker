@@ -1,6 +1,6 @@
 // PrayerPill - Pill-shaped button for individual prayer tracking
-import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
+import React, { useRef } from 'react';
+import { TouchableOpacity, Text, StyleSheet, View, Animated } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context';
 import { SalatStatus } from '../types';
@@ -21,6 +21,25 @@ export const PrayerPill: React.FC<PrayerPillProps> = ({
     prayerTime,
 }) => {
     const { theme, isDark } = useTheme();
+    const scale = useRef(new Animated.Value(1)).current;
+
+    const handlePressIn = () => {
+        Animated.spring(scale, {
+            toValue: 0.9,
+            useNativeDriver: true,
+            speed: 60,
+            bounciness: 4,
+        }).start();
+    };
+
+    const handlePressOut = () => {
+        Animated.spring(scale, {
+            toValue: 1,
+            useNativeDriver: true,
+            speed: 30,
+            bounciness: 8,
+        }).start();
+    };
 
     const getStyles = () => {
         if (status === 'onTime') {
@@ -63,6 +82,7 @@ export const PrayerPill: React.FC<PrayerPillProps> = ({
     const pillStyles = getStyles();
 
     return (
+        <Animated.View style={{ transform: [{ scale }] }}>
         <TouchableOpacity
             style={[
                 styles.pill,
@@ -72,8 +92,10 @@ export const PrayerPill: React.FC<PrayerPillProps> = ({
                 },
             ]}
             onPress={onPress}
+            onPressIn={handlePressIn}
+            onPressOut={handlePressOut}
             onLongPress={onLongPress}
-            activeOpacity={0.7}
+            activeOpacity={1}
             delayLongPress={300}
         >
             <View style={styles.content}>
@@ -106,6 +128,7 @@ export const PrayerPill: React.FC<PrayerPillProps> = ({
                 )}
             </View>
         </TouchableOpacity>
+        </Animated.View>
     );
 };
 

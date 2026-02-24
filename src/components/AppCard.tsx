@@ -1,6 +1,6 @@
-// AppCard - Standardized card component for consistent styling
-import React from 'react';
-import { View, ViewStyle, StyleSheet, TouchableOpacity } from 'react-native';
+// AppCard - Standardized card component with press-scale animation
+import React, { useRef } from 'react';
+import { View, ViewStyle, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { useTheme } from '../context';
 
 interface AppCardProps {
@@ -19,6 +19,25 @@ export const AppCard: React.FC<AppCardProps> = ({
     testID,
 }) => {
     const { theme, isDark } = useTheme();
+    const scale = useRef(new Animated.Value(1)).current;
+
+    const handlePressIn = () => {
+        Animated.spring(scale, {
+            toValue: 0.97,
+            useNativeDriver: true,
+            speed: 50,
+            bounciness: 4,
+        }).start();
+    };
+
+    const handlePressOut = () => {
+        Animated.spring(scale, {
+            toValue: 1,
+            useNativeDriver: true,
+            speed: 30,
+            bounciness: 6,
+        }).start();
+    };
 
     const cardStyle: ViewStyle[] = [
         styles.card,
@@ -34,14 +53,18 @@ export const AppCard: React.FC<AppCardProps> = ({
 
     if (onPress) {
         return (
-            <TouchableOpacity
-                style={cardStyle}
-                onPress={onPress}
-                activeOpacity={0.7}
-                testID={testID}
-            >
-                {children}
-            </TouchableOpacity>
+            <Animated.View style={{ transform: [{ scale }] }}>
+                <TouchableOpacity
+                    style={cardStyle}
+                    onPress={onPress}
+                    onPressIn={handlePressIn}
+                    onPressOut={handlePressOut}
+                    activeOpacity={1}
+                    testID={testID}
+                >
+                    {children}
+                </TouchableOpacity>
+            </Animated.View>
         );
     }
 

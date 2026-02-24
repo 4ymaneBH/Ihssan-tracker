@@ -1,5 +1,5 @@
 // Onboarding Screen with multi-step flow
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
     View,
     Text,
@@ -7,6 +7,7 @@ import {
     TouchableOpacity,
     Dimensions,
     I18nManager,
+    Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -37,6 +38,26 @@ const OnboardingScreen: React.FC = () => {
         completeOnboarding,
     } = useUserPreferencesStore();
 
+    // Animation refs for step transitions
+    const fadeAnim = useRef(new Animated.Value(1)).current;
+    const slideAnim = useRef(new Animated.Value(0)).current;
+
+    const animateTransition = (callback: () => void) => {
+        // Fade + slide out
+        Animated.parallel([
+            Animated.timing(fadeAnim, { toValue: 0, duration: 160, useNativeDriver: true }),
+            Animated.timing(slideAnim, { toValue: -20, duration: 160, useNativeDriver: true }),
+        ]).start(() => {
+            callback();
+            slideAnim.setValue(20);
+            // Fade + slide in
+            Animated.parallel([
+                Animated.timing(fadeAnim, { toValue: 1, duration: 220, useNativeDriver: true }),
+                Animated.timing(slideAnim, { toValue: 0, duration: 220, useNativeDriver: true }),
+            ]).start();
+        });
+    };
+
     const handleLanguageSelect = async (lang: 'en' | 'ar') => {
         setSelectedLanguage(lang);
         await setLanguage(lang);
@@ -49,9 +70,9 @@ const OnboardingScreen: React.FC = () => {
 
     const handleNext = () => {
         if (step === 'language') {
-            setStep('theme');
+            animateTransition(() => setStep('theme'));
         } else if (step === 'theme') {
-            setStep('goals');
+            animateTransition(() => setStep('goals'));
         } else if (step === 'goals') {
             completeOnboarding();
         }
@@ -255,22 +276,34 @@ const OnboardingScreen: React.FC = () => {
             </View>
 
 
-            <View style={styles.content}>{renderCurrentStep()}</View>
+            <Animated.View
+                style={[
+                    styles.content,
+                    { opacity: fadeAnim, transform: [{ translateY: slideAnim }] },
+                ]}
+            >
+                {renderCurrentStep()}
+            </Animated.View>
 
             <View style={styles.footer}>
                 <View style={styles.dots}>
-                    {['language', 'theme', 'goals'].map((s, i) => (
-                        <View
-                            key={s}
-                            style={[
-                                styles.dot,
-                                {
-                                    backgroundColor:
-                                        step === s ? theme.colors.primary : theme.colors.border,
-                                },
-                            ]}
-                        />
-                    ))}
+                    {(['language', 'theme', 'goals'] as const).map((s) => {
+                        const isActive = step === s;
+                        return (
+                            <Animated.View
+                                key={s}
+                                style={[
+                                    styles.dot,
+                                    {
+                                        width: isActive ? 24 : 8,
+                                        backgroundColor: isActive
+                                            ? theme.colors.primary
+                                            : theme.colors.border,
+                                    },
+                                ]}
+                            />
+                        );
+                    })}
                 </View>
 
                 <TouchableOpacity
@@ -389,7 +422,6 @@ const styles = StyleSheet.create({
         marginBottom: 24,
     },
     dot: {
-        width: 8,
         height: 8,
         borderRadius: 4,
     },
