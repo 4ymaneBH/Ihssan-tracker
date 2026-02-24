@@ -15,3 +15,4 @@ export { default as IslamicPattern } from './IslamicPattern';
 export { PrayerNotificationsModal } from './PrayerNotificationsModal';
 export { AppBackground } from './AppBackground';
 export { Skeleton, CardSkeleton, PrayerPillSkeleton, ChartSkeleton } from './Skeleton';
+export { ErrorBoundary } from './ErrorBoundary';

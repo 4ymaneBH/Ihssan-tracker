@@ -14,19 +14,20 @@ import {
 
 import { ThemeProvider, useTheme } from './src/context';
 import { RootNavigator } from './src/navigation';
+import { ErrorBoundary } from './src/components';
 import './src/i18n';
 
 const AppContent: React.FC = () => {
   const { theme, isDark } = useTheme();
 
   return (
-    <>
+    <ErrorBoundary screenName="App">
       <StatusBar
         barStyle={isDark ? 'light-content' : 'dark-content'}
         backgroundColor={theme.colors.background}
       />
       <RootNavigator />
-    </>
+    </ErrorBoundary>
   );
 };
 
