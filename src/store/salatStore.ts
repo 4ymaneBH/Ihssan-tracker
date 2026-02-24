@@ -5,11 +5,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SalatLog, SalatStatus, SalatName } from '../types';
 import { getDateString, getWeekDates } from '../utils/dateUtils';
 
+interface UndoEntry {
+    date: string;
+    prayer: SalatName;
+    previousStatus: SalatStatus | null;
+}
+
 interface SalatState {
     logs: Record<string, SalatLog>; // keyed by date string
+    undoStack: UndoEntry[];          // last N prayer changes
 
     // Actions
     logPrayer: (date: string, prayer: SalatName, status: SalatStatus) => void;
+    undoPrayer: () => void;
+    canUndo: () => boolean;
     getTodayLog: () => SalatLog | null;
     getWeekLogs: () => SalatLog[];
     getPrayerStreak: () => number;
@@ -36,11 +45,20 @@ export const useSalatStore = create<SalatState>()(
     persist(
         (set, get) => ({
             logs: {},
+            undoStack: [],
 
             logPrayer: (date, prayer, status) => {
                 set((state) => {
                     const existingLog = state.logs[date] || createEmptyLog(date);
+                    // Save previous status to undo stack (keep last 10 entries)
+                    const undoEntry: UndoEntry = {
+                        date,
+                        prayer,
+                        previousStatus: (existingLog[prayer] as SalatStatus | null) ?? null,
+                    };
+                    const newUndoStack = [undoEntry, ...state.undoStack].slice(0, 10);
                     return {
+                        undoStack: newUndoStack,
                         logs: {
                             ...state.logs,
                             [date]: {
@@ -52,6 +70,27 @@ export const useSalatStore = create<SalatState>()(
                     };
                 });
             },
+
+            undoPrayer: () => {
+                set((state) => {
+                    if (state.undoStack.length === 0) return state;
+                    const [last, ...rest] = state.undoStack;
+                    const existingLog = state.logs[last.date] || createEmptyLog(last.date);
+                    return {
+                        undoStack: rest,
+                        logs: {
+                            ...state.logs,
+                            [last.date]: {
+                                ...existingLog,
+                                [last.prayer]: last.previousStatus,
+                                updatedAt: Date.now(),
+                            },
+                        },
+                    };
+                });
+            },
+
+            canUndo: () => get().undoStack.length > 0,
 
             getTodayLog: () => {
                 const today = getDateString(new Date());
