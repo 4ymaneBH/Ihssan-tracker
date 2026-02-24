@@ -8,14 +8,16 @@ import {
     TouchableOpacity,
     TextInput,
     Alert,
+    I18nManager,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../context';
 import { useHabitsStore, useUserPreferencesStore } from '../store';
-import { formatNumber, getDateString } from '../utils';
+import { formatNumber, getDateString, getFontFamily } from '../utils';
 
 // Quran constants
 const TOTAL_PAGES = 604;
@@ -24,7 +26,7 @@ const PAGES_PER_HIZB = TOTAL_PAGES / TOTAL_HIZB; // ~10.07
 
 const QuranScreen: React.FC = () => {
     const { t, i18n } = useTranslation();
-    const { theme } = useTheme();
+    const { theme, isDark } = useTheme();
     const navigation = useNavigation();
     const { logQuranReading, getTodayQuranLog, getWeeklyQuranPages } = useHabitsStore();
     const { goals } = useUserPreferencesStore();
@@ -90,16 +92,16 @@ const QuranScreen: React.FC = () => {
             {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity
-                    style={styles.backButton}
+                    style={[styles.backButton, { backgroundColor: theme.colors.surface }]}
                     onPress={() => navigation.goBack()}
                 >
                     <MaterialCommunityIcons
-                        name="arrow-left"
-                        size={24}
+                        name={I18nManager.isRTL ? 'arrow-right' : 'arrow-left'}
+                        size={22}
                         color={theme.colors.text}
                     />
                 </TouchableOpacity>
-                <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
+                <Text style={[styles.headerTitle, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }]}>
                     {t('quran.title')}
                 </Text>
                 <View style={styles.placeholder} />
@@ -111,7 +113,17 @@ const QuranScreen: React.FC = () => {
                 showsVerticalScrollIndicator={false}
             >
                 {/* Weekly Progress Card */}
-                <View style={[styles.progressCard, { backgroundColor: theme.colors.cards.quran }]}>
+                <LinearGradient
+                    colors={isDark
+                        ? ['rgba(164,217,108,0.12)', 'rgba(164,217,108,0.04)']
+                        : ['rgba(164,217,108,0.28)', 'rgba(164,217,108,0.06)']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={[styles.progressCard, {
+                        borderColor: isDark ? 'rgba(164,217,108,0.18)' : 'rgba(164,217,108,0.35)',
+                        borderWidth: 1,
+                    }]}
+                >
                     <View style={styles.progressHeader}>
                         <View style={[styles.iconContainer, { backgroundColor: theme.colors.success.main + '20' }]}>
                             <MaterialCommunityIcons
@@ -121,10 +133,10 @@ const QuranScreen: React.FC = () => {
                             />
                         </View>
                         <View style={styles.progressInfo}>
-                            <Text style={[styles.progressLabel, { color: theme.colors.textSecondary }]}>
+                            <Text style={[styles.progressLabel, { color: theme.colors.textSecondary, fontFamily: getFontFamily(isArabic, 'regular') }]}>
                                 {isArabic ? 'الهدف الأسبوعي' : 'Weekly Goal'}
                             </Text>
-                            <Text style={[styles.progressValue, { color: theme.colors.text }]}>
+                            <Text style={[styles.progressValue, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }]}>
                                 {formatNumber(weeklyPages, i18n.language)}/{formatNumber(weeklyGoal, i18n.language)} {t('quran.pages')}
                             </Text>
                         </View>
@@ -153,7 +165,7 @@ const QuranScreen: React.FC = () => {
                                 size={16}
                                 color={theme.colors.textSecondary}
                             />
-                            <Text style={[styles.estimateText, { color: theme.colors.textSecondary }]}>
+                            <Text style={[styles.estimateText, { color: theme.colors.textSecondary, fontFamily: getFontFamily(isArabic, 'regular') }]}>
                                 {isArabic
                                     ? `بهذا المعدل، ستختم القرآن في ${completionMonths} شهر`
                                     : `At this pace, you'll complete the Quran in ${completionMonths} months`}
@@ -164,65 +176,82 @@ const QuranScreen: React.FC = () => {
                     {weeklyPages >= weeklyGoal && (
                         <View style={styles.completedBadge}>
                             <MaterialCommunityIcons name="check-circle" size={18} color={theme.colors.success.main} />
-                            <Text style={[styles.completedText, { color: theme.colors.success.main }]}>
+                            <Text style={[styles.completedText, { color: theme.colors.success.main, fontFamily: getFontFamily(isArabic, 'bold') }]}>
                                 {isArabic ? 'تم تحقيق الهدف!' : 'Goal achieved!'}
                             </Text>
                         </View>
                     )}
-                </View>
+                </LinearGradient>
 
                 {/* Today's Reading */}
-                {todayLog && (
-                    <View style={[styles.todayCard, { backgroundColor: theme.colors.surface }]}>
-                        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-                            {isArabic ? 'قراءة اليوم' : "Today's Reading"}
-                        </Text>
+                <View style={[styles.todayCard, {
+                    backgroundColor: theme.colors.surface,
+                    borderColor: theme.colors.cardBorder,
+                    borderWidth: 1,
+                }]}>
+                    <Text style={[styles.sectionTitle, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }]}>
+                        {isArabic ? 'قراءة اليوم' : "Today's Reading"}
+                    </Text>
+                    {todayLog ? (
                         <View style={styles.todayStats}>
                             <View style={styles.todayStat}>
-                                <Text style={[styles.todayValue, { color: theme.colors.primary }]}>
+                                <Text style={[styles.todayValue, { color: theme.colors.primary, fontFamily: getFontFamily(isArabic, 'bold') }]}>
                                     {formatNumber(todayLog.pages, i18n.language)}
                                 </Text>
-                                <Text style={[styles.todayLabel, { color: theme.colors.textSecondary }]}>
+                                <Text style={[styles.todayLabel, { color: theme.colors.textSecondary, fontFamily: getFontFamily(isArabic, 'regular') }]}>
                                     {t('quran.pages')}
                                 </Text>
                             </View>
                             {todayLog.minutes && (
                                 <View style={styles.todayStat}>
-                                    <Text style={[styles.todayValue, { color: theme.colors.primary }]}>
+                                    <Text style={[styles.todayValue, { color: theme.colors.primary, fontFamily: getFontFamily(isArabic, 'bold') }]}>
                                         {formatNumber(todayLog.minutes, i18n.language)}
                                     </Text>
-                                    <Text style={[styles.todayLabel, { color: theme.colors.textSecondary }]}>
+                                    <Text style={[styles.todayLabel, { color: theme.colors.textSecondary, fontFamily: getFontFamily(isArabic, 'regular') }]}>
                                         {isArabic ? 'دقيقة' : 'min'}
                                     </Text>
                                 </View>
                             )}
                         </View>
-                    </View>
-                )}
+                    ) : (
+                        <View style={styles.emptyToday}>
+                            <MaterialCommunityIcons name="book-open-outline" size={32} color={theme.colors.textTertiary} />
+                            <Text style={[styles.emptyTodayText, { color: theme.colors.textTertiary, fontFamily: getFontFamily(isArabic, 'regular') }]}>
+                                {isArabic ? 'لم تسجل قراءة اليوم بعد' : 'No reading logged today yet'}
+                            </Text>
+                        </View>
+                    )}
+                </View>
 
                 {/* Log Reading Card */}
-                <View style={[styles.logCard, { backgroundColor: theme.colors.surface }]}>
-                    <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+                <View style={[styles.logCard, {
+                    backgroundColor: theme.colors.surface,
+                    borderColor: theme.colors.cardBorder,
+                    borderWidth: 1,
+                }]}>
+                    <Text style={[styles.sectionTitle, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }]}>
                         {isArabic ? 'تسجيل القراءة' : 'Log Reading'}
                     </Text>
 
-                    {/* Tracking mode toggle */}
-                    <View style={styles.modeToggle}>
+                    {/* Tracking mode toggle - segmented control */}
+                    <View style={[styles.modeToggleContainer, { backgroundColor: theme.colors.background, borderColor: theme.colors.border }]}>
                         <TouchableOpacity
                             style={[
                                 styles.modeButton,
-                                {
-                                    backgroundColor: trackingMode === 'pages'
-                                        ? theme.colors.primary
-                                        : theme.colors.background,
-                                },
+                                trackingMode === 'pages' && [
+                                    styles.modeButtonActive,
+                                    { backgroundColor: theme.colors.primary },
+                                ],
                             ]}
                             onPress={() => setTrackingMode('pages')}
                         >
                             <Text
                                 style={[
                                     styles.modeText,
-                                    { color: trackingMode === 'pages' ? theme.colors.onPrimary : theme.colors.text },
+                                    {
+                                        color: trackingMode === 'pages' ? theme.colors.onPrimary : theme.colors.textSecondary,
+                                        fontFamily: getFontFamily(isArabic, trackingMode === 'pages' ? 'semiBold' : 'regular'),
+                                    },
                                 ]}
                             >
                                 {t('quran.pages')}
@@ -231,18 +260,20 @@ const QuranScreen: React.FC = () => {
                         <TouchableOpacity
                             style={[
                                 styles.modeButton,
-                                {
-                                    backgroundColor: trackingMode === 'hizb'
-                                        ? theme.colors.primary
-                                        : theme.colors.background,
-                                },
+                                trackingMode === 'hizb' && [
+                                    styles.modeButtonActive,
+                                    { backgroundColor: theme.colors.primary },
+                                ],
                             ]}
                             onPress={() => setTrackingMode('hizb')}
                         >
                             <Text
                                 style={[
                                     styles.modeText,
-                                    { color: trackingMode === 'hizb' ? theme.colors.onPrimary : theme.colors.text },
+                                    {
+                                        color: trackingMode === 'hizb' ? theme.colors.onPrimary : theme.colors.textSecondary,
+                                        fontFamily: getFontFamily(isArabic, trackingMode === 'hizb' ? 'semiBold' : 'regular'),
+                                    },
                                 ]}
                             >
                                 {isArabic ? 'حزب' : 'Hizb'}
@@ -255,10 +286,28 @@ const QuranScreen: React.FC = () => {
                         {quickPages.map((num) => (
                             <TouchableOpacity
                                 key={num}
-                                style={[styles.quickButton, { backgroundColor: theme.colors.primaryLight }]}
+                                style={[
+                                    styles.quickButton,
+                                    {
+                                        backgroundColor: pagesInput === String(num)
+                                            ? theme.colors.primary
+                                            : theme.colors.background,
+                                        borderColor: pagesInput === String(num)
+                                            ? theme.colors.primary
+                                            : theme.colors.border,
+                                    },
+                                ]}
                                 onPress={() => setPagesInput(String(num))}
                             >
-                                <Text style={[styles.quickButtonText, { color: theme.colors.primary }]}>
+                                <Text style={[
+                                    styles.quickButtonText,
+                                    {
+                                        color: pagesInput === String(num)
+                                            ? theme.colors.onPrimary
+                                            : theme.colors.primary,
+                                        fontFamily: getFontFamily(isArabic, 'semiBold'),
+                                    },
+                                ]}>
                                     +{num}
                                 </Text>
                             </TouchableOpacity>
@@ -268,7 +317,7 @@ const QuranScreen: React.FC = () => {
                     {/* Input fields */}
                     <View style={styles.inputRow}>
                         <View style={styles.inputGroup}>
-                            <Text style={[styles.inputLabel, { color: theme.colors.textSecondary }]}>
+                            <Text style={[styles.inputLabel, { color: theme.colors.textSecondary, fontFamily: getFontFamily(isArabic, 'regular') }]}>
                                 {trackingMode === 'pages' ? t('quran.pages') : (isArabic ? 'حزب' : 'Hizb')}
                             </Text>
                             <TextInput
@@ -277,7 +326,7 @@ const QuranScreen: React.FC = () => {
                                     {
                                         backgroundColor: theme.colors.background,
                                         color: theme.colors.text,
-                                        borderColor: theme.colors.border,
+                                        borderColor: pagesInput ? theme.colors.primary : theme.colors.border,
                                     },
                                 ]}
                                 value={pagesInput}
@@ -288,7 +337,7 @@ const QuranScreen: React.FC = () => {
                             />
                         </View>
                         <View style={styles.inputGroup}>
-                            <Text style={[styles.inputLabel, { color: theme.colors.textSecondary }]}>
+                            <Text style={[styles.inputLabel, { color: theme.colors.textSecondary, fontFamily: getFontFamily(isArabic, 'regular') }]}>
                                 {isArabic ? 'دقائق (اختياري)' : 'Minutes (optional)'}
                             </Text>
                             <TextInput
@@ -297,7 +346,7 @@ const QuranScreen: React.FC = () => {
                                     {
                                         backgroundColor: theme.colors.background,
                                         color: theme.colors.text,
-                                        borderColor: theme.colors.border,
+                                        borderColor: minutesInput ? theme.colors.primary : theme.colors.border,
                                     },
                                 ]}
                                 value={minutesInput}
@@ -311,24 +360,28 @@ const QuranScreen: React.FC = () => {
 
                     {/* Log button */}
                     <TouchableOpacity
-                        style={[styles.logButton, { backgroundColor: theme.colors.primary }]}
+                        style={[styles.logButton, {
+                            backgroundColor: pagesInput ? theme.colors.primary : theme.colors.border,
+                            opacity: pagesInput ? 1 : 0.6,
+                        }]}
                         onPress={handleLogReading}
+                        disabled={!pagesInput}
                     >
                         <MaterialCommunityIcons name="plus" size={20} color={theme.colors.onPrimary} />
-                        <Text style={[styles.logButtonText, { color: theme.colors.onPrimary }]}>
+                        <Text style={[styles.logButtonText, { color: theme.colors.onPrimary, fontFamily: getFontFamily(isArabic, 'bold') }]}>
                             {isArabic ? 'تسجيل' : 'Log Reading'}
                         </Text>
                     </TouchableOpacity>
                 </View>
 
                 {/* Info card */}
-                <View style={[styles.infoCard, { backgroundColor: theme.colors.surface }]}>
+                <View style={[styles.infoCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.cardBorder, borderWidth: 1 }]}>
                     <MaterialCommunityIcons
                         name="information-outline"
                         size={20}
                         color={theme.colors.info.main}
                     />
-                    <Text style={[styles.infoText, { color: theme.colors.textSecondary }]}>
+                    <Text style={[styles.infoText, { color: theme.colors.textSecondary, fontFamily: getFontFamily(isArabic, 'regular') }]}>
                         {isArabic
                             ? `القرآن يحتوي على ${TOTAL_PAGES} صفحة و ${TOTAL_HIZB} حزب`
                             : `The Quran has ${TOTAL_PAGES} pages and ${TOTAL_HIZB} hizb`}
@@ -353,14 +406,18 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
     },
     backButton: {
-        padding: 8,
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     headerTitle: {
         fontSize: 20,
         fontWeight: '600',
     },
     placeholder: {
-        width: 40,
+        width: 44,
     },
     scrollView: {
         flex: 1,
@@ -458,6 +515,14 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         padding: 20,
     },
+    modeToggleContainer: {
+        flexDirection: 'row',
+        borderRadius: 12,
+        borderWidth: 1,
+        padding: 4,
+        marginBottom: 16,
+        gap: 4,
+    },
     modeToggle: {
         flexDirection: 'row',
         gap: 8,
@@ -465,9 +530,16 @@ const styles = StyleSheet.create({
     },
     modeButton: {
         flex: 1,
-        paddingVertical: 10,
-        borderRadius: 10,
+        paddingVertical: 9,
+        borderRadius: 9,
         alignItems: 'center',
+    },
+    modeButtonActive: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.12,
+        shadowRadius: 3,
+        elevation: 2,
     },
     modeText: {
         fontSize: 15,
@@ -475,7 +547,7 @@ const styles = StyleSheet.create({
     },
     quickButtons: {
         flexDirection: 'row',
-        gap: 10,
+        gap: 8,
         marginBottom: 16,
     },
     quickButton: {
@@ -483,6 +555,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         borderRadius: 10,
         alignItems: 'center',
+        borderWidth: 1.5,
     },
     quickButtonText: {
         fontSize: 15,
@@ -532,6 +605,15 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 14,
         lineHeight: 20,
+    },
+    // Today card empty state
+    emptyToday: {
+        alignItems: 'center',
+        paddingVertical: 16,
+        gap: 8,
+    },
+    emptyTodayText: {
+        fontSize: 14,
     },
     bottomSpacer: {
         height: 40,

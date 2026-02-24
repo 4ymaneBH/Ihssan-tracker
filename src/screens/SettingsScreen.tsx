@@ -1,4 +1,4 @@
-// Settings Screen
+// Settings Screen - Premium Redesign
 import React, { useState } from 'react';
 import {
     View,
@@ -6,7 +6,8 @@ import {
     StyleSheet,
     ScrollView,
     TouchableOpacity,
-    Switch,
+    I18nManager,
+    Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -17,112 +18,144 @@ import { GoalsModal, SelectionModal, PrayerNotificationsModal } from '../compone
 import { getFontFamily } from '../utils';
 
 
-interface SettingRowProps {
-    iconName: string;
-    iconColor?: string;
+// ── Row (iOS-style list item) ─────────────────────────────
+interface RowProps {
+    icon: string;
+    iconBg: string;
+    iconColor: string;
     label: string;
     value?: string;
     onPress?: () => void;
-    rightElement?: React.ReactNode;
+    rightNode?: React.ReactNode;
+    hideChevron?: boolean;
+    destructive?: boolean;
 }
 
-const SettingRow: React.FC<SettingRowProps> = ({
-    iconName,
-    iconColor,
-    label,
-    value,
-    onPress,
-    rightElement,
+const Row: React.FC<RowProps> = ({
+    icon, iconBg, iconColor, label, value,
+    onPress, rightNode, hideChevron = false, destructive = false,
 }) => {
     const { theme } = useTheme();
     const { i18n } = useTranslation();
     const isArabic = i18n.language === 'ar';
 
-    const content = (
-        <View style={styles.settingRow}>
-            <View style={styles.settingLeft}>
-                <View style={[styles.iconContainer, { backgroundColor: (iconColor || theme.colors.primary) + '15' }]}>
-                    <MaterialCommunityIcons
-                        name={iconName as any}
-                        size={20}
-                        color={iconColor || theme.colors.primary}
-                    />
-                </View>
-                <Text style={[
-                    styles.settingLabel,
-                    { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'medium') }
-                ]}>
-                    {label}
-                </Text>
+    const inner = (
+        <View style={styles.row}>
+            <View style={[styles.rowIcon, { backgroundColor: iconBg }]}>
+                <MaterialCommunityIcons name={icon as any} size={20} color={iconColor} />
             </View>
-            {rightElement || (
-                <View style={styles.settingRight}>
-                    {value && (
-                        <Text style={[
-                            styles.settingValue,
-                            { color: theme.colors.textSecondary, fontFamily: getFontFamily(isArabic, 'regular') }
-                        ]}>
-                            {value}
-                        </Text>
-                    )}
-                    <MaterialCommunityIcons
-                        name="chevron-right"
-                        size={22}
-                        color={theme.colors.textTertiary}
-                    />
-                </View>
-            )}
+            <Text numberOfLines={1} style={[styles.rowLabel, {
+                color: destructive ? theme.colors.error.main : theme.colors.text,
+                fontFamily: getFontFamily(isArabic, 'medium'),
+                flex: 1,
+            }]}>
+                {label}
+            </Text>
+            <View style={styles.rowRight}>
+                {rightNode ?? (
+                    <>
+                        {value ? (
+                            <Text style={[styles.rowValue, { color: theme.colors.primary, fontFamily: getFontFamily(isArabic, 'regular') }]}>
+                                {value}
+                            </Text>
+                        ) : null}
+                        {!hideChevron && (
+                            <MaterialCommunityIcons
+                                name={I18nManager.isRTL ? 'chevron-left' : 'chevron-right'}
+                                size={20}
+                                color={theme.colors.textTertiary}
+                            />
+                        )}
+                    </>
+                )}
+            </View>
         </View>
     );
 
-    if (onPress) {
-        return (
-            <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
-                {content}
-            </TouchableOpacity>
-        );
-    }
+    return onPress ? (
+        <TouchableOpacity onPress={onPress} activeOpacity={0.6}>{inner}</TouchableOpacity>
+    ) : inner;
+};
 
-    return content;
+// ── Card wrapper ──────────────────────────────────────────
+const Card: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const { theme } = useTheme();
+    return (
+        <View style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.cardBorder }]}>
+            {children}
+        </View>
+    );
+};
+
+const Divider: React.FC = () => {
+    const { theme } = useTheme();
+    return <View style={[styles.divider, { backgroundColor: theme.colors.borderLight }]} />;
 };
 
 
 const SettingsScreen: React.FC = () => {
     const { t, i18n } = useTranslation();
-    const { theme } = useTheme();
-    const [showGoalsModal, setShowGoalsModal] = useState(false);
-    const [showNotificationsModal, setShowNotificationsModal] = useState(false);
-    const [activeModal, setActiveModal] = useState<'language' | 'theme' | null>(null);
-
-    const {
-        language,
-        notificationsEnabled,
-        hideCharityAmounts,
-        goals,
-        setLanguage,
-        setTheme,
-        setNotificationsEnabled,
-        setHideCharityAmounts,
-    } = useUserPreferencesStore();
-
-    const userTheme = useUserPreferencesStore((state) => state.theme);
-    const { signOut } = useAuthStore();
+    const { theme, isDark } = useTheme();
     const isArabic = i18n.language === 'ar';
 
-    const getThemeLabel = () => {
-        if (userTheme === 'light') return t('onboarding.lightTheme');
-        if (userTheme === 'dark') return t('onboarding.darkTheme');
-        return 'System';
-    };
+    const [showGoalsModal, setShowGoalsModal] = useState(false);
+    const [showNotificationsModal, setShowNotificationsModal] = useState(false);
+    const [showLanguageModal, setShowLanguageModal] = useState(false);
+
+    const { language, setLanguage, setTheme } = useUserPreferencesStore();
+    const userTheme = useUserPreferencesStore((state) => state.theme);
+    const goals = useUserPreferencesStore((state) => state.goals);
+    const { signOut } = useAuthStore();
+
+    // 3-way theme toggle
+    const themeOptions: { value: 'system' | 'light' | 'dark'; icon: string }[] = [
+        { value: 'system', icon: 'theme-light-dark' },
+        { value: 'dark',   icon: 'weather-night' },
+        { value: 'light',  icon: 'white-balance-sunny' },
+    ];
+
+    const ThemeSegment = () => (
+        <View style={[styles.segmentWrap, { backgroundColor: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }]}>
+            {themeOptions.map((opt) => {
+                const active = userTheme === opt.value || (!userTheme && opt.value === 'system');
+                return (
+                    <TouchableOpacity
+                        key={opt.value}
+                        style={[styles.segmentItem, active && { backgroundColor: theme.colors.primary }]}
+                        onPress={() => setTheme(opt.value as 'light' | 'dark')}
+                    >
+                        <MaterialCommunityIcons
+                            name={opt.icon as any}
+                            size={18}
+                            color={active ? theme.colors.onPrimary : theme.colors.textSecondary}
+                        />
+                        {active && (
+                            <MaterialCommunityIcons name="check" size={13} color={theme.colors.onPrimary} />
+                        )}
+                    </TouchableOpacity>
+                );
+            })}
+        </View>
+    );
+
+    const socials: { icon: string; bg: string; url: string }[] = [
+        { icon: 'youtube',   bg: '#FF0000', url: 'https://youtube.com' },
+        { icon: 'instagram', bg: '#E1306C', url: 'https://instagram.com' },
+        { icon: 'facebook',  bg: '#1877F2', url: 'https://facebook.com' },
+        { icon: 'whatsapp',  bg: '#25D366', url: 'https://whatsapp.com' },
+    ];
 
     return (
         <SafeAreaView
             style={[styles.container, { backgroundColor: 'transparent' }]}
         >
+            {/* ── Header ── */}
             <View style={styles.header}>
-                <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
+                <View style={{ width: 36 }} />
+                <Text style={[styles.headerTitle, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }]}>
                     {t('settings.title')}
                 </Text>
+                <View style={{ width: 36 }} />
             </View>
 
             <ScrollView
@@ -130,309 +163,303 @@ const SettingsScreen: React.FC = () => {
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
             >
-                {/* Appearance Section */}
-                <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
-                    <Text style={[styles.sectionTitle, { color: theme.colors.textSecondary }]}>
-                        Appearance
-                    </Text>
-
-                    <SettingRow
-                        iconName="translate"
+                {/* ── Notifications + Language ── */}
+                <Card>
+                    <Row
+                        icon="bell"
+                        iconBg={theme.colors.primary + '20'}
+                        iconColor={theme.colors.primary}
+                        label={isArabic ? 'إشعارات و تذكيرات' : 'Notifications & Reminders'}
+                        onPress={() => setShowNotificationsModal(true)}
+                    />
+                    <Divider />
+                    <Row
+                        icon="web"
+                        iconBg={theme.colors.info.main + '20'}
                         iconColor={theme.colors.info.main}
                         label={t('settings.language')}
-                        value={language === 'en' ? 'English' : 'العربية'}
-                        onPress={() => setActiveModal('language')}
+                        onPress={() => setShowLanguageModal(true)}
+                        rightNode={
+                            <View style={styles.langRight}>
+                                <Text style={[styles.rowValue, { color: theme.colors.primary, fontFamily: getFontFamily(isArabic, 'regular') }]}>
+                                    {language === 'ar' ? 'العربية' : 'English'}
+                                </Text>
+                                <MaterialCommunityIcons name="chevron-down" size={18} color={theme.colors.textTertiary} />
+                            </View>
+                        }
                     />
+                </Card>
 
-                    <View style={[styles.divider, { backgroundColor: theme.colors.borderLight }]} />
+                {/* ── Theme inline toggle ── */}
+                <Card>
+                    <View style={styles.row}>
+                        <View style={[styles.rowIcon, { backgroundColor: theme.colors.warning.main + '20' }]}>
+                            <MaterialCommunityIcons name="brightness-6" size={20} color={theme.colors.warning.main} />
+                        </View>
+                        <Text style={[styles.rowLabel, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'medium'), flex: 1 }]}>
+                            {isArabic ? 'الوضع' : 'Appearance'}
+                        </Text>
+                    </View>
+                    <View style={{ paddingHorizontal: 16, paddingBottom: 14 }}>
+                        <ThemeSegment />
+                    </View>
+                </Card>
 
-                    <SettingRow
-                        iconName={userTheme === 'dark' ? 'weather-night' : 'white-balance-sunny'}
-                        iconColor={userTheme === 'dark' ? theme.colors.info.main : theme.colors.warning.main}
-                        label={t('settings.theme')}
-                        value={getThemeLabel()}
-                        onPress={() => setActiveModal('theme')}
-                    />
-                </View>
-
-                {/* Goals Section - Premium Card */}
+                {/* ── Goals ── */}
                 <TouchableOpacity
-                    style={[styles.goalsCard, { backgroundColor: theme.colors.surface }]}
+                    style={[styles.goalsCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.cardBorder }]}
                     onPress={() => setShowGoalsModal(true)}
                     activeOpacity={0.7}
                 >
-                    <View style={styles.goalsCardContent}>
-                        <View style={[styles.goalsIconContainer, { backgroundColor: theme.colors.primary + '15' }]}>
-                            <MaterialCommunityIcons name="target" size={28} color={theme.colors.primary} />
-                        </View>
-                        <View style={styles.goalsTextContainer}>
-                            <Text style={[styles.goalsTitle, { color: theme.colors.text }]}>
-                                {isArabic ? 'أهدافك الأسبوعية' : 'Your Weekly Goals'}
-                            </Text>
-                            <Text style={[styles.goalsSubtitle, { color: theme.colors.textSecondary }]}>
-                                {isArabic
-                                    ? `${goals.quranPagesPerDay} صفحات • ${goals.charityPerWeek} صدقات • ${goals.tahajjudNightsPerWeek} ليالي`
-                                    : `${goals.quranPagesPerDay} pages • ${goals.charityPerWeek} charity • ${goals.tahajjudNightsPerWeek} nights`}
-                            </Text>
-                        </View>
-                        <MaterialCommunityIcons
-                            name="chevron-right"
-                            size={24}
-                            color={theme.colors.textTertiary}
-                        />
+                    <View style={[styles.rowIcon, { backgroundColor: theme.colors.primary + '18', width: 48, height: 48, borderRadius: 14 }]}>
+                        <MaterialCommunityIcons name="target" size={26} color={theme.colors.primary} />
                     </View>
+                    <View style={{ flex: 1 }}>
+                        <Text style={[styles.goalsTitle, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }]}>
+                            {isArabic ? 'أهدافك الأسبوعية' : 'Your Weekly Goals'}
+                        </Text>
+                        <Text style={[styles.goalsSubtitle, { color: theme.colors.textSecondary, fontFamily: getFontFamily(isArabic, 'regular') }]}>
+                            {isArabic
+                                ? `${goals.quranPagesPerDay} صفحات • ${goals.tahajjudNightsPerWeek} ليالي`
+                                : `${goals.quranPagesPerDay} pages • ${goals.tahajjudNightsPerWeek} nights`}
+                        </Text>
+                    </View>
+                    <MaterialCommunityIcons
+                        name={I18nManager.isRTL ? 'chevron-left' : 'chevron-right'}
+                        size={22}
+                        color={theme.colors.textTertiary}
+                    />
                 </TouchableOpacity>
 
-                <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
-                    <Text style={[styles.sectionTitle, { color: theme.colors.textSecondary }]}>
-                        {t('settings.notifications')}
-                    </Text>
+                {/* ── Help & Support ── */}
+                <Text style={[styles.sectionLabel, { color: theme.colors.textSecondary, fontFamily: getFontFamily(isArabic, 'semiBold') }]}>
+                    {isArabic ? 'المساعدة والدعم' : 'Help & Support'}
+                </Text>
 
-                    <SettingRow
-                        iconName="bell-outline"
+                <Card>
+                    <Row
+                        icon="cellphone-information"
+                        iconBg="#A78BFA20"
+                        iconColor="#A78BFA"
+                        label={isArabic ? 'استعمال التطبيق' : 'How to Use'}
+                        onPress={() => {}}
+                    />
+                    <Divider />
+                    <Row
+                        icon="hand-heart"
+                        iconBg="#F472B620"
+                        iconColor="#F472B6"
+                        label={isArabic ? 'ادعم التطبيق' : 'Support the App'}
+                        onPress={() => {}}
+                    />
+                    <Divider />
+                    <Row
+                        icon="message-text-outline"
+                        iconBg={theme.colors.info.main + '20'}
+                        iconColor={theme.colors.info.main}
+                        label={isArabic ? 'اتصل بنا' : 'Contact Us'}
+                        onPress={() => Linking.openURL('mailto:support@ihssan.app')}
+                    />
+                    <Divider />
+                    <Row
+                        icon="shield-check-outline"
+                        iconBg={theme.colors.success.main + '20'}
                         iconColor={theme.colors.success.main}
-                        label={t('settings.notifications')}
-                        rightElement={
-                            <Switch
-                                value={notificationsEnabled}
-                                onValueChange={setNotificationsEnabled}
-                                trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
-                                thumbColor="#FFFFFF"
-                            />
-                        }
+                        label={isArabic ? 'سياسة الخصوصية' : 'Privacy Policy'}
+                        onPress={() => Linking.openURL('https://ihssan.app/privacy')}
                     />
+                </Card>
 
-                    <SettingRow
-                        iconName="tune-vertical"
-                        iconColor={theme.colors.primary}
-                        label={isArabic ? 'تخصيص التنبيهات' : 'Customize Prayers'}
-                        onPress={() => setShowNotificationsModal(true)}
-                    />
-                </View>
-
-                {/* Privacy Section */}
-                <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
-                    <Text style={[styles.sectionTitle, { color: theme.colors.textSecondary }]}>
-                        {t('settings.privacy')}
-                    </Text>
-
-                    <SettingRow
-                        iconName="lock-outline"
-                        iconColor={theme.colors.error.main}
-                        label={t('settings.hideAmounts')}
-                        rightElement={
-                            <Switch
-                                value={hideCharityAmounts}
-                                onValueChange={setHideCharityAmounts}
-                                trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
-                                thumbColor="#FFFFFF"
-                            />
-                        }
-                    />
-                </View>
-
-                {/* About Section */}
-                <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
-                    <Text style={[styles.sectionTitle, { color: theme.colors.textSecondary }]}>
-                        {t('settings.about')}
-                    </Text>
-
-                    <SettingRow
-                        iconName="cellphone"
-                        label={t('settings.version')}
-                        value="1.0.0"
-                    />
-                </View>
-
-                {/* Account Section */}
-                <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
-                    <SettingRow
-                        iconName="logout"
+                {/* ── Sign out ── */}
+                <Card>
+                    <Row
+                        icon="logout-variant"
+                        iconBg={theme.colors.error.main + '15'}
                         iconColor={theme.colors.error.main}
                         label={t('auth.logout')}
+                        hideChevron
+                        destructive
                         onPress={signOut}
                     />
+                </Card>
+
+                {/* ── Follow us ── */}
+                <Text style={[styles.sectionLabel, { color: theme.colors.textSecondary, fontFamily: getFontFamily(isArabic, 'semiBold') }]}>
+                    {isArabic ? 'تابعنا' : 'Follow Us'}
+                </Text>
+
+                <View style={styles.socialsRow}>
+                    {socials.map((s) => (
+                        <TouchableOpacity
+                            key={s.icon}
+                            style={[styles.socialBtn, { backgroundColor: s.bg }]}
+                            onPress={() => Linking.openURL(s.url)}
+                            activeOpacity={0.8}
+                        >
+                            <MaterialCommunityIcons name={s.icon as any} size={26} color="#FFFFFF" />
+                        </TouchableOpacity>
+                    ))}
                 </View>
 
-                {/* App Info */}
-                <View style={styles.appInfo}>
-                    <Text style={[styles.appName, { color: theme.colors.primary }]}>
-                        {t('common.appName')}
-                    </Text>
-                    <Text style={[styles.appTagline, { color: theme.colors.textSecondary }]}>
-                        {t('onboarding.tagline')}
+                {/* ── Footer ── */}
+                <View style={styles.footer}>
+                    <Text style={[styles.footerVersion, { color: theme.colors.textTertiary }]}>v1.0.4</Text>
+                    <Text style={[styles.footerCopy, { color: theme.colors.textTertiary, fontFamily: getFontFamily(isArabic, 'regular') }]}>
+                        {isArabic ? '© 2025 وذكر. جميع الحقوق محفوظة.' : '© 2025 Ihssan. All rights reserved.'}
                     </Text>
                 </View>
 
-                <View style={styles.bottomSpacer} />
+                <View style={{ height: 100 }} />
             </ScrollView>
 
-            {/* Goals Modal */}
-            <GoalsModal
-                visible={showGoalsModal}
-                onClose={() => setShowGoalsModal(false)}
-            />
-
-            {/* Notifications Modal */}
-            <PrayerNotificationsModal
-                visible={showNotificationsModal}
-                onClose={() => setShowNotificationsModal(false)}
-            />
-
-
-            {/* Language Modal */}
+            <GoalsModal visible={showGoalsModal} onClose={() => setShowGoalsModal(false)} />
+            <PrayerNotificationsModal visible={showNotificationsModal} onClose={() => setShowNotificationsModal(false)} />
             <SelectionModal
-                visible={activeModal === 'language'}
-                onClose={() => setActiveModal(null)}
+                visible={showLanguageModal}
+                onClose={() => setShowLanguageModal(false)}
                 title={t('settings.language')}
                 options={[
                     { label: 'English', value: 'en', icon: 'ab-testing' },
                     { label: 'العربية', value: 'ar', icon: 'abjad-arabic' },
                 ]}
                 selectedValue={language}
-                onSelect={(val: string) => setLanguage(val as 'en' | 'ar')}
-            />
-
-            {/* Theme Modal */}
-            <SelectionModal
-                visible={activeModal === 'theme'}
-                onClose={() => setActiveModal(null)}
-                title={t('settings.theme')}
-                options={[
-                    { label: t('onboarding.lightTheme'), value: 'light', icon: 'white-balance-sunny', iconColor: theme.colors.warning.main },
-                    { label: t('onboarding.darkTheme'), value: 'dark', icon: 'weather-night', iconColor: theme.colors.info.main },
-                ]}
-                selectedValue={userTheme}
-                onSelect={(val: string) => setTheme(val as 'light' | 'dark')}
-            />
-
-            {/* Theme Modal */}
-            <SelectionModal
-                visible={activeModal === 'theme'}
-                onClose={() => setActiveModal(null)}
-                title={t('settings.theme')}
-                options={[
-                    { label: t('onboarding.lightTheme'), value: 'light', icon: 'white-balance-sunny', iconColor: theme.colors.warning.main },
-                    { label: t('onboarding.darkTheme'), value: 'dark', icon: 'weather-night', iconColor: theme.colors.info.main },
-                ]}
-                selectedValue={userTheme}
-                onSelect={(val: string) => setTheme(val as 'light' | 'dark')}
+                onSelect={(val: string) => { setLanguage(val as 'en' | 'ar'); setShowLanguageModal(false); }}
             />
         </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
+    container: { flex: 1 },
+
+    // Header
     header: {
+        flexDirection: 'row',
+        alignItems: 'center',
         paddingHorizontal: 20,
-        paddingTop: 16,
+        paddingTop: 12,
         paddingBottom: 12,
     },
     headerTitle: {
-        fontSize: 28,
+        flex: 1,
+        textAlign: 'center',
+        fontSize: 20,
         fontWeight: '700',
     },
-    scrollView: {
-        flex: 1,
-    },
+
+    // Scroll
+    scrollView: { flex: 1 },
     scrollContent: {
         paddingHorizontal: 16,
-        gap: 16,
+        paddingTop: 4,
+        gap: 10,
     },
-    section: {
+
+    // Card
+    card: {
         borderRadius: 16,
+        borderWidth: 1,
         overflow: 'hidden',
     },
-    sectionTitle: {
-        fontSize: 13,
-        fontWeight: '600',
-        textTransform: 'uppercase',
-        letterSpacing: 0.5,
-        paddingHorizontal: 16,
-        paddingTop: 16,
-        paddingBottom: 8,
-    },
-    settingRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingVertical: 14,
-    },
-    settingLeft: {
+
+    // Row
+    row: {
         flexDirection: 'row',
         alignItems: 'center',
+        paddingHorizontal: 16,
+        paddingVertical: 13,
         gap: 12,
     },
-    iconContainer: {
+    rowIcon: {
         width: 36,
         height: 36,
         borderRadius: 10,
         alignItems: 'center',
         justifyContent: 'center',
     },
-    settingLabel: {
-        fontSize: 16,
-    },
-    settingRight: {
+    rowLabel: { fontSize: 15 },
+    rowRight: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 6,
+        gap: 4,
     },
-    settingValue: {
-        fontSize: 15,
-    },
-    divider: {
-        height: 1,
-        marginLeft: 64,
-    },
-    appInfo: {
-        alignItems: 'center',
-        paddingVertical: 24,
-    },
-    appName: {
-        fontSize: 24,
-        fontWeight: '700',
-    },
-    appTagline: {
-        fontSize: 14,
-        marginTop: 4,
-    },
-    bottomSpacer: {
-        height: 90,
-    },
-    // Goals Card Styles
-    goalsCard: {
-        borderRadius: 16,
-        padding: 16,
-        marginBottom: 0,
-    },
-    goalsCardContent: {
+    rowValue: { fontSize: 14 },
+    langRight: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 14,
+        gap: 2,
     },
-    goalsIconContainer: {
-        width: 52,
-        height: 52,
-        borderRadius: 14,
+
+    // Divider inside card
+    divider: { height: StyleSheet.hairlineWidth, marginLeft: 64 },
+
+    // 3-way segment
+    segmentWrap: {
+        flexDirection: 'row',
+        borderRadius: 12,
+        padding: 4,
+        gap: 4,
+    },
+    segmentItem: {
+        flex: 1,
+        flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
+        gap: 4,
+        paddingVertical: 10,
+        borderRadius: 9,
     },
-    goalsTextContainer: {
-        flex: 1,
+
+    // Goals card
+    goalsCard: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderRadius: 16,
+        borderWidth: 1,
+        paddingHorizontal: 16,
+        paddingVertical: 14,
+        gap: 14,
     },
-    goalsTitle: {
-        fontSize: 17,
-        fontWeight: '600',
-    },
-    goalsSubtitle: {
+    goalsTitle: { fontSize: 16 },
+    goalsSubtitle: { fontSize: 13, marginTop: 2 },
+
+    // Section labels
+    sectionLabel: {
         fontSize: 13,
-        marginTop: 4,
+        fontWeight: '600',
+        textTransform: 'uppercase',
+        letterSpacing: 0.6,
+        paddingHorizontal: 4,
     },
+
+    // Social
+    socialsRow: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        gap: 16,
+        paddingVertical: 4,
+    },
+    socialBtn: {
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.18,
+        shadowRadius: 4,
+        elevation: 4,
+    },
+
+    // Footer
+    footer: {
+        alignItems: 'center',
+        paddingTop: 8,
+        gap: 4,
+    },
+    footerVersion: { fontSize: 13, fontWeight: '600' },
+    footerCopy: { fontSize: 12 },
 });
 
 export default SettingsScreen;

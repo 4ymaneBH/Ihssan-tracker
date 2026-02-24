@@ -1,5 +1,5 @@
-// Adhkar Screen - Premium Scrollable List Experience
-import React, { useState, useCallback } from 'react';
+// Adhkar Screen - Premium Horizontal Pager Experience
+import React, { useState, useCallback, useRef } from 'react';
 import {
     View,
     Text,
@@ -7,6 +7,7 @@ import {
     TouchableOpacity,
     Dimensions,
     ScrollView,
+    FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -69,19 +70,21 @@ const DhikrCard: React.FC<DhikrCardProps> = ({
     const isDone = currentCount >= dhikr.repeatCount;
 
     return (
-        <View style={styles.cardWrapper}>
-            <TouchableOpacity
-                style={[
-                    styles.dhikrCard,
-                    {
-                        backgroundColor: theme.colors.surface,
-                        borderColor: isDark ? theme.colors.border : theme.colors.cardBorder,
-                    },
-                ]}
-                activeOpacity={0.98}
-                onPress={handleTap}
-                disabled={isDone}
-            >
+        <TouchableOpacity
+            style={[
+                styles.dhikrCard,
+                {
+                    backgroundColor: theme.colors.surface,
+                    borderColor: isDone
+                        ? theme.colors.success.main + '60'
+                        : isDark ? theme.colors.border : theme.colors.cardBorder,
+                    borderWidth: isDone ? 2 : 1,
+                },
+            ]}
+            activeOpacity={0.98}
+            onPress={handleTap}
+            disabled={isDone}
+        >
                 {/* Card Header - Index and Counter */}
                 <View style={styles.cardHeader}>
                     <View style={[styles.indexBadge, { backgroundColor: theme.colors.primary + '15' }]}>
@@ -174,8 +177,7 @@ const DhikrCard: React.FC<DhikrCardProps> = ({
                         {isArabic ? 'اضغط للعد' : 'Tap to count'}
                     </Text>
                 )}
-            </TouchableOpacity>
-        </View>
+        </TouchableOpacity>
     );
 };
 
@@ -200,6 +202,8 @@ const AdhkarScreen: React.FC<AdhkarScreenProps> = ({ route }) => {
     const initialCategory = route?.params?.category || 'morning';
     const [activeCategory, setActiveCategory] = useState<AdhkarCategory>(initialCategory);
     const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const flatListRef = useRef<FlatList<Dhikr>>(null);
     const { counts, setCount, clearProgress, isLoaded } = useAdhkarProgress(activeCategory);
 
     const adhkarList = getAdhkarByCategory(activeCategory);
@@ -223,10 +227,38 @@ const AdhkarScreen: React.FC<AdhkarScreenProps> = ({ route }) => {
         setCompletedIds((prev) => new Set([...prev, dhikrId]));
     }, []);
 
+    const handleCompleteAndAdvance = useCallback((dhikrId: string, index: number, total: number) => {
+        handleComplete(dhikrId);
+        if (index < total - 1) {
+            setTimeout(() => {
+                flatListRef.current?.scrollToIndex({ index: index + 1, animated: true });
+                setCurrentIndex(index + 1);
+            }, 600);
+        }
+    }, [handleComplete]);
+
     const handleCategoryChange = (category: AdhkarCategory) => {
         setActiveCategory(category);
         setCompletedIds(new Set());
+        setCurrentIndex(0);
+        flatListRef.current?.scrollToIndex({ index: 0, animated: false });
         // Note: clearProgress is NOT called here — we preserve progress per-category
+    };
+
+    const goToPrev = () => {
+        if (currentIndex > 0) {
+            const idx = currentIndex - 1;
+            flatListRef.current?.scrollToIndex({ index: idx, animated: true });
+            setCurrentIndex(idx);
+        }
+    };
+
+    const goToNext = () => {
+        if (currentIndex < adhkarList.length - 1) {
+            const idx = currentIndex + 1;
+            flatListRef.current?.scrollToIndex({ index: idx, animated: true });
+            setCurrentIndex(idx);
+        }
     };
 
     const completedCount = completedIds.size;
@@ -334,39 +366,137 @@ const AdhkarScreen: React.FC<AdhkarScreenProps> = ({ route }) => {
                 })}
             </View>
 
-            {/* Scrollable List of All Adhkar */}
-            <ScrollView
-                style={styles.scrollView}
-                contentContainerStyle={styles.scrollContent}
-                showsVerticalScrollIndicator={true}
-            >
-                {adhkarList.map((dhikr, index) => (
-                    <DhikrCard
-                        key={dhikr.id}
-                        dhikr={dhikr}
-                        index={index}
-                        total={adhkarList.length}
-                        category={activeCategory}
-                        initialCount={counts[dhikr.id] ?? 0}
-                        onComplete={() => handleComplete(dhikr.id)}
-                        onCountChange={setCount}
-                    />
-                ))}
-
-                {/* Completion Banner */}
-                {isAllComplete && (
-                    <View style={[styles.completionBanner, { backgroundColor: theme.colors.success.main + '20' }]}>
-                        <MaterialCommunityIcons
-                            name="check-decagram"
-                            size={24}
-                            color={theme.colors.success.main}
-                        />
-                        <Text style={[styles.completionText, { color: theme.colors.success.dark, fontFamily: getFontFamily(isArabic, 'bold') }]}>
-                            {isArabic ? 'ما شاء الله! تم إتمام جميع الأذكار' : 'All adhkar completed!'}
-                        </Text>
+            {/* Horizontal Paging FlatList */}
+            <FlatList
+                ref={flatListRef}
+                data={adhkarList}
+                keyExtractor={(item) => item.id}
+                horizontal
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                bounces={false}
+                style={styles.flatList}
+                getItemLayout={(_, idx) => ({
+                    length: SCREEN_WIDTH,
+                    offset: SCREEN_WIDTH * idx,
+                    index: idx,
+                })}
+                onMomentumScrollEnd={(e) => {
+                    const idx = Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH);
+                    setCurrentIndex(idx);
+                }}
+                renderItem={({ item, index }) => (
+                    <View style={styles.pageContainer}>
+                        <ScrollView
+                            showsVerticalScrollIndicator={false}
+                            contentContainerStyle={styles.pageScrollContent}
+                        >
+                            <DhikrCard
+                                dhikr={item}
+                                index={index}
+                                total={adhkarList.length}
+                                category={activeCategory}
+                                initialCount={counts[item.id] ?? 0}
+                                onComplete={() => handleCompleteAndAdvance(item.id, index, adhkarList.length)}
+                                onCountChange={setCount}
+                            />
+                        </ScrollView>
                     </View>
                 )}
-            </ScrollView>
+            />
+
+            {/* Bottom Navigation Bar */}
+            <View style={[styles.bottomNav, { borderTopColor: theme.colors.divider }]}>
+                {/* Prev button */}
+                <TouchableOpacity
+                    style={[
+                        styles.navArrow,
+                        {
+                            backgroundColor: currentIndex === 0
+                                ? theme.colors.border + '40'
+                                : theme.colors.primary + '15',
+                        },
+                    ]}
+                    onPress={goToPrev}
+                    disabled={currentIndex === 0}
+                >
+                    <MaterialCommunityIcons
+                        name={isArabic ? 'chevron-right' : 'chevron-left'}
+                        size={22}
+                        color={currentIndex === 0 ? theme.colors.textTertiary : theme.colors.primary}
+                    />
+                </TouchableOpacity>
+
+                {/* Dot indicators (compact) */}
+                <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.dotsRow}
+                    style={styles.dotsScroll}
+                >
+                    {adhkarList.map((item, i) => {
+                        const isDone = completedIds.has(item.id);
+                        const isCurrent = i === currentIndex;
+                        return (
+                            <TouchableOpacity
+                                key={item.id}
+                                onPress={() => {
+                                    flatListRef.current?.scrollToIndex({ index: i, animated: true });
+                                    setCurrentIndex(i);
+                                }}
+                            >
+                                <View
+                                    style={[
+                                        styles.dot,
+                                        {
+                                            width: isCurrent ? 18 : 6,
+                                            backgroundColor: isDone
+                                                ? theme.colors.success.main
+                                                : isCurrent
+                                                ? theme.colors.primary
+                                                : theme.colors.border,
+                                        },
+                                    ]}
+                                />
+                            </TouchableOpacity>
+                        );
+                    })}
+                </ScrollView>
+
+                {/* Next button */}
+                <TouchableOpacity
+                    style={[
+                        styles.navArrow,
+                        {
+                            backgroundColor: currentIndex === adhkarList.length - 1
+                                ? theme.colors.border + '40'
+                                : theme.colors.primary + '15',
+                        },
+                    ]}
+                    onPress={goToNext}
+                    disabled={currentIndex === adhkarList.length - 1}
+                >
+                    <MaterialCommunityIcons
+                        name={isArabic ? 'chevron-left' : 'chevron-right'}
+                        size={22}
+                        color={currentIndex === adhkarList.length - 1 ? theme.colors.textTertiary : theme.colors.primary}
+                    />
+                </TouchableOpacity>
+            </View>
+
+            {/* Completion Banner (below nav) */}
+            {isAllComplete && (
+                <View style={[styles.completionBanner, { backgroundColor: theme.colors.success.main + '20' }]}>
+                    <MaterialCommunityIcons
+                        name="check-decagram"
+                        size={22}
+                        color={theme.colors.success.main}
+                    />
+                    <Text style={[styles.completionText, { color: theme.colors.success.dark, fontFamily: getFontFamily(isArabic, 'bold') }]}>
+                        {isArabic ? 'ما شاء الله! تم إتمام جميع الأذكار' : 'All adhkar completed!'}
+                    </Text>
+                </View>
+            )}
         </SafeAreaView>
     );
 };
@@ -430,19 +560,51 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '600',
     },
-    // ScrollView
-    scrollView: {
+    // FlatList pager
+    flatList: {
         flex: 1,
     },
-    scrollContent: {
+    pageContainer: {
+        width: SCREEN_WIDTH,
+        flex: 1,
+    },
+    pageScrollContent: {
         paddingHorizontal: 16,
         paddingTop: 12,
         paddingBottom: 24,
     },
-    // Card
-    cardWrapper: {
-        marginBottom: 16,
+    // Bottom navigation
+    bottomNav: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 12,
+        paddingVertical: 12,
+        borderTopWidth: StyleSheet.hairlineWidth,
+        gap: 8,
     },
+    navArrow: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    dotsScroll: {
+        flex: 1,
+    },
+    dotsRow: {
+        flexGrow: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 5,
+        paddingHorizontal: 4,
+    },
+    dot: {
+        height: 6,
+        borderRadius: 3,
+    },
+    // Card
     dhikrCard: {
         borderRadius: 24,
         padding: 20,
