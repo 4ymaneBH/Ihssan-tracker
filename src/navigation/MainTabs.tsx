@@ -1,7 +1,7 @@
-// Bottom Tab Navigation with Frosted Glass Effect
+// Bottom Tab Navigation - Premium floating tab bar
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, StyleSheet, Platform } from 'react-native';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -16,41 +16,77 @@ import SettingsScreen from '../screens/SettingsScreen';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
-// Tab icon mapping
-type IconName = 'view-dashboard' | 'view-dashboard-outline' |
-    'calendar-check' | 'calendar-check-outline' |
-    'chart-donut' | 'chart-donut-variant' |
-    'cog' | 'cog-outline';
+// Better, clearer icon set
+type IconName =
+    | 'home-variant' | 'home-variant-outline'
+    | 'calendar-month' | 'calendar-month-outline'
+    | 'chart-line' | 'chart-line-variant'
+    | 'tune-variant' | 'tune';
 
 const tabIcons: Record<string, { active: IconName; inactive: IconName }> = {
-    Today: { active: 'view-dashboard', inactive: 'view-dashboard-outline' },
-    Track: { active: 'calendar-check', inactive: 'calendar-check-outline' },
-    Insights: { active: 'chart-donut', inactive: 'chart-donut-variant' },
-    Settings: { active: 'cog', inactive: 'cog-outline' },
+    Today:    { active: 'home-variant',     inactive: 'home-variant-outline' },
+    Track:    { active: 'calendar-month',   inactive: 'calendar-month-outline' },
+    Insights: { active: 'chart-line',       inactive: 'chart-line-variant' },
+    Settings: { active: 'tune-variant',     inactive: 'tune' },
 };
 
 const MainTabs: React.FC = () => {
     const { t } = useTranslation();
     const { theme, isDark } = useTheme();
 
-    // Memoize screen options to ensure they update when theme changes
+    // Icon rendered per tab — solid pill on active, plain icon on inactive
+    const getTabBarIcon = React.useCallback(
+        ({ route, focused }: { route: { name: string }; focused: boolean }) => {
+            const icons = tabIcons[route.name];
+            const iconName = focused ? icons.active : icons.inactive;
+            const activeColor   = theme.colors.onPrimary;          // contrasting color on pill
+            const inactiveColor = isDark
+                ? 'rgba(255,255,255,0.45)'
+                : 'rgba(0,0,0,0.35)';
+
+            if (focused) {
+                return (
+                    <View style={[styles.activePill, { backgroundColor: theme.colors.primary }]}>
+                        <MaterialCommunityIcons name={iconName} size={20} color={activeColor} />
+                    </View>
+                );
+            }
+            return (
+                <View style={styles.inactiveIcon}>
+                    <MaterialCommunityIcons name={iconName} size={22} color={inactiveColor} />
+                </View>
+            );
+        },
+        [theme.colors, isDark],
+    );
+
     const screenOptions = React.useMemo(() => ({
         headerShown: false,
+        // Override label — we hide the default label and render nothing
+        // (label is already provided via tabBarLabel on each screen)
+        tabBarActiveTintColor:   theme.colors.primary,
+        tabBarInactiveTintColor: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.35)',
+        tabBarLabelStyle: {
+            fontSize: 10,
+            fontWeight: '600' as const,
+            marginTop: 0,
+            letterSpacing: 0.2,
+        },
         tabBarStyle: {
             position: 'absolute' as const,
             backgroundColor: 'transparent',
             borderTopWidth: 0,
-            height: 72,
-            paddingBottom: 14,
-            paddingTop: 8,
+            height: 76,
+            paddingBottom: 12,
+            paddingTop: 10,
             elevation: 0,
         },
         tabBarBackground: () => (
-            <View style={StyleSheet.absoluteFill}>
+            <View style={[StyleSheet.absoluteFill, styles.tabBarBg]}>
                 {Platform.OS === 'ios' ? (
                     <BlurView
                         tint={isDark ? 'dark' : 'light'}
-                        intensity={isDark ? 60 : 80}
+                        intensity={isDark ? 80 : 90}
                         style={StyleSheet.absoluteFill}
                     />
                 ) : null}
@@ -58,92 +94,81 @@ const MainTabs: React.FC = () => {
                     style={[
                         StyleSheet.absoluteFill,
                         {
-                            backgroundColor: theme.colors.tabBarBackground,
-                            borderTopWidth: StyleSheet.hairlineWidth,
-                            borderTopColor: theme.colors.tabBarBorder,
+                            backgroundColor: isDark
+                                ? 'rgba(13,15,18,0.94)'
+                                : 'rgba(255,255,255,0.95)',
+                            borderTopWidth: 1,
+                            borderTopColor: isDark
+                                ? 'rgba(255,255,255,0.08)'
+                                : 'rgba(0,0,0,0.08)',
+                            // Android shadow via elevation applied on tabBarBg view
                         },
                     ]}
                 />
             </View>
         ),
-        tabBarActiveTintColor: theme.colors.tabBarActive,
-        tabBarInactiveTintColor: theme.colors.tabBarInactive,
-        tabBarLabelStyle: {
-            fontSize: 11,
-            fontWeight: '600' as const,
-            marginTop: 2,
-        },
     }), [theme.colors, isDark]);
-
-    const getTabBarIcon = React.useCallback(({ route, focused, color }: any) => {
-        const icons = tabIcons[route.name];
-        const iconName = focused ? icons.active : icons.inactive;
-        return (
-            <View style={styles.iconWrapper}>
-                {focused && (
-                    <View style={[styles.activeIndicator, { backgroundColor: color + '20' }]} />
-                )}
-                <MaterialCommunityIcons
-                    name={iconName}
-                    size={focused ? 24 : 22}
-                    color={color}
-                />
-            </View>
-        );
-    }, []);
 
     return (
         <Tab.Navigator
             key={isDark ? 'dark' : 'light'}
             screenOptions={({ route }) => ({
                 ...screenOptions,
-                tabBarIcon: (props) => getTabBarIcon({ route, ...props }),
+                tabBarIcon: ({ focused }) => getTabBarIcon({ route, focused }),
             })}
         >
             <Tab.Screen
                 name="Today"
                 component={TodayScreen}
-                options={{
-                    tabBarLabel: t('common.today'),
-                }}
+                options={{ tabBarLabel: t('common.today') }}
             />
             <Tab.Screen
                 name="Track"
                 component={TrackScreen}
-                options={{
-                    tabBarLabel: t('common.track'),
-                }}
+                options={{ tabBarLabel: t('common.track') }}
             />
             <Tab.Screen
                 name="Insights"
                 component={InsightsScreen}
-                options={{
-                    tabBarLabel: t('common.insights'),
-                }}
+                options={{ tabBarLabel: t('common.insights') }}
             />
             <Tab.Screen
                 name="Settings"
                 component={SettingsScreen}
-                options={{
-                    tabBarLabel: t('common.settings'),
-                }}
+                options={{ tabBarLabel: t('common.settings') }}
             />
         </Tab.Navigator>
     );
 };
 
 const styles = StyleSheet.create({
-    iconWrapper: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 48,
-        height: 32,
+    tabBarBg: {
+        // Lifted shadow on Android
+        ...Platform.select({
+            android: {
+                elevation: 24,
+                shadowColor: '#000',
+            },
+        }),
     },
-    activeIndicator: {
-        position: 'absolute',
-        width: 48,
+    activePill: {
+        width: 52,
         height: 32,
         borderRadius: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+        // subtle shadow so pill floats
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.18,
+        shadowRadius: 6,
+        elevation: 4,
+    },
+    inactiveIcon: {
+        width: 52,
+        height: 32,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 });
 
