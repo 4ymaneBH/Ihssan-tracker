@@ -2,6 +2,7 @@
 import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
+import { logger } from '../utils/logger';
 
 import { SalatName, PrayerNotificationSettings } from '../types';
 
@@ -104,7 +105,7 @@ export const scheduleDailyNotification = async (
 
         return identifier;
     } catch (error) {
-        console.error('Failed to schedule notification:', error);
+        logger.error('Failed to schedule notification:', error);
         return null;
     }
 };
@@ -122,7 +123,7 @@ export const cancelNotification = async (notificationId: string): Promise<void> 
             await AsyncStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(notifications));
         }
     } catch (error) {
-        console.error('Failed to cancel notification:', error);
+        logger.error('Failed to cancel notification:', error);
     }
 };
 
@@ -132,7 +133,7 @@ export const cancelAllNotifications = async (): Promise<void> => {
         await Notifications.cancelAllScheduledNotificationsAsync();
         await AsyncStorage.removeItem(NOTIFICATIONS_KEY);
     } catch (error) {
-        console.error('Failed to cancel all notifications:', error);
+        logger.error('Failed to cancel all notifications:', error);
     }
 };
 
@@ -145,7 +146,7 @@ export const getScheduledNotifications = async (): Promise<ScheduledNotification
         }
         return [];
     } catch (error) {
-        console.error('Failed to get scheduled notifications:', error);
+        logger.error('Failed to get scheduled notifications:', error);
         return [];
     }
 };
@@ -174,7 +175,7 @@ export const snoozeNotification = async (
 
         return identifier;
     } catch (error) {
-        console.error('Failed to snooze notification:', error);
+        logger.error('Failed to snooze notification:', error);
         return null;
     }
 };

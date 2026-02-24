@@ -22,7 +22,7 @@ import {
     getMonthName,
     ReportData,
 } from '../services/exportService';
-import { getDateString, getFontFamily } from '../utils';
+import { getDateString, getFontFamily, logger } from '../utils';
 
 
 interface ExportModalProps {
@@ -146,7 +146,7 @@ const ExportModal: React.FC<ExportModalProps> = ({ visible, onClose }) => {
                 setExportSuccess(false);
             }, 1500);
         } catch (error) {
-            console.error('Export failed:', error);
+            logger.error('Export failed:', error);
         } finally {
             setIsExporting(false);
         }

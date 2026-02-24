@@ -6,7 +6,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { useTheme } from '../../context';
 import { useSocialStore } from '../../store';
-import { getFontFamily, formatNumber } from '../../utils';
+import { getFontFamily, formatNumber, logger } from '../../utils';
 import { RootStackParamList } from '../../types';
 
 type GroupDetailsRouteProp = RouteProp<RootStackParamList, 'GroupDetails'>;
@@ -40,7 +40,7 @@ const GroupDetailsScreen: React.FC = () => {
                     : `Join my group "${group.name}" on Ihssan App! Enter code: ${group.code}`,
             });
         } catch (error) {
-            console.error(error);
+            logger.error('Share failed:', error);
         }
     };
 

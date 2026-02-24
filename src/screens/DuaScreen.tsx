@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../context';
+import { logger } from '../utils';
 import {
     duaCollection,
     duaCategories,
@@ -100,7 +101,7 @@ const DuaScreen: React.FC = () => {
 
             await Share.share({ message });
         } catch (error) {
-            console.error('Share error:', error);
+            logger.error('Share error:', error);
         }
     };
 
