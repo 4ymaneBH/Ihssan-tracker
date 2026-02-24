@@ -25,8 +25,15 @@ export interface LocationCoordinates {
 
 /**
  * Get the next upcoming prayer
+ * @param prayerTimes - Today's prayer times
+ * @param now - Current time
+ * @param coordinates - Location coordinates (used for tomorrow's Fajr fallback)
  */
-const getNextPrayer = (prayerTimes: AdhanPrayerTimes, now: Date): { name: PrayerName; time: Date } | null => {
+const getNextPrayer = (
+    prayerTimes: AdhanPrayerTimes,
+    now: Date,
+    coordinates: Coordinates
+): { name: PrayerName; time: Date } | null => {
     const prayers: { name: PrayerName; time: Date }[] = [
         { name: 'fajr', time: prayerTimes.fajr },
         { name: 'dhuhr', time: prayerTimes.dhuhr },
@@ -42,14 +49,13 @@ const getNextPrayer = (prayerTimes: AdhanPrayerTimes, now: Date): { name: Prayer
         }
     }
 
-    // If no prayer found today, return tomorrow's Fajr
+    // If no prayer found today, return tomorrow's Fajr using actual coordinates
     const tomorrow = new Date(now);
     tomorrow.setDate(tomorrow.getDate() + 1);
     tomorrow.setHours(0, 0, 0, 0);
 
-    const tomorrowCoords = new Coordinates(0, 0); // Will be set by caller
     const tomorrowParams = CalculationMethod.MuslimWorldLeague();
-    const tomorrowPrayers = new AdhanPrayerTimes(tomorrowCoords, tomorrow, tomorrowParams);
+    const tomorrowPrayers = new AdhanPrayerTimes(coordinates, tomorrow, tomorrowParams);
 
     return { name: 'fajr', time: tomorrowPrayers.fajr };
 };
@@ -97,7 +103,7 @@ export const calculatePrayerTimes = (
         asr: prayerTimes.asr,
         maghrib: prayerTimes.maghrib,
         isha: prayerTimes.isha,
-        nextPrayer: getNextPrayer(prayerTimes, now),
+        nextPrayer: getNextPrayer(prayerTimes, now, coordinates),
         currentPrayer: getCurrentPrayer(prayerTimes, now),
         qiblaDirection: qibla.direction,
     };

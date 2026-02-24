@@ -1,9 +1,10 @@
 // Custom hook for prayer times with location
-import { useState, useEffect useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import * as Location from 'expo-location';
 import { calculatePrayerTimes, PrayerTimesResult, formatPrayerTime, getTimeRemaining } from '../services/prayerTimes';
 import { schedulePrayerNotifications } from '../services/notifications';
 import { useUserPreferencesStore } from '../store';
+import { logger } from '../utils/logger';
 
 interface UsePrayerTimesResult {
     prayerTimes: PrayerTimesResult | null;
@@ -75,8 +76,8 @@ export const usePrayerTimes = (): UsePrayerTimesResult => {
             const times = calculatePrayerTimes(latitude, longitude);
             setPrayerTimes(times);
         } catch (err) {
-            setError('Failed to load prayer times');
-            console.error('Prayer times error:', err);
+            setError('Failed to load prayer times. Please check your location settings.');
+            logger.error('Prayer times error:', err);
         } finally {
             setLoading(false);
         }
@@ -90,7 +91,9 @@ export const usePrayerTimes = (): UsePrayerTimesResult => {
 
     useEffect(() => {
         if (prayerTimes && prayerNotifications) {
-            schedulePrayerNotifications(prayerTimes, prayerNotifications, language).catch(console.error);
+            schedulePrayerNotifications(prayerTimes, prayerNotifications, language).catch(
+                (err) => logger.error('Failed to schedule prayer notifications:', err)
+            );
         }
     }, [prayerTimes, prayerNotifications, language]);
 
