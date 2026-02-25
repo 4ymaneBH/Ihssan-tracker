@@ -1,154 +1,156 @@
 // Color palette for Ihssan Tracker
-// Modern, clean aesthetic with neon green accent (based on reference image)
+// Premium emerald-green identity — warm neutrals, rich accents, high contrast surfaces
 
 export const colors = {
-    // Primary - Bright Lime/Neon Green (from reference)
+    // Primary — deep saturated emerald (replaces cheap neon lime)
     primary: {
-        50: '#F7FEF0',
-        100: '#ECFCD5',
-        200: '#D9F9AE',
-        300: '#BFF37C',
-        400: '#A4D96C',  // Main primary (neon green from reference)
-        500: '#8BC34A',
-        600: '#7CB342',
-        700: '#689F38',
-        800: '#558B2F',
-        900: '#33691E',
+        50:  '#F0FDF4',
+        100: '#DCFCE7',
+        200: '#BBF7D0',
+        300: '#86EFAC',
+        400: '#4ADE80',
+        500: '#22C55E',
+        600: '#16A34A',   // ← Main light-mode primary: rich, confident emerald
+        700: '#15803D',
+        800: '#166534',
+        900: '#14532D',
     },
 
-    // Neutral - Clean grays (from reference)
+    // Neutral — warm-tinted grays for light mode (not cold blue-gray)
     neutral: {
-        0: '#FFFFFF',
-        50: '#F8F9FA',   // Very light gray background
-        100: '#F1F3F5',
-        200: '#E9ECEF',
-        300: '#DEE2E6',
-        400: '#CED4DA',
-        500: '#ADB5BD',
-        600: '#6C757D',
-        700: '#495057',
-        800: '#343A40',
-        900: '#212529',
-        950: '#0D0F12',
+        0:   '#FFFFFF',
+        50:  '#F9FAF7',   // Warm off-white background
+        100: '#F2F4F0',   // Slightly warmer secondary bg
+        200: '#E5E8E2',   // Warm border / divider
+        300: '#CFD3CC',
+        400: '#9EA49A',   // Balanced mid-gray
+        500: '#737870',
+        600: '#565C54',
+        700: '#3D4239',
+        800: '#272B24',
+        900: '#161A14',   // Warm near-black text
+        950: '#0C0E0A',
     },
 
-    // Semantic colors
+    // Semantic — all distinct, none overlapping with primary
     success: {
-        light: '#D9F9AE',
-        main: '#A4D96C',  // Same as primary
-        dark: '#7CB342',
+        light: '#D1FAE5',
+        main:  '#10B981',   // Emerald-500 — clearly "done/good"
+        dark:  '#059669',
     },
     warning: {
         light: '#FEF3C7',
-        main: '#F59E0B',
-        dark: '#D97706',
+        main:  '#F59E0B',
+        dark:  '#D97706',
     },
     error: {
         light: '#FEE2E2',
-        main: '#EF4444',
-        dark: '#DC2626',
+        main:  '#EF4444',
+        dark:  '#DC2626',
     },
     info: {
-        light: '#DBEAFE',
-        main: '#3B82F6',
-        dark: '#2563EB',
+        light: '#E0F2FE',
+        main:  '#0EA5E9',   // Sky blue — distinct from emerald
+        dark:  '#0284C7',
     },
 
-    // Card accent colors (for icon backgrounds) — differentiated per module
+    // Accent colors — rich, differentiated, curated palette
     accents: {
-        salat: '#34D399',      // Emerald green
-        adhkar: '#FBBF24',     // Warm amber
-        quran: '#2DD4BF',      // Teal
-        charity: '#F472B6',    // Rose pink
-        tahajjud: '#A78BFA',   // Soft purple
-        custom: '#60A5FA',     // Sky blue
+        salat:    '#16A34A',   // Emerald — mirrors primary (prayer = core)
+        adhkar:   '#D97706',   // Amber-600 — warm & earthy
+        quran:    '#0284C7',   // Sky-700 — clear sky, knowledge
+        charity:  '#DB2777',   // Pink-600 — warmth, giving
+        tahajjud: '#7C3AED',   // Violet-600 — night, depth
+        custom:   '#EA580C',   // Orange-600 — energy, personal
     },
 };
 
-// Light theme - clean modern aesthetic (from reference)
+// ─── Light Theme ────────────────────────────────────────────────────────────
 export const lightTheme = {
-    background: colors.neutral[50],           // Very light gray (#F8F9FA)
+    background:          colors.neutral[50],     // Warm off-white (#F9FAF7)
     backgroundSecondary: colors.neutral[100],
-    surface: colors.neutral[0],               // Pure white cards
-    surfaceElevated: colors.neutral[0],
-    text: colors.neutral[900],                // Dark gray text (#212529)
-    textSecondary: colors.neutral[600],       // Medium gray (#6C757D)
-    textTertiary: colors.neutral[500],        // Light gray (#ADB5BD)
-    border: colors.neutral[200],              // Subtle borders (#E9ECEF)
-    borderLight: colors.neutral[200],
-    divider: colors.neutral[200],
-    cardBorder: colors.neutral[200],
-    primary: colors.primary[400],             // Neon green (#A4D96C)
-    primaryLight: colors.primary[100],
-    onPrimary: colors.neutral[0],             // White text on green
-    tabBarBackground: 'rgba(255,255,255,0.85)',  // Frosted glass tab bar
-    tabBarBorder: 'rgba(0,0,0,0.06)',
-    tabBarActive: colors.primary[500],           // Vibrant green active
-    tabBarInactive: colors.neutral[400],         // Softer inactive
-    // Palettes for advanced usage
+    surface:             colors.neutral[0],      // Pure white cards
+    surfaceElevated:     colors.neutral[0],
+    text:                colors.neutral[900],     // Warm near-black (#161A14)
+    textSecondary:       colors.neutral[600],     // Medium warm gray (#565C54)
+    textTertiary:        colors.neutral[400],
+    border:              colors.neutral[200],     // Warm hairline (#E5E8E2)
+    borderLight:         colors.neutral[200],
+    divider:             colors.neutral[200],
+    cardBorder:          '#E4E7E0',              // Slightly greenish-warm card stroke
+
+    primary:      colors.primary[600],            // Rich emerald (#16A34A)
+    primaryLight: colors.primary[100],            // Soft green tint (#DCFCE7)
+    onPrimary:    colors.neutral[0],              // White on green
+
+    tabBarBackground: 'rgba(255,255,255,0.97)',
+    tabBarBorder:     'rgba(0,0,0,0.09)',
+    tabBarActive:     colors.primary[600],        // Emerald pill
+    tabBarInactive:   colors.neutral[400],        // #9EA49A — clearly readable
+
     palette: colors,
-    // Semantic colors
     success: colors.success,
     warning: colors.warning,
-    error: colors.error,
-    info: colors.info,
-    // Accent colors for icons
+    error:   colors.error,
+    info:    colors.info,
     accents: colors.accents,
-    // Card backgrounds - subtle tinted in light mode
+
+    // Card backgrounds — each subtly tinted, distinct but harmonious
     cards: {
-        salat: '#F0FDF4',       // Soft mint
-        adhkar: '#FFFBEB',      // Warm cream
-        quran: '#F0FDFA',       // Light teal
-        charity: '#FFF1F2',     // Blush pink
-        tahajjud: '#F5F3FF',    // Pale lavender
-        custom: '#EFF6FF',      // Ice blue
+        salat:    '#F0FDF5',   // Barely-there mint
+        adhkar:   '#FFFBF0',   // Warm honey cream
+        quran:    '#F0F9FF',   // Pale sky
+        charity:  '#FFF0F7',   // Light rose
+        tahajjud: '#F5F0FF',   // Pale violet
+        custom:   '#FFF5F0',   // Pale peach
     },
-    // Progress bar colors
+
     progressBarBackground: colors.neutral[200],
-    progressBarFill: colors.primary[400],
+    progressBarFill:       colors.primary[600],
 };
 
-// Dark theme
+// ─── Dark Theme ──────────────────────────────────────────────────────────────
 export const darkTheme = {
-    background: colors.neutral[950],
+    background:          colors.neutral[950],
     backgroundSecondary: colors.neutral[900],
-    surface: colors.neutral[900],
-    surfaceElevated: colors.neutral[800],
-    text: colors.neutral[50],
-    textSecondary: colors.neutral[400],
-    textTertiary: colors.neutral[500],
-    border: colors.neutral[800],
-    borderLight: colors.neutral[700],
-    divider: colors.neutral[800],
-    cardBorder: colors.neutral[700],
-    primary: colors.primary[400],             // Neon green
+    surface:             colors.neutral[900],
+    surfaceElevated:     colors.neutral[800],
+    text:                '#F2F4F0',
+    textSecondary:       colors.neutral[400],
+    textTertiary:        colors.neutral[500],
+    border:              colors.neutral[800],
+    borderLight:         colors.neutral[700],
+    divider:             colors.neutral[800],
+    cardBorder:          colors.neutral[700],
+
+    primary:      colors.primary[400],            // Bright emerald on dark (#4ADE80)
     primaryLight: colors.primary[900],
-    onPrimary: colors.neutral[900],
-    tabBarBackground: 'rgba(13,15,18,0.88)',   // Frosted dark glass tab bar
-    tabBarBorder: 'rgba(255,255,255,0.06)',
-    tabBarActive: colors.primary[400],
-    tabBarInactive: colors.neutral[500],
-    // Palettes for advanced usage
+    onPrimary:    colors.neutral[900],            // Dark text on bright green
+
+    tabBarBackground: 'rgba(12,14,10,0.94)',
+    tabBarBorder:     'rgba(255,255,255,0.08)',
+    tabBarActive:     colors.primary[400],
+    tabBarInactive:   colors.neutral[500],
+
     palette: colors,
-    // Semantic colors
     success: colors.success,
     warning: colors.warning,
-    error: colors.error,
-    info: colors.info,
-    // Accent colors for icons
+    error:   colors.error,
+    info:    colors.info,
     accents: colors.accents,
-    // Dark mode card colors - rich subtle tints
+
     cards: {
-        salat: '#0D2818',       // Deep emerald
-        adhkar: '#1A1608',      // Deep amber
-        quran: '#0D1F1C',       // Deep teal
-        charity: '#1F0D14',     // Deep rose
-        tahajjud: '#16103A',    // Deep purple
-        custom: '#0D1626',      // Deep navy
+        salat:    '#0A1F12',
+        adhkar:   '#1A1506',
+        quran:    '#071B25',
+        charity:  '#1F070F',
+        tahajjud: '#120A2E',
+        custom:   '#1F1007',
     },
-    // Progress bar colors
+
     progressBarBackground: colors.neutral[700],
-    progressBarFill: colors.primary[400],
+    progressBarFill:       colors.primary[400],
 };
 
 export type Theme = typeof lightTheme;
+
