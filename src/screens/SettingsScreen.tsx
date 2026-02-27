@@ -194,7 +194,7 @@ const SettingsScreen: React.FC = () => {
                     </View>
                 </LinearGradient>
 
-                {/* ── Notifications + Language ── */
+                {/* ── Notifications + Language ── */}
                 <Card>
                     <Row
                         icon="bell"

@@ -19,6 +19,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../context';
 import { logger } from '../utils';
+import { useUserPreferencesStore } from '../store';
 import {
     duaCollection,
     duaCategories,
@@ -31,7 +32,6 @@ import {
 } from '../data/duaContent';
 
 const { width } = Dimensions.get('window');
-const CARD_WIDTH = (width - 48) / 2;
 
 // Category card colors and icons - improved contrast for light mode
 const categoryStyles: Record<DuaCategory, { bgColor: string; accentColor: string; icon: string }> = {
@@ -66,6 +66,7 @@ const DuaScreen: React.FC = () => {
     const { theme, isDark } = useTheme();
     const navigation = useNavigation();
     const isArabic = i18n.language === 'ar';
+    const displayName = useUserPreferencesStore(state => state.displayName);
 
     const [selectedCategory, setSelectedCategory] = useState<DuaCategory | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
@@ -124,44 +125,35 @@ const DuaScreen: React.FC = () => {
     };
 
     // Render category card with illustration as background
-    const renderCategoryCard = (category: DuaCategory, isLarge: boolean = false) => {
+    const renderCategoryCard = (category: DuaCategory) => {
         const style = categoryStyles[category];
         const label = getCategoryLabel(category, isArabic);
-        const duaCount = getDuasByCategory(category).length;
         const image = categoryImages[category];
 
         return (
             <TouchableOpacity
                 key={category}
                 style={[
-                    isLarge ? styles.largeCategoryCard : styles.categoryCard,
+                    styles.categoryCard,
                     { backgroundColor: isDark ? theme.colors.surface : style.bgColor },
                 ]}
                 onPress={() => handleCategoryPress(category)}
                 activeOpacity={0.85}
             >
-                {/* Background Illustration */}
+                <View style={styles.categoryTextContainer}>
+                    <Text style={[styles.categoryLabel, { color: isDark ? theme.colors.text : '#1F2937' }]} numberOfLines={2}>
+                        {label}
+                    </Text>
+                </View>
+                {/* Illustration on the right */}
                 <Image
                     source={image}
                     style={[
-                        styles.illustrationBackground,
-                        isLarge && styles.largeIllustrationBackground,
-                        isDark && { opacity: 0.6 },
+                        styles.illustrationRight,
+                        isDark && { opacity: 0.8 },
                     ]}
-                    resizeMode="cover"
+                    resizeMode="contain"
                 />
-                {/* Text overlay at bottom */}
-                <View style={[
-                    styles.categoryTextOverlay,
-                    { backgroundColor: isDark ? 'rgba(30, 30, 35, 0.9)' : 'rgba(255, 255, 255, 0.85)' },
-                ]}>
-                    <Text style={[styles.categoryLabel, { color: theme.colors.text }]} numberOfLines={2}>
-                        {label}
-                    </Text>
-                    <Text style={[styles.categoryCount, { color: theme.colors.textSecondary }]}>
-                        {isArabic ? `${duaCount} أدعية` : `${duaCount} du'as`}
-                    </Text>
-                </View>
             </TouchableOpacity>
         );
     };
@@ -271,29 +263,52 @@ const DuaScreen: React.FC = () => {
 
     // Categories home view
     const renderCategoriesHome = () => (
-        <ScrollView
-            style={styles.scrollView}
-            contentContainerStyle={styles.categoriesContent}
-            showsVerticalScrollIndicator={false}
-        >
-            {/* Featured / Large Category */}
-            <View style={styles.featuredSection}>
-                {renderCategoryCard('protection', true)}
-            </View>
+        <View style={styles.homeContainer}>
+            <ScrollView
+                style={styles.scrollView}
+                contentContainerStyle={styles.categoriesContent}
+                showsVerticalScrollIndicator={false}
+            >
+                <Text style={[styles.greetingTitle, { color: theme.colors.text }]}>
+                    {isArabic ? `ما الذي يشغل بالك${displayName ? `، ${displayName}` : ''}؟` : `What's on your heart${displayName ? `, ${displayName}` : ''}?`}
+                </Text>
 
-            {/* Category Grid */}
-            <View style={styles.categoryGrid}>
-                {renderCategoryCard('morning_evening')}
-                {renderCategoryCard('prayer')}
-                {renderCategoryCard('forgiveness')}
-                {renderCategoryCard('anxiety')}
-                {renderCategoryCard('travel')}
-                {renderCategoryCard('food')}
-                {renderCategoryCard('sleep')}
-                {renderCategoryCard('gratitude')}
-                {renderCategoryCard('daily')}
+                <View style={styles.previousSearchesHeader}>
+                    <MaterialCommunityIcons name="history" size={20} color="#B48A4B" />
+                    <Text style={[styles.previousSearchesText, { color: "#B48A4B" }]}>
+                        {isArabic ? 'عمليات البحث السابقة' : 'Previous searches'}
+                    </Text>
+                </View>
+
+                {/* Category List */}
+                <View style={styles.categoryList}>
+                    {renderCategoryCard('protection')}
+                    {renderCategoryCard('morning_evening')}
+                    {renderCategoryCard('prayer')}
+                    {renderCategoryCard('forgiveness')}
+                    {renderCategoryCard('anxiety')}
+                    {renderCategoryCard('travel')}
+                    {renderCategoryCard('food')}
+                    {renderCategoryCard('sleep')}
+                    {renderCategoryCard('gratitude')}
+                    {renderCategoryCard('daily')}
+                </View>
+            </ScrollView>
+
+            {/* Floating Search Input */}
+            <View style={[styles.floatingSearchContainer, { backgroundColor: theme.colors.surface }]}>
+                <TextInput
+                    style={[styles.floatingSearchInput, { color: theme.colors.text }]}
+                    placeholder={isArabic ? 'كنت عاطلاً عن العمل لفترة وأشعر باليأس' : 'been unemployed for a while and I feel hopeless'}
+                    placeholderTextColor={theme.colors.textTertiary}
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                />
+                <TouchableOpacity style={styles.searchSubmitButton}>
+                    <MaterialCommunityIcons name="arrow-up" size={20} color="#FFF" />
+                </TouchableOpacity>
             </View>
-        </ScrollView>
+        </View>
     );
 
     // Du'a list view for selected category
@@ -401,66 +416,93 @@ const styles = StyleSheet.create({
     headerRight: {
         width: 40,
     },
+    homeContainer: {
+        flex: 1,
+    },
     scrollView: {
         flex: 1,
     },
     categoriesContent: {
-        paddingHorizontal: 16,
-        paddingBottom: 24,
+        paddingHorizontal: 20,
+        paddingBottom: 100, // Space for floating search
     },
-    // Featured section
-    featuredSection: {
-        marginBottom: 16,
+    greetingTitle: {
+        fontSize: 32,
+        fontWeight: '700',
+        marginTop: 10,
+        marginBottom: 24,
+        lineHeight: 40,
     },
-    // Category Grid
-    categoryGrid: {
+    previousSearchesHeader: {
         flexDirection: 'row',
-        flexWrap: 'wrap',
+        alignItems: 'center',
+        marginBottom: 16,
+        gap: 8,
+    },
+    previousSearchesText: {
+        fontSize: 16,
+        fontWeight: '600',
+    },
+    // Category List
+    categoryList: {
+        flexDirection: 'column',
         gap: 12,
     },
     categoryCard: {
-        width: CARD_WIDTH,
-        borderRadius: 20,
-        minHeight: 180,
-        overflow: 'hidden',
-        position: 'relative',
-    },
-    largeCategoryCard: {
-        borderRadius: 24,
-        minHeight: 180,
-        overflow: 'hidden',
-        position: 'relative',
-    },
-    illustrationBackground: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
         width: '100%',
-        height: '100%',
-        opacity: 0.85,
+        borderRadius: 16,
+        height: 80,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 20,
+        overflow: 'hidden',
     },
-    largeIllustrationBackground: {
-        opacity: 0.9,
-    },
-    categoryTextOverlay: {
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        paddingHorizontal: 16,
-        paddingVertical: 14,
-        backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    categoryTextContainer: {
+        flex: 1,
+        zIndex: 2,
     },
     categoryLabel: {
-        fontSize: 16,
-        fontWeight: '700',
-        marginBottom: 2,
+        fontSize: 18,
+        fontWeight: '600',
     },
-    categoryCount: {
-        fontSize: 12,
-        opacity: 0.7,
+    illustrationRight: {
+        position: 'absolute',
+        right: 0,
+        bottom: 0,
+        height: '120%',
+        width: 120,
+        opacity: 0.9,
+    },
+    // Floating Search
+    floatingSearchContainer: {
+        position: 'absolute',
+        bottom: 20,
+        left: 20,
+        right: 20,
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        borderRadius: 30,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 12,
+        elevation: 5,
+    },
+    floatingSearchInput: {
+        flex: 1,
+        fontSize: 15,
+        marginRight: 12,
+    },
+    searchSubmitButton: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        backgroundColor: '#8B6B4A',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     // Search
     searchContainer: {
