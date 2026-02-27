@@ -1,5 +1,5 @@
 // Today Screen - Main Dashboard - Premium Redesign
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
     View,
     Text,
@@ -8,6 +8,7 @@ import {
     TouchableOpacity,
     I18nManager,
     Animated,
+    Dimensions,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -16,6 +17,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Haptics from 'expo-haptics';
+import Svg, { Path, Circle, Rect, Defs, LinearGradient as SvgGradient, Stop } from 'react-native-svg';
 import { useTheme } from '../context';
 import { useSalatStore, useHabitsStore, useUserPreferencesStore } from '../store';
 import { getDateString, formatNumber, getFontFamily } from '../utils';
@@ -25,6 +27,7 @@ import { ResetModal, AppCard, PrayerPill, QuickActionButton } from '../component
 import { usePrayerTimes } from '../hooks';
 import { formatPrayerTime, getTimeRemaining } from '../services/prayerTimes';
 
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -183,6 +186,295 @@ const bannerStyles = StyleSheet.create({
     },
     countdown: {
         fontSize: 12,
+    },
+});
+
+// ========================================
+// Mosque Silhouette SVG Component - 3D Volumetric
+// ========================================
+const MosqueSilhouette: React.FC<{ width: number; height: number }> = ({ width, height }) => (
+    <Svg width={width} height={height} viewBox="0 0 360 220">
+        <Defs>
+            {/* Main dome - brighter at top-left, darker at base */}
+            <SvgGradient id="domeMain" x1="0.2" y1="0" x2="0.8" y2="1">
+                <Stop offset="0" stopColor="#2EE8A0" stopOpacity="0.75" />
+                <Stop offset="0.45" stopColor="#0EA571" stopOpacity="0.7" />
+                <Stop offset="1" stopColor="#053D27" stopOpacity="0.95" />
+            </SvgGradient>
+            {/* Side face of dome - darker */}
+            <SvgGradient id="domeSide" x1="0" y1="0" x2="1" y2="0">
+                <Stop offset="0" stopColor="#0EA571" stopOpacity="0.5" />
+                <Stop offset="1" stopColor="#042A1A" stopOpacity="0.95" />
+            </SvgGradient>
+            {/* Minaret gradient - left to right shading */}
+            <SvgGradient id="minaretL" x1="0" y1="0" x2="1" y2="0">
+                <Stop offset="0" stopColor="#2EE8A0" stopOpacity="0.7" />
+                <Stop offset="1" stopColor="#042A1A" stopOpacity="0.9" />
+            </SvgGradient>
+            <SvgGradient id="minaretR" x1="0" y1="0" x2="1" y2="0">
+                <Stop offset="0" stopColor="#0EA571" stopOpacity="0.65" />
+                <Stop offset="1" stopColor="#031E12" stopOpacity="0.95" />
+            </SvgGradient>
+            {/* Base wall */}
+            <SvgGradient id="wallGrad" x1="0" y1="0" x2="0" y2="1">
+                <Stop offset="0" stopColor="#0EA571" stopOpacity="0.5" />
+                <Stop offset="1" stopColor="#042A1A" stopOpacity="0.85" />
+            </SvgGradient>
+        </Defs>
+
+        {/* ── Left minaret body ── */}
+        <Rect x="52" y="78" width="18" height="95" rx="9" fill="url(#minaretL)" />
+        {/* Left minaret cap (pointed cone) */}
+        <Path d="M49,82 Q61,50 73,82 Z" fill="#1ECC8A" opacity="0.85" />
+        {/* Left minaret balcony ring */}
+        <Rect x="48" y="105" width="26" height="5" rx="2.5" fill="#0EA571" opacity="0.6" />
+        {/* Left crescent */}
+        <Path d="M58,52 Q61,44 64,52 Q61,48.5 58,52 Z" fill="#2EE8A0" opacity="0.95" />
+        <Circle cx="63" cy="43" r="2.5" fill="#2EE8A0" opacity="0.85" />
+
+        {/* ── Right minaret body ── */}
+        <Rect x="290" y="78" width="18" height="95" rx="9" fill="url(#minaretR)" />
+        {/* Right minaret cap */}
+        <Path d="M287,82 Q299,50 311,82 Z" fill="#0EA571" opacity="0.8" />
+        {/* Right minaret balcony ring */}
+        <Rect x="286" y="105" width="26" height="5" rx="2.5" fill="#063D27" opacity="0.7" />
+        {/* Right crescent */}
+        <Path d="M296,52 Q299,44 302,52 Q299,48.5 296,52 Z" fill="#1ECC8A" opacity="0.9" />
+        <Circle cx="301" cy="43" r="2.5" fill="#1ECC8A" opacity="0.8" />
+
+        {/* ── Main dome hemisphere ── */}
+        <Path d="M85,168 Q85,30 180,12 Q275,30 275,168 Z" fill="url(#domeMain)" />
+        {/* Dome highlight (lit face – top left shimmer) */}
+        <Path d="M115,155 Q108,80 150,42 Q165,52 168,75 Q138,90 128,155 Z" fill="#3DFDB8" opacity="0.1" />
+        {/* Dome right shadow */}
+        <Path d="M230,155 Q250,100 265,155 Z" fill="#021810" opacity="0.35" />
+
+        {/* ── Crescent on main dome ── */}
+        <Path d="M173,14 Q180,2 187,14 Q181,8 174,14 Z" fill="#2EE8A0" opacity="0.95" />
+        <Circle cx="183" cy="2" r="3" fill="#2EE8A0" opacity="0.85" />
+
+        {/* ── Side small domes ── */}
+        <Path d="M85,168 Q85,128 115,120 Q145,128 145,168" fill="#0A4830" opacity="0.6" />
+        <Path d="M215,168 Q215,128 245,120 Q275,128 275,168" fill="#063320" opacity="0.6" />
+
+        {/* ── Base wall ── */}
+        <Rect x="72" y="160" width="216" height="28" rx="5" fill="url(#wallGrad)" />
+        {/* Wall arched openings */}
+        <Path d="M100,188 Q100,165 118,162 Q136,165 136,188" fill="#021810" opacity="0.45" />
+        <Path d="M144,188 Q144,158 180,154 Q216,158 216,188" fill="#021810" opacity="0.45" />
+        <Path d="M224,188 Q224,165 242,162 Q260,165 260,188" fill="#021810" opacity="0.45" />
+
+        {/* ── Ambient stars ── */}
+        <Circle cx="30" cy="45" r="1.5" fill="#2EE8A0" opacity="0.55" />
+        <Circle cx="18" cy="80" r="1" fill="#2EE8A0" opacity="0.4" />
+        <Circle cx="340" cy="30" r="1.2" fill="#2EE8A0" opacity="0.45" />
+        <Circle cx="350" cy="75" r="1" fill="#2EE8A0" opacity="0.35" />
+        <Circle cx="50" cy="25" r="1" fill="#2EE8A0" opacity="0.4" />
+        <Circle cx="310" cy="60" r="1.2" fill="#2EE8A0" opacity="0.4" />
+    </Svg>
+);
+
+// ========================================
+// Hero Section Component
+// ========================================
+const HeroSection: React.FC = () => {
+    const { t, i18n } = useTranslation();
+    const { theme, isDark } = useTheme();
+    const navigation = useNavigation<NavigationProp>();
+    const isArabic = i18n.language === 'ar';
+
+    const displayName = useUserPreferencesStore(state => state.displayName);
+    const { getPrayerStreak } = useSalatStore();
+    const { getWeeklyQuranPages } = useHabitsStore();
+    const { goals } = useUserPreferencesStore();
+    const streak = getPrayerStreak();
+    const weeklyPages = getWeeklyQuranPages();
+
+    const today = new Date();
+    const hijriDate = getHijriDate(today, isArabic ? 'ar' : 'en');
+
+    // Get greeting based on time of day
+    const getGreeting = () => {
+        const hour = today.getHours();
+        if (hour < 12) return isArabic ? 'صباح الخير' : 'Good morning';
+        if (hour < 17) return isArabic ? 'مساء الخير' : 'Good afternoon';
+        return isArabic ? 'مساء الخير' : 'Good evening';
+    };
+
+    // Week streak data (last 7 days)
+    const weekDays = useMemo(() => {
+        const days = [];
+        const dayLabels = isArabic
+            ? ['أح', 'إث', 'ثل', 'أر', 'خم', 'جم', 'سب']
+            : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            const dateStr = getDateString(d);
+            const dayOfWeek = d.getDay();
+            days.push({
+                label: dayLabels[dayOfWeek],
+                completed: useSalatStore.getState().logs[dateStr]
+                    ? Object.values(useSalatStore.getState().logs[dateStr]).filter(v => v === 'onTime' || v === 'late').length >= 3
+                    : false,
+                isToday: i === 0,
+            });
+        }
+        return days;
+    }, [isArabic]);
+
+    const gradientColors: [string, string, string] = isDark
+        ? ['#0B2018', '#091509', '#070E0A']
+        : ['#E5F5EE', '#F0FBF5', '#FFFFFF'];
+
+    return (
+        <LinearGradient
+            colors={gradientColors}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            style={heroStyles.container}
+        >
+            {/* Mosque silhouette in background */}
+            <View style={heroStyles.mosqueContainer}>
+                <MosqueSilhouette
+                    width={SCREEN_WIDTH * 0.85}
+                    height={200}
+                />
+            </View>
+
+            {/* Greeting */}
+            <View style={heroStyles.greetingSection}>
+                <Text style={[heroStyles.greeting, { color: isDark ? '#8FA898' : theme.colors.textSecondary }]}>
+                    {getGreeting()},
+                </Text>
+                <Text style={[heroStyles.name, { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }]}>
+                    {displayName || (isArabic ? 'مستخدم' : 'User')}
+                </Text>
+                <Text style={[heroStyles.hijriDate, { color: isDark ? '#5A7363' : theme.colors.textTertiary }]}>
+                    {hijriDate}
+                </Text>
+            </View>
+
+            {/* Streak Section */}
+            {streak > 0 && (
+                <View style={[heroStyles.streakCard, {
+                    backgroundColor: isDark ? 'rgba(14,165,113,0.1)' : 'rgba(14,165,113,0.07)',
+                    borderColor: isDark ? 'rgba(14,165,113,0.18)' : 'rgba(14,165,113,0.14)',
+                }]}>
+                    <View style={heroStyles.streakHeader}>
+                        <Text style={{ fontSize: 16 }}>🔥</Text>
+                        <Text style={[heroStyles.streakTitle, { color: theme.colors.text }]}>
+                            {isArabic
+                                ? `أنت في سلسلة ${formatNumber(streak, 'ar')} يوم!`
+                                : `You're on the ${formatNumber(streak, 'en')} day streaks!`}
+                        </Text>
+                    </View>
+
+                    {/* Week calendar */}
+                    <View style={heroStyles.weekRow}>
+                        {weekDays.map((day, idx) => (
+                            <View key={idx} style={heroStyles.dayColumn}>
+                                <Text style={[heroStyles.dayLabel, {
+                                    color: day.isToday ? theme.colors.primary : (isDark ? '#5A7363' : theme.colors.textTertiary),
+                                    fontWeight: day.isToday ? '700' : '500',
+                                }]}>
+                                    {day.label}
+                                </Text>
+                                <View style={[heroStyles.dayCircle, {
+                                    backgroundColor: day.completed
+                                        ? theme.colors.primary
+                                        : (isDark ? '#1A2B1F' : '#E5E8E2'),
+                                    borderWidth: day.isToday ? 2 : 0,
+                                    borderColor: day.isToday ? theme.colors.primary : 'transparent',
+                                }]}>
+                                    {day.completed && (
+                                        <MaterialCommunityIcons name="check" size={16} color="#FFFFFF" />
+                                    )}
+                                </View>
+                            </View>
+                        ))}
+                    </View>
+
+                    <Text style={[heroStyles.streakHint, { color: isDark ? '#5A7363' : theme.colors.textTertiary }]}>
+                        {isArabic ? 'تدرب كل يوم حتى لا تفقد سلسلتك' : "Practice each day so your streak won't reset"}
+                    </Text>
+                </View>
+            )}
+        </LinearGradient>
+    );
+};
+
+const heroStyles = StyleSheet.create({
+    container: {
+        paddingTop: 8,
+        paddingBottom: 20,
+        paddingHorizontal: 20,
+        position: 'relative',
+        overflow: 'hidden',
+    },
+    mosqueContainer: {
+        position: 'absolute',
+        top: -20,
+        right: -40,
+        opacity: 0.6,
+    },
+    greetingSection: {
+        marginBottom: 20,
+        zIndex: 1,
+    },
+    greeting: {
+        fontSize: 16,
+        fontWeight: '400',
+        marginBottom: 4,
+    },
+    name: {
+        fontSize: 32,
+        fontWeight: '800',
+        letterSpacing: -0.5,
+    },
+    hijriDate: {
+        fontSize: 13,
+        marginTop: 4,
+    },
+    streakCard: {
+        borderRadius: 16,
+        padding: 16,
+        borderWidth: 1,
+        zIndex: 1,
+    },
+    streakHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        marginBottom: 14,
+    },
+    streakTitle: {
+        fontSize: 15,
+        fontWeight: '600',
+    },
+    weekRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 12,
+    },
+    dayColumn: {
+        alignItems: 'center',
+        gap: 6,
+    },
+    dayLabel: {
+        fontSize: 12,
+        fontWeight: '500',
+    },
+    dayCircle: {
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    streakHint: {
+        fontSize: 12,
+        textAlign: 'center',
     },
 });
 
@@ -929,14 +1221,6 @@ const TodayScreen: React.FC = () => {
     const navigation = useNavigation<NavigationProp>();
     const isArabic = i18n.language === 'ar';
 
-    const today = new Date();
-    const formattedDate = today.toLocaleDateString(
-        isArabic ? 'ar-SA' : 'en-US',
-        { weekday: 'long', month: 'long', day: 'numeric' }
-    );
-    const hijriDate = getHijriDate(today, isArabic ? 'ar' : 'en');
-
-
     const handleOpenProfile = () => {
         navigation.navigate('Profile');
     };
@@ -945,28 +1229,14 @@ const TodayScreen: React.FC = () => {
         <SafeAreaView
             style={[styles.container, { backgroundColor: 'transparent' }]}
         >
-            {/* Header */}
+            {/* Minimal Header */}
             <View style={styles.header}>
-                <View>
-                    <Text style={[
-                        styles.headerTitle,
-                        { color: theme.colors.text, fontFamily: getFontFamily(isArabic, 'bold') }
-                    ]}>
-                        {t('common.today')}
-                    </Text>
-                    <Text style={[
-                        styles.headerDate,
-                        { color: theme.colors.textSecondary, fontFamily: getFontFamily(isArabic, 'regular') }
-                    ]}>
-                        {formattedDate} • {hijriDate}
-                    </Text>
-                </View>
-
+                <View style={{ flex: 1 }} />
                 <TouchableOpacity
                     style={[styles.profileButton, {
-                        backgroundColor: theme.colors.surface,
-                        borderColor: isDark ? 'transparent' : theme.colors.cardBorder,
-                        borderWidth: isDark ? 0 : 1,
+                        backgroundColor: isDark ? 'rgba(14,165,113,0.12)' : theme.colors.surface,
+                        borderColor: isDark ? 'rgba(14,165,113,0.18)' : theme.colors.cardBorder,
+                        borderWidth: 1,
                     }]}
                     onPress={handleOpenProfile}
                 >
@@ -980,6 +1250,7 @@ const TodayScreen: React.FC = () => {
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
             >
+                <HeroSection />
                 <NextPrayerBanner />
                 <SalatCard />
                 <QiblaCard />
@@ -1006,11 +1277,11 @@ const styles = StyleSheet.create({
     },
     header: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
         paddingHorizontal: 20,
-        paddingTop: 16,
-        paddingBottom: 16,
+        paddingTop: 8,
+        paddingBottom: 4,
     },
     headerTitle: {
         fontSize: 32,

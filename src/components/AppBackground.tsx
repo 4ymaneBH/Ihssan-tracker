@@ -7,11 +7,11 @@ export const AppBackground: React.FC = () => {
     const { isDark } = useTheme();
 
     if (isDark) {
-        // Rich dark mode gradient with subtle blue-green tint
+        // Premium deep green-black gradient
         return (
             <LinearGradient
-                colors={['#0B0E14', '#101824', '#0D1520', '#0B0E14']}
-                locations={[0, 0.35, 0.7, 1]}
+                colors={['#070E0A', '#0A1510', '#0D1A12', '#070E0A']}
+                locations={[0, 0.3, 0.65, 1]}
                 style={StyleSheet.absoluteFill}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}

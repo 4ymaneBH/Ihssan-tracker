@@ -43,7 +43,7 @@ export const AppCard: React.FC<AppCardProps> = ({
         styles.card,
         {
             backgroundColor: backgroundColor || theme.colors.surface,
-            borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+            borderColor: isDark ? 'rgba(14,165,113,0.1)' : 'rgba(0,0,0,0.04)',
             borderWidth: 1,
         },
         !isDark && styles.lightShadow,

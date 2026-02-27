@@ -111,45 +111,49 @@ export const lightTheme = {
 
 // ─── Dark Theme ──────────────────────────────────────────────────────────────
 export const darkTheme = {
-    background:          colors.neutral[950],
-    backgroundSecondary: colors.neutral[900],
-    surface:             colors.neutral[900],
-    surfaceElevated:     colors.neutral[800],
-    text:                '#F2F4F0',
-    textSecondary:       colors.neutral[400],
-    textTertiary:        colors.neutral[500],
-    border:              colors.neutral[800],
-    borderLight:         colors.neutral[700],
-    divider:             colors.neutral[800],
-    cardBorder:          colors.neutral[700],
+    background:          '#070E0A',               // Deep green-black
+    backgroundSecondary: '#0C1410',
+    surface:             '#111C15',               // Rich dark green surface
+    surfaceElevated:     '#162218',
+    text:                '#F0F5F1',
+    textSecondary:       '#8FA898',               // Muted sage
+    textTertiary:        '#5A7363',
+    border:              '#1A2B1F',
+    borderLight:         '#1E3125',
+    divider:             '#1A2B1F',
+    cardBorder:          '#1E3125',
 
-    primary:      colors.primary[400],            // Bright emerald on dark (#4ADE80)
-    primaryLight: colors.primary[900],
-    onPrimary:    colors.neutral[900],            // Dark text on bright green
+    primary:      '#0EA571',                      // Deep teal-emerald
+    primaryLight: '#0D2A16',
+    onPrimary:    '#F0F5F1',                      // Light text on teal
 
-    tabBarBackground: 'rgba(12,14,10,0.94)',
-    tabBarBorder:     'rgba(255,255,255,0.08)',
-    tabBarActive:     colors.primary[400],
-    tabBarInactive:   colors.neutral[500],
+    tabBarBackground: 'rgba(7,14,10,0.96)',
+    tabBarBorder:     'rgba(14,165,113,0.1)',
+    tabBarActive:     '#0EA571',
+    tabBarInactive:   '#5A7363',
 
     palette: colors,
     success: colors.success,
     warning: colors.warning,
     error:   colors.error,
     info:    colors.info,
-    accents: colors.accents,
-
-    cards: {
-        salat:    '#0A1F12',
-        adhkar:   '#1A1506',
-        quran:    '#071B25',
-        charity:  '#1F070F',
-        tahajjud: '#120A2E',
-        custom:   '#1F1007',
+    accents: {
+        ...colors.accents,
+        salat:    '#0EA571',
+        quran:    '#38BDF8',
     },
 
-    progressBarBackground: colors.neutral[700],
-    progressBarFill:       colors.primary[400],
+    cards: {
+        salat:    '#0D1F13',
+        adhkar:   '#181408',
+        quran:    '#0A1820',
+        charity:  '#1A0A12',
+        tahajjud: '#120D28',
+        custom:   '#1A1108',
+    },
+
+    progressBarBackground: '#1A2B1F',
+    progressBarFill:       '#0EA571',
 };
 
 export type Theme = typeof lightTheme;

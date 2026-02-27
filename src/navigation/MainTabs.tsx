@@ -95,13 +95,12 @@ const MainTabs: React.FC = () => {
                         StyleSheet.absoluteFill,
                         {
                             backgroundColor: isDark
-                                ? 'rgba(13,15,18,0.94)'
+                                ? 'rgba(7,14,10,0.96)'
                                 : 'rgba(255,255,255,0.95)',
                             borderTopWidth: 1,
                             borderTopColor: isDark
-                                ? 'rgba(255,255,255,0.08)'
+                                ? 'rgba(14,165,113,0.1)'
                                 : 'rgba(0,0,0,0.08)',
-                            // Android shadow via elevation applied on tabBarBg view
                         },
                     ]}
                 />

@@ -451,10 +451,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 20,
-        paddingTop: 16,
+        paddingTop: 8,
         paddingBottom: 12,
     },
-    headerTitle: { fontSize: 26, fontWeight: '700' },
+    headerTitle: { fontSize: 28, fontWeight: '800' },
     headerSubtitle: { fontSize: 13, marginTop: 2 },
     onTimeChip: {
         flexDirection: 'row',
